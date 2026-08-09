@@ -584,15 +584,15 @@ button {
 .notif-card {
   padding: 12px;
   border-radius: 12px;
-  border: 1px solid #333;
-  background: #171717;
+  border: 1px solid #e5e7eb;
+  background: #ffffff;
   transition: all 0.2s ease;
   cursor: pointer;
 }
 
 .notif-card:hover {
   border-color: rgba(212, 150, 43, 0.3);
-  background: #1f1f1f;
+  background: #f9fafb;
 }
 
 .notif-card-read {
@@ -626,8 +626,8 @@ button {
   display: flex;
   gap: 8px;
   padding: 16px;
-  border-top: 1px solid #333;
-  background: #171717;
+  border-top: 1px solid #e5e7eb;
+  background: #ffffff;
   border-radius: 0 0 12px 12px;
 }
 
@@ -676,16 +676,16 @@ button {
 .chat-bubble-sent {
   align-self: flex-end;
   background: linear-gradient(135deg, #d4962b, #bb7420);
-  color: #0a0a0a;
+  color: #ffffff;
   border-bottom-right-radius: 4px;
 }
 
 .chat-bubble-received {
   align-self: flex-start;
-  background: #2a2a2a;
-  color: #f3f4f6;
+  background: #ffffff;
+  color: #111827;
   border-bottom-left-radius: 4px;
-  border: 1px solid #333;
+  border: 1px solid #e5e7eb;
 }
 
 .chat-bubble-meta {
@@ -698,11 +698,11 @@ button {
 }
 
 .chat-bubble-sent .chat-bubble-meta {
-  color: rgba(0, 0, 0, 0.6);
+  color: rgba(255, 255, 255, 0.8);
 }
 
 .chat-bubble-received .chat-bubble-meta {
-  color: rgba(255, 255, 255, 0.4);
+  color: rgba(17, 24, 39, 0.6);
 }
 
 .chat-tick {
@@ -724,10 +724,10 @@ button {
   display: flex;
   gap: 4px;
   padding: 12px 16px;
-  background: #2a2a2a;
+  background: #ffffff;
   border-radius: 16px;
   border-bottom-left-radius: 4px;
-  border: 1px solid #333;
+  border: 1px solid #e5e7eb;
   width: fit-content;
 }
 
@@ -758,8 +758,8 @@ button {
 }
 
 .chat-date-sep span {
-  background: rgba(255, 255, 255, 0.05);
-  color: rgba(255, 255, 255, 0.5);
+  background: #e5e7eb;
+  color: #4b5563;
   font-size: 11px;
   font-weight: 600;
   padding: 4px 12px;

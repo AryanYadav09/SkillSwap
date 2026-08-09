@@ -126,7 +126,7 @@ export function AppLayout() {
  const navigate = useNavigate();
 
  useEffect(() => {
- document.documentElement.classList.add("dark");
+ document.documentElement.classList.remove("dark");
  }, []);
 
  // Fetch unread count on mount
