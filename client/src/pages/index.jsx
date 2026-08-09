@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState, Fragment } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
 import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
@@ -1184,7 +1184,7 @@ export function ChatDetailPage() {
               const isMine = item.senderId === currentUser?.id;
               const showDate = idx === 0 || new Date(item.createdAt).toDateString() !== new Date(messages[idx - 1].createdAt).toDateString();
               return (
-                <div key={item.id}>
+                <Fragment key={item.id}>
                   {showDate && <ChatDateSep date={item.createdAt} />}
                   <div className={`chat-bubble ${isMine ? "chat-bubble-sent" : "chat-bubble-received"}`}>
                     {item.imageUrl && <img src={item.imageUrl} alt="" className="rounded-lg mb-2 max-w-[240px]" />}
@@ -1198,7 +1198,7 @@ export function ChatDetailPage() {
                       )}
                     </div>
                   </div>
-                </div>
+                </Fragment>
               );
             })}
             {isTyping && (
