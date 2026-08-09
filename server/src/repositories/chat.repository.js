@@ -88,7 +88,7 @@ const listMessages = ({ chatId, skip, take }) =>
     skip,
     take,
     orderBy: {
-      createdAt: "asc",
+      createdAt: "desc",
     },
     include: {
       sender: {

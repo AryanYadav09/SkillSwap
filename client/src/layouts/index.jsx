@@ -445,8 +445,23 @@ function NotificationsPanel({ onClose, onCountChange }) {
       await api.patch(`/matches/${matchId}/${action}`);
       toast.success(`Match request ${action}ed`);
       await markOne(notifId);
+      
       if (action === "accept") {
-        navigate(`/sessions?matchId=${matchId}`);
+        try {
+          const res = await api.post("/sessions", {
+            matchRequestId: matchId,
+            title: "Instant Skill Exchange",
+            description: "Immediate session started after match acceptance.",
+            sessionDate: new Date().toISOString(),
+            duration: 60
+          });
+          const session = res.data?.data || res.data;
+          if (session && session.meetingId) {
+             navigate(`/meeting/${session.meetingId}`);
+          }
+        } catch(sessionErr) {
+           navigate(`/sessions?matchId=${matchId}`);
+        }
         if (onClose) onClose();
       } else {
         loadNotifications();
@@ -456,11 +471,29 @@ function NotificationsPanel({ onClose, onCountChange }) {
     }
   };
 
-  const handleClick = (item) => {
+  const handleClick = async (item) => {
     if (!item.isRead) markOne(item.id);
-    if (item.type === "NEW_MESSAGE" && item.entityId) { navigate(`/chat/${item.entityId}`); onClose?.(); }
-    else if (item.type?.startsWith("SESSION_")) { navigate("/sessions"); onClose?.(); }
-    else if (item.type?.startsWith("MATCH_")) { navigate("/matches"); onClose?.(); }
+    
+    if (item.type === "NEW_MESSAGE" && item.entityId) { 
+      navigate(`/chat/${item.entityId}`); 
+      onClose?.(); 
+    } else if (item.type?.startsWith("SESSION_") && item.entityId) { 
+      try {
+        const res = await api.get(`/sessions/${item.entityId}`);
+        const session = res.data?.data || res.data;
+        if (session && session.meetingId) {
+          navigate(`/meeting/${session.meetingId}`);
+        } else {
+          navigate("/sessions");
+        }
+      } catch (e) {
+        navigate("/sessions");
+      }
+      onClose?.(); 
+    } else if (item.type?.startsWith("MATCH_")) { 
+      navigate("/matches"); 
+      onClose?.(); 
+    }
   };
 
   return (

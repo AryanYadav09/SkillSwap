@@ -885,7 +885,21 @@ export function MatchesPage() {
       await api.patch(`/matches/${id}/${status}`);
       toast.success("Match updated");
       if (status === "accept") {
-        navigate(`/sessions?matchId=${id}`);
+        try {
+          const res = await api.post("/sessions", {
+            matchRequestId: id,
+            title: "Instant Skill Exchange",
+            description: "Immediate session started after match acceptance.",
+            sessionDate: new Date().toISOString(),
+            duration: 60
+          });
+          const session = res.data?.data || res.data;
+          if (session && session.meetingId) {
+             navigate(`/meeting/${session.meetingId}`);
+          }
+        } catch(sessionErr) {
+           navigate(`/sessions?matchId=${id}`);
+        }
       } else {
         requests.reload();
       }

@@ -37,14 +37,16 @@ const getChatById = async (userId, chatId, query) => {
   ensureUserInChat(chat, userId);
 
   const pagination = parsePagination(query, ["createdAt"], "createdAt");
-  const [messages, total] = await Promise.all([
+  const [messagesDesc, total] = await Promise.all([
     chatRepository.listMessages({
       chatId,
       skip: pagination.skip,
-      take: pagination.limit,
+      take: pagination.limit || 50,
     }),
     chatRepository.countMessages(chatId),
   ]);
+
+  const messages = messagesDesc.reverse();
 
   return {
     chat: {
