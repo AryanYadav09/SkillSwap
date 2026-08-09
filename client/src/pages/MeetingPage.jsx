@@ -14,6 +14,7 @@ import {
 
 import { selectAuth } from "../features/auth/authSlice";
 import { getSocket } from "../services/socket";
+import { api, unwrap } from "../services/api";
 
 const ICE_SERVERS = [
   { urls: "stun:stun.l.google.com:19302" },
@@ -30,21 +31,26 @@ const CALL_STATES = {
 };
 
 export default function MeetingPage() {
-  const { sessionId } = useParams();
+  const { meetingId } = useParams();
   const [searchParams] = useSearchParams();
-  const targetUserId = searchParams.get("target");
-  const targetName = searchParams.get("name") || "Participant";
-  const isCaller = searchParams.get("role") === "caller";
+  const queryTarget = searchParams.get("target");
+  const queryName = searchParams.get("name") || "Participant";
+  const queryRole = searchParams.get("role");
 
   const navigate = useNavigate();
   const { user, accessToken } = useSelector(selectAuth);
+
+  // Resolved meeting info (from query params or API)
+  const [targetUserId, setTargetUserId] = useState(queryTarget || null);
+  const [remoteName, setRemoteName] = useState(queryName);
+  const [isCaller, setIsCaller] = useState(queryRole === "caller");
+  const [resolving, setResolving] = useState(!queryTarget);
 
   const [callState, setCallState] = useState(CALL_STATES.IDLE);
   const [micOn, setMicOn] = useState(true);
   const [camOn, setCamOn] = useState(true);
   const [sharing, setSharing] = useState(false);
   const [elapsed, setElapsed] = useState(0);
-  const [remoteName, setRemoteName] = useState(targetName);
 
   const localVideoRef = useRef(null);
   const remoteVideoRef = useRef(null);
@@ -54,6 +60,39 @@ export default function MeetingPage() {
   const socketRef = useRef(null);
   const timerRef = useRef(null);
   const iceCandidateQueueRef = useRef([]);
+
+  // ── Resolve meeting by ID if no target in query ────
+  useEffect(() => {
+    if (queryTarget) {
+      setResolving(false);
+      return;
+    }
+
+    if (!meetingId || !accessToken || !user) return;
+
+    api.get(`/sessions/meeting/${meetingId}`)
+      .then((res) => {
+        const session = unwrap(res);
+        if (session) {
+          const senderId = session.matchRequest?.senderId;
+          const receiverId = session.matchRequest?.receiverId;
+          const senderName = session.matchRequest?.sender?.name || "Participant";
+          const receiverName = session.matchRequest?.receiver?.name || "Participant";
+
+          const otherId = senderId === user.id ? receiverId : senderId;
+          const otherName = senderId === user.id ? receiverName : senderName;
+
+          setTargetUserId(otherId);
+          setRemoteName(otherName);
+          setIsCaller(true);
+        }
+      })
+      .catch((err) => {
+        console.error("Failed to resolve meeting:", err);
+        navigate(-1);
+      })
+      .finally(() => setResolving(false));
+  }, [meetingId, queryTarget, accessToken, user, navigate]);
 
   // ── Format elapsed time ─────────────────────────────
   const formatTime = (seconds) => {
@@ -109,7 +148,6 @@ export default function MeetingPage() {
       }
       return stream;
     } catch (error) {
-      // Try audio-only if camera fails
       try {
         const stream = await navigator.mediaDevices.getUserMedia({
           video: false,
@@ -142,21 +180,24 @@ export default function MeetingPage() {
       const pc = new RTCPeerConnection({ iceServers: ICE_SERVERS });
       peerRef.current = pc;
 
-      // Add local tracks
       if (localStreamRef.current) {
         localStreamRef.current.getTracks().forEach((track) => {
           pc.addTrack(track, localStreamRef.current);
         });
       }
 
-      // Handle remote tracks
       pc.ontrack = (event) => {
-        if (remoteVideoRef.current && event.streams[0]) {
-          remoteVideoRef.current.srcObject = event.streams[0];
+        if (remoteVideoRef.current) {
+          let stream = remoteVideoRef.current.srcObject;
+          if (!stream) {
+            stream = new MediaStream();
+            remoteVideoRef.current.srcObject = stream;
+          }
+          stream.addTrack(event.track);
+          remoteVideoRef.current.play().catch((err) => console.error("Playback error:", err));
         }
       };
 
-      // Send ICE candidates
       pc.onicecandidate = (event) => {
         if (event.candidate) {
           socket.emit("call:ice-candidate", {
@@ -166,7 +207,6 @@ export default function MeetingPage() {
         }
       };
 
-      // Track connection state
       pc.onconnectionstatechange = () => {
         if (pc.connectionState === "connected") {
           setCallState(CALL_STATES.CONNECTED);
@@ -193,7 +233,7 @@ export default function MeetingPage() {
 
   // ── Main effect: initialize and handle signaling ────
   useEffect(() => {
-    if (!accessToken || !targetUserId) return;
+    if (!accessToken || !targetUserId || resolving) return;
 
     const socket = getSocket(accessToken);
     if (!socket) return;
@@ -205,20 +245,16 @@ export default function MeetingPage() {
       await getLocalStream();
 
       if (isCaller) {
-        // Caller: initiate the call
         setCallState(CALL_STATES.RINGING);
         socket.emit("call:initiate", {
           targetUserId,
           callerName: user?.name || "Someone",
-          sessionId,
+          sessionId: meetingId,
         });
       } else {
-        // Callee: already accepted (navigated here), tell the caller
         socket.emit("call:accept", { callerId: targetUserId });
       }
     };
-
-    // ── Socket event handlers ───────────────────────
 
     const onCallAccepted = async () => {
       if (!mounted) return;
@@ -306,8 +342,9 @@ export default function MeetingPage() {
   }, [
     accessToken,
     targetUserId,
-    sessionId,
+    meetingId,
     isCaller,
+    resolving,
     user?.name,
     getLocalStream,
     createPeerConnection,
@@ -319,7 +356,6 @@ export default function MeetingPage() {
   const toggleMic = () => {
     const stream = localStreamRef.current;
     if (!stream) return;
-
     stream.getAudioTracks().forEach((track) => {
       track.enabled = !track.enabled;
     });
@@ -330,7 +366,6 @@ export default function MeetingPage() {
   const toggleCamera = () => {
     const stream = localStreamRef.current;
     if (!stream) return;
-
     stream.getVideoTracks().forEach((track) => {
       track.enabled = !track.enabled;
     });
@@ -343,36 +378,41 @@ export default function MeetingPage() {
     if (!pc) return;
 
     if (sharing) {
-      // Stop screen share and revert to camera
       if (screenStreamRef.current) {
         screenStreamRef.current.getTracks().forEach((track) => track.stop());
         screenStreamRef.current = null;
       }
-
       const videoTrack = localStreamRef.current?.getVideoTracks()[0];
       if (videoTrack) {
-        const sender = pc.getSenders().find((s) => s.track?.kind === "video");
+        const sender = pc.getSenders().find((s) => s.track?.kind === "video" || s.track === null);
         if (sender) sender.replaceTrack(videoTrack);
+      }
+      if (localVideoRef.current) {
+        localVideoRef.current.srcObject = localStreamRef.current;
       }
       setSharing(false);
     } else {
       try {
-        const screen = await navigator.mediaDevices.getDisplayMedia({
-          video: true,
-        });
+        const screen = await navigator.mediaDevices.getDisplayMedia({ video: true });
         screenStreamRef.current = screen;
-
         const screenTrack = screen.getVideoTracks()[0];
-        const sender = pc.getSenders().find((s) => s.track?.kind === "video");
+        const sender = pc.getSenders().find((s) => s.track?.kind === "video" || s.track === null);
         if (sender) sender.replaceTrack(screenTrack);
+        
+        // Show screen share locally
+        if (localVideoRef.current) {
+          localVideoRef.current.srcObject = screen;
+        }
 
         screenTrack.onended = () => {
-          const videoTrack = localStreamRef.current?.getVideoTracks()[0];
-          if (videoTrack && sender) sender.replaceTrack(videoTrack);
+          const vt = localStreamRef.current?.getVideoTracks()[0];
+          if (vt && sender) sender.replaceTrack(vt);
+          if (localVideoRef.current) {
+            localVideoRef.current.srcObject = localStreamRef.current;
+          }
           screenStreamRef.current = null;
           setSharing(false);
         };
-
         setSharing(true);
       } catch (error) {
         console.error("Screen share failed:", error);
@@ -395,6 +435,20 @@ export default function MeetingPage() {
     cleanup();
     navigate(-1);
   };
+
+  // ── Resolving state ─────────────────────────────────
+  if (resolving) {
+    return (
+      <div className="meeting-page">
+        <div className="meeting-overlay">
+          <div className="meeting-avatar">
+            <Video size={36} />
+          </div>
+          <p className="meeting-status-text">Joining meeting...</p>
+        </div>
+      </div>
+    );
+  }
 
   // ── Status text ─────────────────────────────────────
   const statusText = {

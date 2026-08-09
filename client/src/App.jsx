@@ -14,9 +14,6 @@ import { store } from "./redux/store";
 import { fetchCurrentUser, selectAuth } from "./features/auth/authSlice";
 import { AuthLayout, AppLayout } from "./layouts";
 import {
-  AdminReportsPage,
-  AdminSkillsPage,
-  AdminUsersPage,
   BookmarksPage,
   ChatDetailPage,
   ChatsPage,
@@ -35,10 +32,12 @@ import {
   SearchPage,
   SessionsPage,
   SkillsPage,
+  BarterDetailPage,
 } from "./pages";
 import MeetingPage from "./pages/MeetingPage";
+import AdminApp from "./admin/AdminApp";
 
-function ProtectedRoute({ adminOnly = false }) {
+function ProtectedRoute() {
   const { user, accessToken, bootstrapped } = useSelector(selectAuth);
   const location = useLocation();
 
@@ -48,10 +47,6 @@ function ProtectedRoute({ adminOnly = false }) {
 
   if (!accessToken || !user) {
     return <Navigate to="/login" replace state={{ from: location }} />;
-  }
-
-  if (adminOnly && user.role !== "ADMIN") {
-    return <Navigate to="/dashboard" replace />;
   }
 
   return <Outlet />;
@@ -81,6 +76,11 @@ function Bootstrapper() {
   return (
     <>
       <Routes>
+        {/* ── Admin portal (fully separate) ─────────────────── */}
+        <Route path="/admin-login/*" element={<AdminApp />} />
+        <Route path="/admin/*" element={<AdminApp />} />
+
+        {/* ── Guest routes ──────────────────────────────────── */}
         <Route element={<GuestRoute />}>
           <Route element={<AuthLayout />}>
             <Route path="/" element={<LoginPage />} />
@@ -91,6 +91,7 @@ function Bootstrapper() {
           </Route>
         </Route>
 
+        {/* ── User protected routes ─────────────────────────── */}
         <Route element={<ProtectedRoute />}>
           <Route element={<AppLayout />}>
             <Route path="/dashboard" element={<DashboardPage />} />
@@ -101,6 +102,7 @@ function Bootstrapper() {
             <Route path="/matches" element={<MatchesPage />} />
             <Route path="/chat" element={<ChatsPage />} />
             <Route path="/chat/:id" element={<ChatDetailPage />} />
+            <Route path="/barter/:id" element={<BarterDetailPage />} />
             <Route path="/sessions" element={<SessionsPage />} />
             <Route path="/reviews" element={<ReviewsPage />} />
             <Route path="/bookmarks" element={<BookmarksPage />} />
@@ -108,16 +110,7 @@ function Bootstrapper() {
             <Route path="/search" element={<SearchPage />} />
             <Route path="/reports" element={<ReportsPage />} />
           </Route>
-          <Route path="/meeting/:sessionId" element={<MeetingPage />} />
-        </Route>
-
-        <Route element={<ProtectedRoute adminOnly />}>
-          <Route element={<AppLayout />}>
-            <Route path="/admin" element={<AdminUsersPage dashboard />} />
-            <Route path="/admin/users" element={<AdminUsersPage />} />
-            <Route path="/admin/skills" element={<AdminSkillsPage />} />
-            <Route path="/admin/reports" element={<AdminReportsPage />} />
-          </Route>
+          <Route path="/meeting/:meetingId" element={<MeetingPage />} />
         </Route>
 
         <Route path="*" element={<Navigate to="/dashboard" replace />} />

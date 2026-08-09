@@ -1,14 +1,20 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import toast from "react-hot-toast";
 import { useDispatch, useSelector } from "react-redux";
-import { Link, useNavigate, useParams } from "react-router-dom";
+import { Link, useNavigate, useParams, useSearchParams } from "react-router-dom";
 import {
+  ArrowLeft,
   Bell,
   BookOpen,
   Bookmark,
   CalendarPlus,
   Check,
+  CheckCheck,
+  Clock,
+  Calendar,
+  Copy,
   GraduationCap,
+  MessageCircle,
   Plus,
   RefreshCw,
   Search,
@@ -17,6 +23,7 @@ import {
   Star,
   Trash2,
   UserRound,
+  Users,
   Video,
   X,
 } from "lucide-react";
@@ -401,7 +408,29 @@ function StatCard({ label, value, icon: Icon }) {
 
 export function DashboardPage() {
   const { data, loading, reload } = useApiList("/dashboard");
+  const { accessToken } = useSelector(selectAuth);
+  const navigate = useNavigate();
   const stats = data?.statistics || {};
+
+  useEffect(() => {
+    const socket = getSocket(accessToken);
+    if (!socket) return undefined;
+    const handler = () => reload();
+    socket.on("notification:new", handler);
+    return () => socket.off("notification:new", handler);
+  }, [accessToken, reload]);
+
+  const handleMatchAction = async (matchId, action, notifId) => {
+    try {
+      await api.patch(`/matches/${matchId}/${action}`);
+      toast.success(`Match request ${action}ed`);
+      if (notifId) await api.patch(`/notifications/${notifId}/read`);
+      reload();
+      if (action === "accept") navigate(`/sessions?matchId=${matchId}`);
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
 
   return (
     <>
@@ -432,9 +461,9 @@ export function DashboardPage() {
             learnableTeachers={data?.learnableTeachers || []}
           />
           <div className="grid gap-6 xl:grid-cols-3">
-            <SimplePanel title="Recent match requests" items={data?.recentMatchRequests} render={(item) => `${item.sender?.name} -> ${item.receiver?.name} (${item.status})`} />
-            <SimplePanel title="Upcoming sessions" items={data?.upcomingSessions} render={(item) => `${item.title} - ${formatDate(item.sessionDate)}`} />
-            <SimplePanel title="Notifications" items={data?.notifications} render={(item) => item.title} />
+            <SimplePanel title="Recent match requests" items={data?.recentMatchRequests} render={(item) => `${item.sender?.name} → ${item.receiver?.name} (${item.status})`} />
+            <SimplePanel title="Upcoming sessions" items={data?.upcomingSessions} render={(item) => `${item.title} — ${formatDate(item.sessionDate)}`} />
+            <DashboardNotificationPanel notifications={data?.notifications || []} onMatchAction={handleMatchAction} navigate={navigate} />
           </div>
         </div>
       )}
@@ -570,6 +599,80 @@ function SimplePanel({ title, items = [], render }) {
           ))
         ) : (
           <p className="text-sm text-muted">No items yet.</p>
+        )}
+      </div>
+    </section>
+  );
+}
+
+function getNotifIcon(type) {
+  switch (type) {
+    case "MATCH_REQUEST": case "MATCH_ACCEPTED": case "MATCH_REJECTED": return Users;
+    case "SESSION_SCHEDULED": case "SESSION_ACCEPTED": case "SESSION_REJECTED": return Calendar;
+    case "NEW_MESSAGE": return MessageCircle;
+    case "REVIEW_ADDED": return Star;
+    default: return Bell;
+  }
+}
+
+function timeAgo(date) {
+  const seconds = Math.floor((Date.now() - new Date(date).getTime()) / 1000);
+  if (seconds < 60) return "just now";
+  const minutes = Math.floor(seconds / 60);
+  if (minutes < 60) return `${minutes}m ago`;
+  const hours = Math.floor(minutes / 60);
+  if (hours < 24) return `${hours}h ago`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `${days}d ago`;
+  return new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(new Date(date));
+}
+
+function DashboardNotificationPanel({ notifications, onMatchAction, navigate }) {
+  return (
+    <section className="card">
+      <div className="flex items-center justify-between mb-4">
+        <h2 className="font-display text-xl font-bold text-ink dark:text-white flex items-center gap-2">
+          <Bell size={18} className="text-gold-400" /> Notifications
+        </h2>
+        <Link to="/notifications" className="text-xs font-bold text-gold-400 hover:text-gold-300 transition-colors">View All →</Link>
+      </div>
+      <div className="grid gap-2">
+        {notifications.length ? notifications.map((item) => {
+          const Icon = getNotifIcon(item.type);
+          return (
+            <div key={item.id} className={`notif-card notif-item ${item.isRead ? "notif-card-read" : ""}`}>
+              <div className="flex items-start gap-3">
+                <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gold-500/10 text-gold-400">
+                  <Icon size={16} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-start justify-between gap-2">
+                    <p className="text-sm font-bold text-gray-100 truncate">{item.title}</p>
+                    <span className="text-[10px] text-gray-500 whitespace-nowrap">{timeAgo(item.createdAt)}</span>
+                  </div>
+                  <p className="text-xs text-gray-400 mt-0.5 line-clamp-2">{item.message}</p>
+                  {item.type === "MATCH_REQUEST" && !item.isRead && item.entityId && (
+                    <div className="flex gap-2 mt-2">
+                      <button className="btn btn-primary text-xs px-2 py-1" onClick={(e) => { e.stopPropagation(); onMatchAction(item.entityId, "accept", item.id); }}>
+                        <Check size={12} /> Accept
+                      </button>
+                      <button className="btn btn-secondary text-xs px-2 py-1" onClick={(e) => { e.stopPropagation(); onMatchAction(item.entityId, "reject", item.id); }}>
+                        <X size={12} /> Reject
+                      </button>
+                    </div>
+                  )}
+                  {item.type.startsWith("SESSION_") && item.entityId && (
+                    <button className="btn btn-secondary text-xs px-2 py-1 mt-2" onClick={() => navigate(`/sessions`)}>
+                      <Calendar size={12} /> View Session
+                    </button>
+                  )}
+                </div>
+                {!item.isRead && <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-gold-400 shadow-glow" />}
+              </div>
+            </div>
+          );
+        }) : (
+          <p className="text-sm text-gray-500 text-center py-4">No notifications yet.</p>
         )}
       </div>
     </section>
@@ -761,8 +864,11 @@ export function SearchPage() {
 }
 
 export function MatchesPage() {
+  const { user } = useSelector(selectAuth);
   const compatible = useApiList("/matches/compatible");
   const requests = useApiList("/matches");
+  const chats = useApiList("/chats");
+  const navigate = useNavigate();
 
   const sendRequest = async (receiverId) => {
     try {
@@ -778,7 +884,11 @@ export function MatchesPage() {
     try {
       await api.patch(`/matches/${id}/${status}`);
       toast.success("Match updated");
-      requests.reload();
+      if (status === "accept") {
+        navigate(`/sessions?matchId=${id}`);
+      } else {
+        requests.reload();
+      }
     } catch (error) {
       toast.error(getErrorMessage(error));
     }
@@ -794,14 +904,27 @@ export function MatchesPage() {
         </section>
         <section>
           <h2 className="mb-3 font-display text-xl font-bold text-ink dark:text-white">Requests</h2>
-          {requests.loading ? <LoadingState /> : <div className="grid gap-4">{requests.items.map((request) => <MatchRequestCard key={request.id} request={request} onStatus={changeStatus} />)}</div>}
+          {requests.loading ? <LoadingState /> : <div className="grid gap-4">{requests.items.map((request) => <MatchRequestCard key={request.id} request={request} onStatus={changeStatus} currentUser={user} chats={chats.items} />)}</div>}
         </section>
       </div>
     </>
   );
 }
 
-function MatchRequestCard({ request, onStatus }) {
+function MatchRequestCard({ request, onStatus, currentUser, chats }) {
+  const isReceiver = currentUser && request.receiverId === currentUser.id;
+  const navigate = useNavigate();
+
+  const handleMessage = () => {
+    const otherUserId = isReceiver ? request.senderId : request.receiverId;
+    const chat = chats?.find(c => c.otherParticipant?.id === otherUserId);
+    if (chat) {
+      navigate(`/chat/${chat.id}`);
+    } else {
+      toast.error("Chat not found. It might take a moment to generate.");
+    }
+  };
+
   return (
     <article className="card">
       <div className="flex items-start justify-between gap-3">
@@ -815,12 +938,21 @@ function MatchRequestCard({ request, onStatus }) {
       </div>
       {request.status === "PENDING" ? (
         <div className="mt-4 flex flex-wrap gap-2">
-          <button className="btn btn-primary" onClick={() => onStatus(request.id, "accept")}><Check size={16} /> Accept</button>
-          <button className="btn btn-secondary" onClick={() => onStatus(request.id, "reject")}><X size={16} /> Reject</button>
-          <button className="btn btn-danger" onClick={() => onStatus(request.id, "cancel")}><Trash2 size={16} /> Cancel</button>
+          {isReceiver ? (
+            <>
+              <button className="btn btn-primary" onClick={() => onStatus(request.id, "accept")}><Check size={16} /> Accept</button>
+              <button className="btn btn-secondary" onClick={() => onStatus(request.id, "reject")}><X size={16} /> Reject</button>
+            </>
+          ) : (
+            <button className="btn btn-danger" onClick={() => onStatus(request.id, "cancel")}><Trash2 size={16} /> Cancel</button>
+          )}
         </div>
       ) : request.status === "ACCEPTED" ? (
-        <button className="btn btn-secondary mt-4" onClick={() => onStatus(request.id, "complete")}><Check size={16} /> Complete</button>
+        <div className="mt-4 flex flex-wrap gap-2">
+          <button className="btn btn-primary" onClick={() => navigate(`/sessions?matchId=${request.id}`)}><CalendarPlus size={16} /> Schedule</button>
+          <button className="btn btn-secondary" onClick={handleMessage}><MessageCircle size={16} /> Message</button>
+          <button className="btn btn-secondary" onClick={() => onStatus(request.id, "complete")}><Check size={16} /> Complete</button>
+        </div>
       ) : null}
     </article>
   );
@@ -828,21 +960,86 @@ function MatchRequestCard({ request, onStatus }) {
 
 export function ChatsPage() {
   const { items, loading } = useApiList("/chats");
+  const { accessToken } = useSelector(selectAuth);
+  const [onlineUsers, setOnlineUsers] = useState(new Set());
+
+  useEffect(() => {
+    const socket = getSocket(accessToken);
+    if (!socket) return undefined;
+    const handler = ({ userId, isOnline }) => {
+      setOnlineUsers((prev) => {
+        const next = new Set(prev);
+        if (isOnline) next.add(userId); else next.delete(userId);
+        return next;
+      });
+    };
+    socket.on("presence:update", handler);
+    return () => socket.off("presence:update", handler);
+  }, [accessToken]);
 
   return (
     <>
       <PageHeader title="Chats" eyebrow="Messages" />
-      {loading ? <LoadingState /> : items.length ? <div className="grid gap-3">{items.map((chat) => <Link className="card block hover:border-forest" key={chat.id} to={`/chat/${chat.id}`}><p className="font-bold text-ink dark:text-white">{chat.otherParticipant?.name}</p><p className="mt-1 text-sm text-muted">{chat.lastMessage?.message || "Open conversation"}</p></Link>)}</div> : <EmptyState title="No chats yet" description="Accepted matches create chats automatically." />}
+      {loading ? <LoadingState /> : items.length ? (
+        <div className="grid gap-2">
+          {items.map((chat) => {
+            const other = chat.otherParticipant;
+            const isOnline = onlineUsers.has(other?.id);
+            const lastMsg = chat.lastMessage;
+            return (
+              <Link className="card flex items-center gap-4 hover:border-gold-500/40" key={chat.id} to={`/chat/${chat.id}`}>
+                <div className="relative shrink-0">
+                  <div className="grid h-12 w-12 place-items-center rounded-full bg-gold-500/10 text-gold-400 font-bold text-lg">
+                    {other?.profileImage ? <img className="h-full w-full rounded-full object-cover" src={other.profileImage} alt="" /> : other?.name?.charAt(0)}
+                  </div>
+                  <div className={`online-dot ${isOnline ? "online-dot-on" : "online-dot-off"}`} />
+                </div>
+                <div className="flex-1 min-w-0">
+                  <div className="flex items-center justify-between gap-2">
+                    <p className="font-bold text-gray-100 truncate">{other?.name}</p>
+                    {lastMsg && <span className="text-[10px] text-gray-500 whitespace-nowrap">{timeAgo(lastMsg.createdAt)}</span>}
+                  </div>
+                  <p className="text-sm text-gray-400 truncate mt-0.5">{lastMsg?.message || "Start a conversation"}</p>
+                </div>
+                {chat.unreadCount > 0 && <div className="chat-unread-badge">{chat.unreadCount}</div>}
+              </Link>
+            );
+          })}
+        </div>
+      ) : <EmptyState title="No chats yet" description="Accepted matches create chats automatically." />}
     </>
   );
 }
 
+function ChatDateSep({ date }) {
+  const d = new Date(date);
+  const today = new Date();
+  const yesterday = new Date(today);
+  yesterday.setDate(yesterday.getDate() - 1);
+  let label;
+  if (d.toDateString() === today.toDateString()) label = "Today";
+  else if (d.toDateString() === yesterday.toDateString()) label = "Yesterday";
+  else label = new Intl.DateTimeFormat("en-IN", { dateStyle: "medium" }).format(d);
+  return <div className="chat-date-sep"><span>{label}</span></div>;
+}
+
+function formatTime(date) {
+  return new Intl.DateTimeFormat("en-IN", { hour: "2-digit", minute: "2-digit", hour12: true }).format(new Date(date));
+}
+
 export function ChatDetailPage() {
   const { id } = useParams();
-  const { accessToken } = useSelector(selectAuth);
+  const { accessToken, user: currentUser } = useSelector(selectAuth);
   const [payload, setPayload] = useState(null);
   const [message, setMessage] = useState("");
   const [loading, setLoading] = useState(true);
+  const [isTyping, setIsTyping] = useState(false);
+  const messagesEndRef = useRef(null);
+  const typingTimeoutRef = useRef(null);
+
+  const scrollToBottom = useCallback(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, []);
 
   const loadChat = useCallback(async () => {
     setLoading(true);
@@ -850,39 +1047,82 @@ export function ChatDetailPage() {
       const response = await api.get(`/chats/${id}`);
       setPayload(unwrap(response));
       await api.patch(`/messages/${id}/seen`);
+      const socket = getSocket(accessToken);
+      if (socket) socket.emit("message:seen", { chatId: id });
     } catch (error) {
       toast.error(getErrorMessage(error));
     } finally {
       setLoading(false);
     }
-  }, [id]);
+  }, [id, accessToken]);
 
-  useEffect(() => {
-    loadChat();
-  }, [loadChat]);
+  useEffect(() => { loadChat(); }, [loadChat]);
+  useEffect(() => { if (!loading) scrollToBottom(); }, [loading, scrollToBottom]);
 
   useEffect(() => {
     const socket = getSocket(accessToken);
     if (!socket) return undefined;
 
-    const handler = (event) => {
+    const onMessage = (event) => {
       if (event.chatId === id) {
-        setPayload((current) => current ? { ...current, messages: { ...current.messages, items: [...(current.messages?.items || []), event.message] } } : current);
+        setPayload((cur) => cur ? { ...cur, messages: { ...cur.messages, items: [...(cur.messages?.items || []), event.message] } } : cur);
+        setTimeout(scrollToBottom, 50);
+        socket.emit("message:seen", { chatId: id });
       }
     };
 
-    socket.on("chat:message", handler);
-    return () => socket.off("chat:message", handler);
-  }, [accessToken, id]);
+    const onSeen = (event) => {
+      if (event.chatId === id) {
+        setPayload((cur) => {
+          if (!cur) return cur;
+          const updatedItems = (cur.messages?.items || []).map((msg) =>
+            msg.senderId === currentUser?.id && !msg.isSeen ? { ...msg, isSeen: true, seenAt: event.seenAt } : msg
+          );
+          return { ...cur, messages: { ...cur.messages, items: updatedItems } };
+        });
+      }
+    };
+
+    const onTyping = (event) => {
+      if (event.chatId === id && event.userId !== currentUser?.id) setIsTyping(true);
+    };
+    const onStopTyping = (event) => {
+      if (event.chatId === id && event.userId !== currentUser?.id) setIsTyping(false);
+    };
+
+    socket.on("chat:message", onMessage);
+    socket.on("chat:seen", onSeen);
+    socket.on("chat:typing", onTyping);
+    socket.on("chat:stop-typing", onStopTyping);
+    return () => {
+      socket.off("chat:message", onMessage);
+      socket.off("chat:seen", onSeen);
+      socket.off("chat:typing", onTyping);
+      socket.off("chat:stop-typing", onStopTyping);
+    };
+  }, [accessToken, id, currentUser?.id, scrollToBottom]);
+
+  const handleInputChange = (e) => {
+    setMessage(e.target.value);
+    const socket = getSocket(accessToken);
+    if (!socket) return;
+    socket.emit("chat:typing", { chatId: id });
+    clearTimeout(typingTimeoutRef.current);
+    typingTimeoutRef.current = setTimeout(() => {
+      socket.emit("chat:stop-typing", { chatId: id });
+    }, 1500);
+  };
 
   const submit = async (event) => {
     event.preventDefault();
     if (!message.trim()) return;
-
+    const socket = getSocket(accessToken);
+    if (socket) socket.emit("chat:stop-typing", { chatId: id });
     try {
       const response = await api.post("/messages", { chatId: id, message });
-      setPayload((current) => current ? { ...current, messages: { ...current.messages, items: [...(current.messages?.items || []), unwrap(response)] } } : current);
+      setPayload((cur) => cur ? { ...cur, messages: { ...cur.messages, items: [...(cur.messages?.items || []), unwrap(response)] } } : cur);
       setMessage("");
+      setTimeout(scrollToBottom, 50);
     } catch (error) {
       toast.error(getErrorMessage(error));
     }
@@ -890,35 +1130,76 @@ export function ChatDetailPage() {
 
   if (loading) return <LoadingState />;
 
+  const messages = payload?.messages?.items || [];
+  const otherUser = payload?.chat?.otherParticipant;
+
   return (
     <>
-      <PageHeader
-        title={payload?.chat?.otherParticipant?.name || "Chat"}
-        eyebrow="Conversation"
-        action={
-          payload?.chat?.otherParticipant ? (
-            <Link
-              className="btn btn-secondary"
-              to={`/meeting/chat-${id}?target=${payload.chat.otherParticipant.id}&name=${encodeURIComponent(payload.chat.otherParticipant.name)}&role=caller`}
-            >
-              <Video size={16} />
-              Video Call
-            </Link>
-          ) : null
-        }
-      />
-      <section className="card flex min-h-[70vh] flex-col">
-        <div className="flex-1 space-y-3 overflow-y-auto">
-          {(payload?.messages?.items || []).map((item) => (
-            <div key={item.id} className="max-w-2xl rounded-md bg-slate-50 p-3 dark:bg-slate-950">
-              <p className="text-xs font-bold text-muted">{item.sender?.name}</p>
-              <p className="mt-1 text-sm text-ink dark:text-white">{item.message}</p>
+      <header className="flex items-center justify-between mb-4 pb-4 border-b border-line">
+        <div className="flex items-center gap-4">
+          <Link to="/chats" className="btn btn-secondary px-2" title="Back to chats">
+            <ArrowLeft size={18} />
+          </Link>
+          <div className="relative">
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full bg-forest/10 font-bold text-forest text-lg overflow-hidden">
+              {otherUser?.profileImage ? <img className="h-full w-full object-cover" src={otherUser.profileImage} alt="" /> : otherUser?.name?.charAt(0) || "?"}
             </div>
-          ))}
+            <div className={`online-dot ${otherUser?.isOnline ? "online-dot-on" : "online-dot-off"}`} />
+          </div>
+          <div>
+            <h1 className="font-display text-2xl font-bold text-ink dark:text-white leading-none">
+              {otherUser?.name || "Chat"}
+            </h1>
+            <p className="text-sm text-muted mt-1">{otherUser?.college || "User"}</p>
+          </div>
         </div>
-        <form className="mt-4 flex gap-2 border-t border-line pt-4 dark:border-slate-800" onSubmit={submit}>
-          <input className="input" value={message} onChange={(event) => setMessage(event.target.value)} placeholder="Type a message" />
-          <button className="btn btn-primary"><Send size={16} /> Send</button>
+        {otherUser ? (
+          <Link
+            className="btn btn-secondary"
+            to={`/meeting/chat-${id}?target=${otherUser.id}&name=${encodeURIComponent(otherUser.name)}&role=caller`}
+          >
+            <Video size={16} className="text-gold-400" />
+            <span className="hidden sm:inline">Video Call</span>
+          </Link>
+        ) : null}
+      </header>
+      <section className="rounded-xl border border-line bg-charcoal shadow-soft flex flex-col" style={{ height: "calc(100vh - 220px)", minHeight: 400 }}>
+        <div className="flex-1 overflow-y-auto px-4">
+          <div className="chat-container">
+            {messages.map((item, idx) => {
+              const isMine = item.senderId === currentUser?.id;
+              const showDate = idx === 0 || new Date(item.createdAt).toDateString() !== new Date(messages[idx - 1].createdAt).toDateString();
+              return (
+                <div key={item.id}>
+                  {showDate && <ChatDateSep date={item.createdAt} />}
+                  <div className={`chat-bubble ${isMine ? "chat-bubble-sent" : "chat-bubble-received"}`}>
+                    {item.imageUrl && <img src={item.imageUrl} alt="" className="rounded-lg mb-2 max-w-[240px]" />}
+                    {item.message && <p>{item.message}</p>}
+                    <div className="chat-bubble-meta">
+                      <span>{formatTime(item.createdAt)}</span>
+                      {isMine && (
+                        <span className={`chat-tick ${item.isSeen ? "chat-tick-seen" : "chat-tick-sent"}`}>
+                          ✓✓
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              );
+            })}
+            {isTyping && (
+              <div className="chat-typing">
+                <div className="chat-typing-dot" />
+                <div className="chat-typing-dot" />
+                <div className="chat-typing-dot" />
+              </div>
+            )}
+            <div ref={messagesEndRef} />
+          </div>
+        </div>
+        <form className="chat-input-area" onSubmit={submit}>
+          <input className="input" value={message} onChange={handleInputChange} placeholder="Type a message..." autoFocus />
+          <button className="btn btn-primary" disabled={!message.trim()}><Send size={16} /></button>
         </form>
       </section>
     </>
@@ -926,8 +1207,35 @@ export function ChatDetailPage() {
 }
 
 export function SessionsPage() {
+  const { user: currentUser, accessToken } = useSelector(selectAuth);
   const { items, loading, reload } = useApiList("/sessions");
+  const chats = useApiList("/chats");
+  const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const initialMatchId = searchParams.get("matchId");
+
+  useEffect(() => {
+    const socket = getSocket(accessToken);
+    if (!socket) return undefined;
+    const handler = () => reload();
+    socket.on("notification:new", handler);
+    return () => socket.off("notification:new", handler);
+  }, [accessToken, reload]);
+
   const [form, setForm] = useState({ matchRequestId: "", title: "", description: "", sessionDate: "", duration: 60 });
+  const [joinId, setJoinId] = useState("");
+
+  useEffect(() => {
+    if (initialMatchId) {
+      setForm((prev) => ({
+        ...prev,
+        matchRequestId: initialMatchId,
+        title: prev.title || "Skill Exchange Session",
+        description: prev.description || "A focused session on exchanging our skills and collaborating."
+      }));
+    }
+  }, [initialMatchId]);
+
   const update = (event) => setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
 
   const create = async (event) => {
@@ -951,9 +1259,47 @@ export function SessionsPage() {
     }
   };
 
+  const copyMeetingId = (meetingId) => {
+    navigator.clipboard.writeText(meetingId);
+    toast.success("Meeting ID copied!");
+  };
+
+  const handleMessage = (otherUserId) => {
+    const chat = chats.items?.find(c => c.otherParticipant?.id === otherUserId);
+    if (chat) {
+      navigate(`/chat/${chat.id}`);
+    } else {
+      toast.error("Chat not found");
+    }
+  };
+
+  const joinMeeting = async (e) => {
+    e.preventDefault();
+    if (!joinId.trim()) return;
+    try {
+      const res = await api.get(`/sessions/meeting/${joinId.trim()}`);
+      const session = unwrap(res);
+      if (session) {
+        navigate(`/meeting/${session.meetingId}`);
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
+
   return (
     <>
       <PageHeader title="Sessions" eyebrow="Schedule" />
+
+      {/* Join Meeting by ID */}
+      <div className="card mb-6">
+        <h3 className="text-lg font-bold text-gray-100 mb-3 flex items-center gap-2"><Video size={18} className="text-gold-400" /> Join a Meeting</h3>
+        <form className="flex gap-3" onSubmit={joinMeeting}>
+          <input className="input flex-1" value={joinId} onChange={(e) => setJoinId(e.target.value)} placeholder="Paste meeting ID here..." />
+          <button className="btn btn-primary" disabled={!joinId.trim()}><Video size={16} /> Join</button>
+        </form>
+      </div>
+
       <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
         <form className="card grid gap-4" onSubmit={create}>
           <Field label="Accepted match request ID" name="matchRequestId" value={form.matchRequestId} onChange={update} required />
@@ -963,7 +1309,66 @@ export function SessionsPage() {
           <Field label="Duration minutes" name="duration" type="number" value={form.duration} onChange={update} required />
           <button className="btn btn-primary"><CalendarPlus size={16} /> Create session</button>
         </form>
-        {loading ? <LoadingState /> : <div className="grid gap-4">{items.map((session) => { const otherUser = session.matchRequest?.sender?.id === session.createdBy?.id ? session.matchRequest?.receiver : session.matchRequest?.sender; return (<article className="card" key={session.id}><div className="flex justify-between gap-3"><div><p className="font-bold text-ink dark:text-white">{session.title}</p><p className="text-sm text-muted">{formatDate(session.sessionDate)}</p></div><span className="pill">{session.status}</span></div><p className="mt-3 text-sm text-muted">{session.description}</p><div className="mt-4 flex flex-wrap gap-2">{session.status === "SCHEDULED" ? (<Link className="btn btn-primary" to={`/meeting/${session.id}?target=${otherUser?.id}&name=${encodeURIComponent(otherUser?.name || "Participant")}&role=caller`}><Video size={16} /> Start Meeting</Link>) : null}<button className="btn btn-secondary" onClick={() => status(session.id, "complete")}>Complete</button><button className="btn btn-danger" onClick={() => status(session.id, "cancel")}>Cancel</button></div></article>); })}</div>}
+        {loading ? <LoadingState /> : (
+          <div className="grid gap-4">
+            {items.map((session) => {
+              const otherUser = session.matchRequest?.sender?.id === session.createdBy?.id ? session.matchRequest?.receiver : session.matchRequest?.sender;
+              return (
+                <article className="card" key={session.id}>
+                  <div className="flex justify-between gap-3">
+                    <div>
+                      <p className="font-bold text-gray-100">{session.title}</p>
+                      {otherUser && <p className="text-sm font-semibold text-gold-400 mt-1">With {otherUser.name}</p>}
+                      <p className="text-sm text-gray-400 flex items-center gap-1 mt-1"><Clock size={12} /> {formatDate(session.sessionDate)}</p>
+                    </div>
+                    <span className="pill">{session.status}</span>
+                  </div>
+                  <p className="mt-3 text-sm text-gray-400">{session.description}</p>
+
+                  {/* Meeting ID */}
+                  {session.meetingId && (
+                    <div className="mt-3 flex items-center gap-2 rounded-lg bg-obsidian border border-line px-3 py-2">
+                      <span className="text-xs font-bold text-gray-500 uppercase">Meeting ID</span>
+                      <code className="flex-1 text-sm text-gold-400 font-mono truncate">{session.meetingId}</code>
+                      <button type="button" className="btn btn-secondary px-2 py-1 text-xs" onClick={() => copyMeetingId(session.meetingId)} title="Copy">
+                        <Copy size={12} />
+                      </button>
+                    </div>
+                  )}
+
+                  {session.status === "PENDING" && (
+                    <div className="mt-4 flex flex-wrap gap-2 items-center">
+                      {session.createdBy?.id === currentUser?.id ? (
+                        <>
+                          <span className="text-sm text-gold-400 font-semibold px-2 py-1">Waiting for response...</span>
+                          <button className="btn btn-secondary" onClick={() => handleMessage(otherUser?.id)}><MessageCircle size={16} /> Message</button>
+                          <button className="btn btn-danger" onClick={() => status(session.id, "cancel")}><X size={16} /> Cancel</button>
+                        </>
+                      ) : (
+                        <>
+                          <button className="btn btn-primary" onClick={() => status(session.id, "accept")}><Check size={16} /> Accept</button>
+                          <button className="btn btn-secondary" onClick={() => status(session.id, "reject")}><X size={16} /> Reject</button>
+                          <button className="btn btn-secondary" onClick={() => handleMessage(otherUser?.id)}><MessageCircle size={16} /> Message</button>
+                        </>
+                      )}
+                    </div>
+                  )}
+
+                  {session.status === "SCHEDULED" && (
+                    <div className="mt-4 flex flex-wrap gap-2">
+                      <Link className="btn btn-primary" to={`/meeting/${session.meetingId}`}>
+                        <Video size={16} /> Start Meeting
+                      </Link>
+                      <button className="btn btn-secondary" onClick={() => handleMessage(otherUser?.id)}><MessageCircle size={16} /> Message</button>
+                      <button className="btn btn-secondary" onClick={() => status(session.id, "complete")}><Check size={16} /> Complete</button>
+                      <button className="btn btn-danger" onClick={() => status(session.id, "cancel")}><X size={16} /> Cancel</button>
+                    </div>
+                  )}
+                </article>
+              );
+            })}
+          </div>
+        )}
       </div>
     </>
   );
@@ -1024,6 +1429,8 @@ export function BookmarksPage() {
 
 export function NotificationsPage() {
   const { items, loading, reload, data } = useApiList("/notifications");
+  const navigate = useNavigate();
+
   const markAll = async () => {
     try {
       await api.patch("/notifications/read-all");
@@ -1034,37 +1441,185 @@ export function NotificationsPage() {
     }
   };
 
+  const markOne = async (notifId) => {
+    try {
+      await api.patch(`/notifications/${notifId}/read`);
+      reload();
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
+
+  const handleMatchAction = async (matchId, action, notifId) => {
+    try {
+      await api.patch(`/matches/${matchId}/${action}`);
+      toast.success(`Match request ${action}ed`);
+      await markOne(notifId);
+      if (action === "accept") {
+        navigate(`/sessions?matchId=${matchId}`);
+      }
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
+
+  const handleNotifClick = (item) => {
+    if (!item.isRead) markOne(item.id);
+    if (item.type === "NEW_MESSAGE" && item.entityId) navigate(`/chat/${item.entityId}`);
+    else if (item.type === "SESSION_SCHEDULED") navigate("/sessions");
+    else if (item.type?.startsWith("MATCH_")) navigate("/matches");
+  };
+
   return (
     <>
       <PageHeader title="Notifications" eyebrow={`${data?.unreadCount || 0} unread`} action={<button className="btn btn-secondary" onClick={markAll}><Check size={16} /> Mark all read</button>} />
-      {loading ? <LoadingState /> : <div className="grid gap-3">{items.map((item) => <article className="card" key={item.id}><div className="flex items-start gap-3"><Bell className="text-forest" size={18} /><div><p className="font-bold text-ink dark:text-white">{item.title}</p><p className="text-sm text-muted">{item.message}</p></div></div></article>)}</div>}
+      {loading ? <LoadingState /> : (
+        <div className="grid gap-2">
+          {items.length ? items.map((item) => {
+            const Icon = getNotifIcon(item.type);
+            return (
+              <div key={item.id} className={`notif-card notif-item ${item.isRead ? "notif-card-read" : ""}`} onClick={() => handleNotifClick(item)}>
+                <div className="flex items-start gap-3">
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gold-500/10 text-gold-400">
+                    <Icon size={18} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <div className="flex items-start justify-between gap-2">
+                      <p className="text-sm font-bold text-gray-100">{item.title}</p>
+                      <span className="text-[10px] text-gray-500 whitespace-nowrap">{timeAgo(item.createdAt)}</span>
+                    </div>
+                    <p className="text-xs text-gray-400 mt-1">{item.message}</p>
+                    {item.type === "MATCH_REQUEST" && !item.isRead && item.entityId && (
+                      <div className="flex gap-2 mt-2">
+                        <button className="btn btn-primary text-xs px-3 py-1" onClick={(e) => { e.stopPropagation(); handleMatchAction(item.entityId, "accept", item.id); }}>
+                          <Check size={12} /> Accept
+                        </button>
+                        <button className="btn btn-secondary text-xs px-3 py-1" onClick={(e) => { e.stopPropagation(); handleMatchAction(item.entityId, "reject", item.id); }}>
+                          <X size={12} /> Reject
+                        </button>
+                      </div>
+                    )}
+                  </div>
+                  {!item.isRead && <div className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-gold-400 shadow-glow" />}
+                </div>
+              </div>
+            );
+          }) : <EmptyState title="All caught up" description="You have no notifications." />}
+        </div>
+      )}
     </>
   );
 }
 
 export function ProfilePage() {
-  const { user } = useSelector(selectAuth);
+  const { user: currentUser } = useSelector(selectAuth);
+  const [searchParams] = useSearchParams();
+  const id = searchParams.get("id");
+  const isMe = !id || id === currentUser?.id;
+  
+  const [profile, setProfile] = useState(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    let active = true;
+    const fetchId = isMe ? currentUser?.id : id;
+    if (fetchId) {
+      setLoading(true);
+      api.get(`/users/${fetchId}`)
+        .then(res => {
+          if (active) setProfile(unwrap(res));
+        })
+        .catch(err => {
+          if (active) toast.error(getErrorMessage(err));
+        })
+        .finally(() => {
+          if (active) setLoading(false);
+        });
+    }
+
+    return () => { active = false; };
+  }, [id, isMe, currentUser?.id]);
+
+  if (loading) return <LoadingState />;
+  if (!profile) return (
+    <div className="flex h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gold-500/20 bg-charcoal">
+      <h3 className="font-display text-lg font-bold text-gray-100">User not found</h3>
+      <p className="text-sm text-gray-400">The profile you are looking for does not exist.</p>
+    </div>
+  );
 
   return (
     <>
-      <PageHeader title="Profile" eyebrow={user?.username} action={<Link className="btn btn-primary" to="/profile/edit">Edit profile</Link>} />
-      <section className="card">
-        <div className="flex flex-col gap-5 md:flex-row">
-          <div className="grid h-24 w-24 place-items-center rounded-md bg-forest/10 text-3xl font-bold text-forest">
-            {user?.profileImage ? <img className="h-full w-full rounded-md object-cover" src={user.profileImage} alt="" /> : user?.name?.charAt(0)}
+      <PageHeader 
+        title="Profile" 
+        eyebrow={profile.username} 
+        action={
+          isMe 
+            ? <Link className="btn btn-primary" to="/profile/edit">Edit profile</Link>
+            : <Link className="btn btn-primary" to={`/barter/new?userId=${profile.id}`}><Send size={16} /> Send Request</Link>
+        } 
+      />
+      <section className="card mb-6 border border-gold-500/10 bg-charcoal/80">
+        <div className="flex flex-col gap-6 md:flex-row items-start">
+          <div className="grid h-24 w-24 shrink-0 place-items-center rounded-xl bg-gold-600/10 text-4xl font-bold text-gold-400 border border-gold-500/20 shadow-glow">
+            {profile.profileImage ? <img className="h-full w-full rounded-xl object-cover" src={profile.profileImage} alt="" /> : profile.name?.charAt(0)}
           </div>
-          <div>
-            <h2 className="font-display text-3xl font-bold text-ink dark:text-white">{user?.name}</h2>
-            <p className="mt-1 text-muted">{user?.bio || "No bio added yet."}</p>
-            <div className="mt-4 flex flex-wrap gap-2">
-              <span className="pill">{user?.college}</span>
-              <span className="pill">{user?.department}</span>
-              <span className="pill">Semester {user?.semester}</span>
-              <span className="pill">Rating {user?.averageRating || 0}</span>
+          <div className="flex-1 text-center md:text-left">
+            <h2 className="font-display text-3xl font-bold text-gray-100 ">{profile.name}</h2>
+            <p className="mt-2 text-gray-400 max-w-2xl">{profile.bio || `${profile.name} is active on SkillSwap and open to peer learning sessions.`}</p>
+            <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-2">
+              <span className="pill font-medium border-gold-500/20 text-gold-400">{profile.college}</span>
+              <span className="pill font-medium border-gold-500/20 text-gold-400">{profile.department}</span>
+              <span className="pill font-medium border-gold-500/20 text-gold-400">Semester {profile.semester}</span>
+              {profile.averageRating > 0 && <span className="pill font-bold bg-amber-500/10 text-amber-500 border-amber-500/20"><Star size={12} className="inline mr-1" fill="currentColor" />Rating {profile.averageRating}</span>}
             </div>
           </div>
         </div>
       </section>
+
+      <div className="grid gap-6 md:grid-cols-2 items-start">
+        <section className="card border border-gold-500/10 bg-charcoal/50">
+          <h3 className="font-display text-xl font-bold text-gray-100 mb-5 flex items-center gap-2">
+            <Star className="text-gold-400" size={20} fill="currentColor" /> Skills Offered
+          </h3>
+          <div className="grid gap-4">
+            {profile.offeredSkills?.length ? profile.offeredSkills.map(s => (
+              <div key={s.id} className="p-4 bg-[#1f2022] border border-gold-500/10 rounded-xl shadow-sm transition hover:border-gold-500/30">
+                <div className="flex justify-between items-start gap-3">
+                  <div>
+                    <p className="font-bold text-gray-100">{s.skill.name}</p>
+                    <p className="text-xs text-gold-600/70 uppercase tracking-wider font-bold mt-1">{s.skill.category}</p>
+                  </div>
+                  <span className="pill text-[10px] bg-gold-500/10 text-gold-400 border-gold-500/20">{s.level}</span>
+                </div>
+                <p className="text-sm text-gray-400 mt-3 leading-relaxed">{s.skill.description}</p>
+              </div>
+            )) : <p className="text-sm text-gray-500 italic">No skills offered yet.</p>}
+          </div>
+        </section>
+
+        <section className="card border border-sky-500/10 bg-charcoal/50">
+          <h3 className="font-display text-xl font-bold text-gray-100 mb-5 flex items-center gap-2">
+            <BookOpen className="text-sky-400" size={20} /> Learning Goals
+          </h3>
+          <div className="grid gap-4">
+            {profile.learningSkills?.length ? profile.learningSkills.map(s => (
+              <div key={s.id} className="p-4 bg-[#1f2022] border border-sky-500/10 rounded-xl shadow-sm transition hover:border-sky-500/30">
+                <div className="flex justify-between items-start gap-3">
+                  <div>
+                    <p className="font-bold text-gray-100">{s.skill.name}</p>
+                    <p className="text-xs text-sky-400/70 uppercase tracking-wider font-bold mt-1">{s.skill.category}</p>
+                  </div>
+                </div>
+                <div className="mt-3 grid gap-2">
+                  <p className="text-sm text-gray-400 leading-relaxed"><span className="text-gray-300 font-semibold">About:</span> {s.skill.description}</p>
+                  {s.goal && <p className="text-sm text-gray-400 leading-relaxed"><span className="text-gray-300 font-semibold">Goal:</span> {s.goal}</p>}
+                </div>
+              </div>
+            )) : <p className="text-sm text-gray-500 italic">No learning goals added yet.</p>}
+          </div>
+        </section>
+      </div>
     </>
   );
 }
@@ -1225,3 +1780,5 @@ export function AdminReportsPage() {
     </>
   );
 }
+
+export { BarterDetailPage } from "./BarterDetailPage";

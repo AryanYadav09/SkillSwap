@@ -31,6 +31,21 @@ const completeSession = async (req, res) => {
   res.status(200).json(new ApiResponse(200, result, "Session completed successfully"));
 };
 
+const acceptSession = async (req, res) => {
+  const result = await sessionService.changeSessionStatus(req.user.id, req.params.id, "SCHEDULED");
+  res.status(200).json(new ApiResponse(200, result, "Session accepted successfully"));
+};
+
+const rejectSession = async (req, res) => {
+  const result = await sessionService.changeSessionStatus(req.user.id, req.params.id, "REJECTED");
+  res.status(200).json(new ApiResponse(200, result, "Session rejected successfully"));
+};
+
+const getByMeetingId = async (req, res) => {
+  const result = await sessionService.getSessionByMeetingId(req.user.id, req.params.meetingId);
+  res.status(200).json(new ApiResponse(200, result, "Meeting fetched successfully"));
+};
+
 module.exports = {
   listSessions,
   getSessionById,
@@ -38,4 +53,7 @@ module.exports = {
   updateSession,
   cancelSession,
   completeSession,
+  acceptSession,
+  rejectSession,
+  getByMeetingId,
 };

@@ -11,10 +11,13 @@ const router = express.Router();
 router.use(protect);
 
 router.get("/", asyncHandler(sessionController.listSessions));
+router.get("/meeting/:meetingId", asyncHandler(sessionController.getByMeetingId));
 router.get("/:id", asyncHandler(sessionController.getSessionById));
 router.post("/", validate(createSessionSchema), asyncHandler(sessionController.createSession));
 router.patch("/:id", validate(updateSessionSchema), asyncHandler(sessionController.updateSession));
 router.patch("/:id/cancel", asyncHandler(sessionController.cancelSession));
 router.patch("/:id/complete", asyncHandler(sessionController.completeSession));
+router.patch("/:id/accept", asyncHandler(sessionController.acceptSession));
+router.patch("/:id/reject", asyncHandler(sessionController.rejectSession));
 
 module.exports = router;

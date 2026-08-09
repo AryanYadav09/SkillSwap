@@ -131,6 +131,7 @@ const markMessagesSeen = (chatId, viewerId) =>
     },
     data: {
       isSeen: true,
+      seenAt: new Date(),
     },
   });
 

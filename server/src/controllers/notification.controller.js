@@ -21,9 +21,15 @@ const removeNotification = async (req, res) => {
   res.status(200).json(new ApiResponse(200, result, "Notification deleted"));
 };
 
+const getUnreadCount = async (req, res) => {
+  const result = await notificationService.getUnreadCount(req.user.id);
+  res.status(200).json(new ApiResponse(200, result, "Unread count fetched"));
+};
+
 module.exports = {
   listNotifications,
   markRead,
   markAllRead,
   removeNotification,
+  getUnreadCount,
 };

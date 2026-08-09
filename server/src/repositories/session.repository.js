@@ -75,8 +75,15 @@ const countUserSessions = ({ userId, where }) =>
     },
   });
 
+const findSessionByMeetingId = (meetingId) =>
+  prisma.session.findUnique({
+    where: { meetingId },
+    include: sessionInclude,
+  });
+
 module.exports = {
   findSessionById,
+  findSessionByMeetingId,
   createSession,
   updateSession,
   listUserSessions,

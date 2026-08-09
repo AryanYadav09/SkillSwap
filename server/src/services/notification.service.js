@@ -68,10 +68,16 @@ const removeNotification = async (userId, notificationId) => {
   return { success: true };
 };
 
+const getUnreadCount = async (userId) => {
+  const count = await notificationRepository.countUnreadNotifications(userId);
+  return { unreadCount: count };
+};
+
 module.exports = {
   notify,
   listNotifications,
   markRead,
   markAllRead,
   removeNotification,
+  getUnreadCount,
 };

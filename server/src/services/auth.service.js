@@ -9,6 +9,7 @@ const {
 } = require("../utils/tokens");
 const prisma = require("../config/db");
 const { sanitizeUser } = require("../utils/user");
+const { sendPasswordResetEmail } = require("../utils/email");
 const userRepository = require("../repositories/user.repository");
 
 const buildUsernameBase = (name, email) => {
@@ -193,10 +194,11 @@ const forgotPassword = async ({ email }) => {
     passwordResetTokenExpiry: reset.expiresAt,
   });
 
+  // Send the email in the background
+  sendPasswordResetEmail(user.email, reset.rawToken);
+
   return {
-    message: "If the account exists, a password reset flow has been created.",
-    resetTokenPreview:
-      process.env.NODE_ENV === "production" ? undefined : reset.rawToken,
+    message: "If the account exists, a password reset flow has been created. Check your email.",
   };
 };
 

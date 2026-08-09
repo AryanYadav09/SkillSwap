@@ -108,9 +108,64 @@ const changeSessionStatus = async (userId, sessionId, status) => {
     return session;
   }
 
+  if (status === SESSION_STATUSES.SCHEDULED) {
+    if (session.status !== SESSION_STATUSES.PENDING) {
+      throw new ApiError(400, "Only pending sessions can be accepted");
+    }
+    const isReceiver = session.createdById !== userId;
+    if (!isReceiver) {
+      throw new ApiError(403, "Only the invitee can accept the session");
+    }
+    const accepterName = session.matchRequest.senderId === userId ? session.matchRequest.sender.name : session.matchRequest.receiver.name;
+    await notificationService.notify({
+      userId: session.createdById,
+      title: "Session accepted",
+      message: `${accepterName} accepted "${session.title}".`,
+      type: NOTIFICATION_TYPES.SESSION_ACCEPTED,
+      entityId: session.id,
+    });
+  } else if (status === SESSION_STATUSES.REJECTED) {
+    if (session.status !== SESSION_STATUSES.PENDING) {
+      throw new ApiError(400, "Only pending sessions can be rejected");
+    }
+    const isReceiver = session.createdById !== userId;
+    if (!isReceiver) {
+      throw new ApiError(403, "Only the invitee can reject the session");
+    }
+    const rejecterName = session.matchRequest.senderId === userId ? session.matchRequest.sender.name : session.matchRequest.receiver.name;
+    await notificationService.notify({
+      userId: session.createdById,
+      title: "Session rejected",
+      message: `${rejecterName} rejected "${session.title}".`,
+      type: NOTIFICATION_TYPES.SESSION_REJECTED,
+      entityId: session.id,
+    });
+  } else if (status === SESSION_STATUSES.CANCELLED) {
+     if (session.createdById !== userId && session.status === SESSION_STATUSES.PENDING) {
+       throw new ApiError(403, "Only the creator can cancel a pending session");
+     }
+  }
+
   return sessionRepository.updateSession(sessionId, {
     status,
   });
+};
+
+const getSessionByMeetingId = async (userId, meetingId) => {
+  const session = await sessionRepository.findSessionByMeetingId(meetingId);
+
+  if (!session) {
+    throw new ApiError(404, "Meeting not found");
+  }
+
+  const isParticipant =
+    session.matchRequest.senderId === userId || session.matchRequest.receiverId === userId;
+
+  if (!isParticipant) {
+    throw new ApiError(403, "You do not have access to this meeting");
+  }
+
+  return session;
 };
 
 module.exports = {
@@ -119,4 +174,5 @@ module.exports = {
   createSession,
   updateSession,
   changeSessionStatus,
+  getSessionByMeetingId,
 };

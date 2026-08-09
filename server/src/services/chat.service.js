@@ -96,13 +96,15 @@ const markChatAsSeen = async (userId, chatId) => {
   const chat = await chatRepository.findChatById(chatId);
   ensureUserInChat(chat, userId);
 
-  await chatRepository.markMessagesSeen(chatId, userId);
+  const result = await chatRepository.markMessagesSeen(chatId, userId);
 
   const otherUserId = chat.user1Id === userId ? chat.user2Id : chat.user1Id;
 
   emitToUser(otherUserId, "chat:seen", {
     chatId,
     seenBy: userId,
+    seenAt: new Date().toISOString(),
+    count: result.count,
   });
 
   return {

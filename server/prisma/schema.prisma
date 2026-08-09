@@ -33,9 +33,11 @@ enum MatchRequestStatus {
 }
 
 enum SessionStatus {
+  PENDING
   SCHEDULED
   COMPLETED
   CANCELLED
+  REJECTED
 }
 
 enum ReportStatus {
@@ -49,6 +51,8 @@ enum NotificationType {
   MATCH_ACCEPTED
   MATCH_REJECTED
   SESSION_SCHEDULED
+  SESSION_ACCEPTED
+  SESSION_REJECTED
   REVIEW_ADDED
   NEW_MESSAGE
   SYSTEM
@@ -139,10 +143,11 @@ model MatchRequest {
   id         String             @id @default(cuid())
   senderId   String
   receiverId String
-  status     MatchRequestStatus @default(PENDING)
-  message    String?            @db.Text
-  createdAt  DateTime           @default(now())
-  updatedAt  DateTime           @updatedAt
+  status      MatchRequestStatus @default(PENDING)
+  message     String?            @db.Text
+  description String?            @db.Text
+  createdAt   DateTime           @default(now())
+  updatedAt   DateTime           @updatedAt
   sender     User               @relation("SentMatchRequests", fields: [senderId], references: [id], onDelete: Cascade)
   receiver   User               @relation("ReceivedMatchRequests", fields: [receiverId], references: [id], onDelete: Cascade)
   sessions   Session[]
@@ -166,15 +171,16 @@ model Chat {
 }
 
 model Message {
-  id        String   @id @default(cuid())
+  id        String    @id @default(cuid())
   chatId    String
   senderId  String
-  message   String?  @db.Text
+  message   String?   @db.Text
   imageUrl  String?
-  isSeen    Boolean  @default(false)
-  createdAt DateTime @default(now())
-  chat      Chat     @relation(fields: [chatId], references: [id], onDelete: Cascade)
-  sender    User     @relation(fields: [senderId], references: [id], onDelete: Cascade)
+  isSeen    Boolean   @default(false)
+  seenAt    DateTime?
+  createdAt DateTime  @default(now())
+  chat      Chat      @relation(fields: [chatId], references: [id], onDelete: Cascade)
+  sender    User      @relation(fields: [senderId], references: [id], onDelete: Cascade)
 
   @@index([chatId, createdAt])
   @@map("messages")
@@ -182,13 +188,14 @@ model Message {
 
 model Session {
   id             String        @id @default(cuid())
+  meetingId      String        @unique @default(cuid())
   matchRequestId String
   createdById    String
   title          String
   description    String        @db.Text
   sessionDate    DateTime
   duration       Int
-  status         SessionStatus @default(SCHEDULED)
+  status         SessionStatus @default(PENDING)
   createdAt      DateTime      @default(now())
   updatedAt      DateTime      @updatedAt
   matchRequest   MatchRequest  @relation(fields: [matchRequestId], references: [id], onDelete: Cascade)

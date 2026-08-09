@@ -73,8 +73,8 @@ const listCompatibleMatches = async (userId, query) => {
       offeredSkillIds,
       learningSkillIds,
       extraWhere,
-      skip: pagination.skip,
-      take: pagination.limit,
+      skip: 0,
+      take: 100, // Fetch up to 100 for ML ranking
       orderBy: {
         [pagination.sortBy]: pagination.sortOrder,
       },
@@ -87,7 +87,58 @@ const listCompatibleMatches = async (userId, query) => {
     }),
   ]);
 
-  return buildPaginatedResponse(users.map(sanitizeUser), total, pagination);
+  if (!users.length) {
+    return buildPaginatedResponse([], total, pagination);
+  }
+
+  const mlServiceUrl = process.env.ML_SERVICE_URL || "http://localhost:8002";
+  let rankedUsers = users;
+
+  try {
+    const targetUser = await userRepository.findById(userId);
+    const response = await fetch(`${mlServiceUrl}/recommend`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        user: targetUser,
+        candidates: users
+      })
+    });
+
+    if (response.ok) {
+      const mlResult = await response.json();
+      if (mlResult.success && Array.isArray(mlResult.recommendations)) {
+        const scoreMap = new Map();
+        mlResult.recommendations.forEach((rec) => {
+          scoreMap.set(rec.candidateId, rec.score);
+        });
+
+        // Sort by ML score
+        rankedUsers.sort((a, b) => {
+          const scoreA = scoreMap.get(a.id) || 0;
+          const scoreB = scoreMap.get(b.id) || 0;
+          return scoreB - scoreA;
+        });
+
+        // Add ML reasoning
+        rankedUsers = rankedUsers.map((u) => {
+          const rec = mlResult.recommendations.find(r => r.candidateId === u.id);
+          if (rec) {
+            u.mlScore = rec.matchPercentage;
+            u.mlReason = rec.reason;
+          }
+          return u;
+        });
+      }
+    }
+  } catch (error) {
+    console.error("ML service failed, using default database sorting", error.message);
+  }
+
+  // Apply manual pagination on the ranked results
+  const slicedUsers = rankedUsers.slice(pagination.skip, pagination.skip + pagination.limit);
+
+  return buildPaginatedResponse(slicedUsers.map(sanitizeUser), total, pagination);
 };
 
 const listMatchRequests = async (userId, query) => {
@@ -113,7 +164,7 @@ const listMatchRequests = async (userId, query) => {
   return buildPaginatedResponse(items, total, pagination);
 };
 
-const sendMatchRequest = async (userId, { receiverId, message }) => {
+const sendMatchRequest = async (userId, { receiverId, message, description }) => {
   if (userId === receiverId) {
     throw new ApiError(400, "You cannot send a match request to yourself");
   }
@@ -150,6 +201,7 @@ const sendMatchRequest = async (userId, { receiverId, message }) => {
     senderId: userId,
     receiverId,
     message,
+    description,
   });
 
   await notificationService.notify({
@@ -177,15 +229,25 @@ const changeMatchStatus = async (userId, matchRequestId, nextStatus) => {
     throw new ApiError(403, "You are not part of this match request");
   }
 
+  if (matchRequest.status === nextStatus) {
+    return matchRequest; // Idempotent
+  }
+
   if (nextStatus === MATCH_STATUSES.ACCEPTED || nextStatus === MATCH_STATUSES.REJECTED) {
-    if (!isReceiver || matchRequest.status !== MATCH_STATUSES.PENDING) {
-      throw new ApiError(400, "Only the receiver can respond to a pending request");
+    if (!isReceiver) {
+      throw new ApiError(403, "Only the receiver can respond to this request");
+    }
+    if (matchRequest.status !== MATCH_STATUSES.PENDING) {
+      throw new ApiError(400, "This match request is no longer pending");
     }
   }
 
   if (nextStatus === MATCH_STATUSES.CANCELLED) {
-    if (!isSender || matchRequest.status !== MATCH_STATUSES.PENDING) {
-      throw new ApiError(400, "Only the sender can cancel a pending request");
+    if (!isSender) {
+      throw new ApiError(403, "Only the sender can cancel this request");
+    }
+    if (matchRequest.status !== MATCH_STATUSES.PENDING) {
+      throw new ApiError(400, "This match request is no longer pending");
     }
   }
 

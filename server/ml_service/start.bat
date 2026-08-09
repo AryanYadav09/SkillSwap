@@ -1,0 +1,9 @@
+@echo off
+echo Starting Barter System ML Service installation and run...
+py -m venv venv
+call venv\Scripts\activate
+echo Installing dependencies from requirements.txt...
+pip install -r requirements.txt
+echo Starting FastAPI application on port 8002...
+py main.py
+pause
