@@ -141,8 +141,8 @@ const changeSessionStatus = async (userId, sessionId, status) => {
       entityId: session.id,
     });
   } else if (status === SESSION_STATUSES.CANCELLED) {
-     if (session.createdById !== userId && session.status === SESSION_STATUSES.PENDING) {
-       throw new ApiError(403, "Only the creator can cancel a pending session");
+     if (session.status === SESSION_STATUSES.COMPLETED) {
+       throw new ApiError(400, "Cannot cancel a completed session");
      }
   }
 

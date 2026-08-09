@@ -500,8 +500,8 @@ function MatchToggleSection({ teachableStudents, learnableTeachers }) {
  <button
  className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-bold transition-all duration-200 ${
  activeTab === "teaching"
- ? "bg-forest text-gray-900 shadow-sm"
- : "text-muted hover:text-ink dark:hover:text-gray-900"
+ ? "bg-gradient-to-r from-gold-600 to-gold-500 text-white shadow-sm"
+ : "text-muted hover:text-ink"
  }`}
  onClick={() => setActiveTab("teaching")}
  >
@@ -511,8 +511,8 @@ function MatchToggleSection({ teachableStudents, learnableTeachers }) {
  <button
  className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-bold transition-all duration-200 ${
  activeTab === "learning"
- ? "bg-sky text-gray-900 shadow-sm"
- : "text-muted hover:text-ink dark:hover:text-gray-900"
+ ? "bg-gradient-to-r from-gold-600 to-gold-500 text-white shadow-sm"
+ : "text-muted hover:text-ink"
  }`}
  onClick={() => setActiveTab("learning")}
  >
@@ -554,9 +554,7 @@ function DashboardMatchCard({ user, variant = "teaching" }) {
  return (
  <article className="card">
  <div className="flex items-start gap-3">
- <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-md font-bold ${
- isTeaching ? "bg-forest/10 text-forest" : "bg-sky/10 text-sky"
- }`}>
+ <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-md font-bold bg-gold-500/10 text-gold-600`}>
  {user.profileImage ? <img className="h-full w-full rounded-md object-cover" src={user.profileImage} alt="" /> : user.name?.charAt(0)}
  </div>
  <div className="min-w-0">
@@ -578,7 +576,7 @@ function DashboardMatchCard({ user, variant = "teaching" }) {
  <span className="font-bold">{user.averageRating}</span>
  </div>
  ) : null}
- <Link className={`btn mt-4 w-full ${isTeaching ? "btn-primary" : "btn-secondary"}`} to="/matches">
+ <Link className="btn mt-4 w-full btn-primary" to="/matches">
  <Send size={16} />
  Send request
  </Link>
@@ -1225,8 +1223,6 @@ export function SessionsPage() {
  const { items, loading, reload } = useApiList("/sessions");
  const chats = useApiList("/chats");
  const navigate = useNavigate();
- const [searchParams] = useSearchParams();
- const initialMatchId = searchParams.get("matchId");
 
  useEffect(() => {
  const socket = getSocket(accessToken);
@@ -1236,32 +1232,7 @@ export function SessionsPage() {
  return () => socket.off("notification:new", handler);
  }, [accessToken, reload]);
 
- const [form, setForm] = useState({ matchRequestId: "", title: "", description: "", sessionDate: "", duration: 60 });
  const [joinId, setJoinId] = useState("");
-
- useEffect(() => {
- if (initialMatchId) {
- setForm((prev) => ({
- ...prev,
- matchRequestId: initialMatchId,
- title: prev.title || "Skill Exchange Session",
- description: prev.description || "A focused session on exchanging our skills and collaborating."
- }));
- }
- }, [initialMatchId]);
-
- const update = (event) => setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
-
- const create = async (event) => {
- event.preventDefault();
- try {
- await api.post("/sessions", { ...form, sessionDate: new Date(form.sessionDate).toISOString(), duration: Number(form.duration) });
- toast.success("Session created");
- reload();
- } catch (error) {
- toast.error(getErrorMessage(error));
- }
- };
 
  const status = async (id, next) => {
  try {
@@ -1314,19 +1285,11 @@ export function SessionsPage() {
  </form>
  </div>
 
- <div className="grid gap-6 xl:grid-cols-[420px_1fr]">
- <form className="card grid gap-4" onSubmit={create}>
- <Field label="Accepted match request ID" name="matchRequestId" value={form.matchRequestId} onChange={update} required />
- <Field label="Title" name="title" value={form.title} onChange={update} required />
- <TextArea label="Description" name="description" value={form.description} onChange={update} required />
- <Field label="Date and time" name="sessionDate" type="datetime-local" value={form.sessionDate} onChange={update} required />
- <Field label="Duration minutes" name="duration" type="number" value={form.duration} onChange={update} required />
- <button className="btn btn-primary"><CalendarPlus size={16} /> Create session</button>
- </form>
  {loading ? <LoadingState /> : (
- <div className="grid gap-4">
- {items.map((session) => {
- const otherUser = session.matchRequest?.sender?.id === session.createdBy?.id ? session.matchRequest?.receiver : session.matchRequest?.sender;
+ <div className="grid gap-4 md:grid-cols-2">
+ {items.filter(session => session.status === "SCHEDULED" || session.status === "PENDING").map((session) => {
+ const isSender = session.matchRequest?.sender?.id === currentUser?.id;
+ const otherUser = isSender ? session.matchRequest?.receiver : session.matchRequest?.sender;
  return (
  <article className="card" key={session.id}>
  <div className="flex justify-between gap-3">
@@ -1350,25 +1313,7 @@ export function SessionsPage() {
  </div>
  )}
 
- {session.status === "PENDING" && (
- <div className="mt-4 flex flex-wrap gap-2 items-center">
- {session.createdBy?.id === currentUser?.id ? (
- <>
- <span className="text-sm text-gold-600 font-semibold px-2 py-1">Waiting for response...</span>
- <button className="btn btn-secondary" onClick={() => handleMessage(otherUser?.id)}><MessageCircle size={16} /> Message</button>
- <button className="btn btn-danger" onClick={() => status(session.id, "cancel")}><X size={16} /> Cancel</button>
- </>
- ) : (
- <>
- <button className="btn btn-primary" onClick={() => status(session.id, "accept")}><Check size={16} /> Accept</button>
- <button className="btn btn-secondary" onClick={() => status(session.id, "reject")}><X size={16} /> Reject</button>
- <button className="btn btn-secondary" onClick={() => handleMessage(otherUser?.id)}><MessageCircle size={16} /> Message</button>
- </>
- )}
- </div>
- )}
-
- {session.status === "SCHEDULED" && (
+ {session.status === "SCHEDULED" || session.status === "PENDING" ? (
  <div className="mt-4 flex flex-wrap gap-2">
  <Link className="btn btn-primary" to={`/meeting/${session.meetingId}`}>
  <Video size={16} /> Start Meeting
@@ -1377,13 +1322,12 @@ export function SessionsPage() {
  <button className="btn btn-secondary" onClick={() => status(session.id, "complete")}><Check size={16} /> Complete</button>
  <button className="btn btn-danger" onClick={() => status(session.id, "cancel")}><X size={16} /> Cancel</button>
  </div>
- )}
+ ) : null}
  </article>
  );
  })}
  </div>
  )}
- </div>
  </>
  );
 }

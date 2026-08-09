@@ -4,8 +4,9 @@ const { sanitizeUser } = require("../utils/user");
 const matchRepository = require("../repositories/match.repository");
 const userRepository = require("../repositories/user.repository");
 const chatRepository = require("../repositories/chat.repository");
+const sessionRepository = require("../repositories/session.repository");
 const notificationService = require("./notification.service");
-const { NOTIFICATION_TYPES, MATCH_STATUSES } = require("../constants/enums");
+const { NOTIFICATION_TYPES, MATCH_STATUSES, SESSION_STATUSES } = require("../constants/enums");
 
 const listCompatibleMatches = async (userId, query) => {
   const snapshot = await matchRepository.findSkillSnapshot(userId);
@@ -264,10 +265,21 @@ const changeMatchStatus = async (userId, matchRequestId, nextStatus) => {
   if (nextStatus === MATCH_STATUSES.ACCEPTED) {
     await chatRepository.getOrCreateChat(matchRequest.senderId, matchRequest.receiverId);
 
+    // Auto-create a session
+    const session = await sessionRepository.createSession({
+      matchRequestId: matchRequest.id,
+      createdById: matchRequest.senderId,
+      title: "Skill Exchange Session",
+      description: "Auto-generated session for exchanging skills.",
+      sessionDate: new Date().toISOString(),
+      duration: 60,
+      status: SESSION_STATUSES.SCHEDULED,
+    });
+
     await notificationService.notify({
       userId: matchRequest.senderId,
       title: "Match request accepted",
-      message: `${matchRequest.receiver.name} accepted your request.`,
+      message: `${matchRequest.receiver.name} accepted your request and a session has been automatically scheduled.`,
       type: NOTIFICATION_TYPES.MATCH_ACCEPTED,
       entityId: matchRequest.id,
     });
