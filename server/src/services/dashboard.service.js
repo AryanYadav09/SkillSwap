@@ -3,11 +3,30 @@ const { getAverageRating } = require("../utils/user");
 const chatRepository = require("../repositories/chat.repository");
 
 const getStudentDashboard = async (userId) => {
+  const userSelect = {
+    id: true,
+    name: true,
+    username: true,
+    college: true,
+    department: true,
+    semester: true,
+    profileImage: true,
+    offeredSkills: {
+      include: { skill: true },
+      take: 3,
+    },
+    learningSkills: {
+      include: { skill: true },
+      take: 3,
+    },
+    reviewsReceived: {
+      select: { rating: true },
+    },
+  };
+
   const [
     offeredSkills,
     learningSkills,
-    totalSkillsOffered,
-    totalLearningSkills,
     activeMatches,
     scheduledSessions,
     receivedReviews,
@@ -15,6 +34,8 @@ const getStudentDashboard = async (userId) => {
     upcomingSessions,
     notifications,
     recentChats,
+    teachableStudents,
+    learnableTeachers,
   ] = await Promise.all([
     prisma.userOfferedSkill.findMany({
       where: { userId },
@@ -26,8 +47,6 @@ const getStudentDashboard = async (userId) => {
       orderBy: { createdAt: "desc" },
       include: { skill: true },
     }),
-    prisma.userOfferedSkill.count({ where: { userId } }),
-    prisma.userLearningSkill.count({ where: { userId } }),
     prisma.matchRequest.count({
       where: {
         status: {
@@ -121,75 +140,53 @@ const getStudentDashboard = async (userId) => {
       },
       take: 5,
     }),
-    chatRepository.listUserChats(userId),
+    chatRepository.listUserChats(userId, 5),
+    // teachableStudents (people who want to learn what I teach)
+    prisma.user.findMany({
+      where: {
+        id: { not: userId },
+        role: "USER",
+        status: "ACTIVE",
+        learningSkills: {
+          some: {
+            skill: {
+              offeredBy: {
+                some: { userId },
+              },
+            },
+          },
+        },
+      },
+      take: 12,
+      orderBy: { createdAt: "desc" },
+      select: userSelect,
+    }),
+    // learnableTeachers (people who can teach what I want to learn)
+    prisma.user.findMany({
+      where: {
+        id: { not: userId },
+        role: "USER",
+        status: "ACTIVE",
+        offeredSkills: {
+          some: {
+            skill: {
+              learners: {
+                some: { userId },
+              },
+            },
+          },
+        },
+      },
+      take: 12,
+      orderBy: { createdAt: "desc" },
+      select: userSelect,
+    }),
   ]);
-
-  const offeredSkillIds = offeredSkills.map((entry) => entry.skillId);
-  const learningSkillIds = learningSkills.map((entry) => entry.skillId);
-
-  const userSelect = {
-    id: true,
-    name: true,
-    username: true,
-    college: true,
-    department: true,
-    semester: true,
-    profileImage: true,
-    offeredSkills: {
-      include: { skill: true },
-      take: 3,
-    },
-    learningSkills: {
-      include: { skill: true },
-      take: 3,
-    },
-    reviewsReceived: {
-      select: { rating: true },
-    },
-  };
-
-  // People who want to learn what I can teach
-  const teachableStudents = offeredSkillIds.length
-    ? await prisma.user.findMany({
-        where: {
-          id: { not: userId },
-          role: "USER",
-          status: "ACTIVE",
-          learningSkills: {
-            some: {
-              skillId: { in: offeredSkillIds },
-            },
-          },
-        },
-        take: 12,
-        orderBy: { createdAt: "desc" },
-        select: userSelect,
-      })
-    : [];
-
-  // People who can teach what I want to learn
-  const learnableTeachers = learningSkillIds.length
-    ? await prisma.user.findMany({
-        where: {
-          id: { not: userId },
-          role: "USER",
-          status: "ACTIVE",
-          offeredSkills: {
-            some: {
-              skillId: { in: learningSkillIds },
-            },
-          },
-        },
-        take: 12,
-        orderBy: { createdAt: "desc" },
-        select: userSelect,
-      })
-    : [];
 
   return {
     statistics: {
-      totalSkillsOffered,
-      totalLearningSkills,
+      totalSkillsOffered: offeredSkills.length,
+      totalLearningSkills: learningSkills.length,
       activeMatches,
       sessionsScheduled: scheduledSessions,
       averageRating: getAverageRating(receivedReviews),

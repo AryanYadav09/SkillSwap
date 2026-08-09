@@ -571,7 +571,7 @@ export function AuthLayout() {
  </span>
  <span className="font-display text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-300 to-gold-600">SkillSwap</span>
  </Link>
- <p className="mt-3 text-sm text-gray-600">Trade what you know. Learn what you need.</p>
+ <p className="mt-3 text-sm text-gray-600">Share your skills. Learn what you need.</p>
  </div>
  <Outlet />
  </section>

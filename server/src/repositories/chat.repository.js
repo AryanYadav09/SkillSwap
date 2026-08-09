@@ -58,7 +58,7 @@ const findChatById = (id) =>
     },
   });
 
-const listUserChats = (userId) =>
+const listUserChats = (userId, take = undefined) =>
   prisma.chat.findMany({
     where: {
       OR: [{ user1Id: userId }, { user2Id: userId }],
@@ -66,6 +66,7 @@ const listUserChats = (userId) =>
     orderBy: {
       updatedAt: "desc",
     },
+    ...(take ? { take } : {}),
     include: {
       ...chatInclude,
       messages: {
