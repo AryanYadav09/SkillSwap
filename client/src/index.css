@@ -5,14 +5,14 @@
 @tailwind utilities;
 
 :root {
-  color: #eef2f6;
-  background: #0a0a0a;
+  color: #111827;
+  background: #f9fafb;
   font-family: "Inter", "Plus Jakarta Sans", "Segoe UI", sans-serif;
   font-synthesis: none;
   text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  color-scheme: dark;
+  color-scheme: light;
 }
 
 * {
@@ -23,7 +23,7 @@ body {
   min-width: 320px;
   min-height: 100vh;
   margin: 0;
-  background-color: #0a0a0a;
+  background-color: #f9fafb;
 }
 
 button,
@@ -45,22 +45,22 @@ button {
   font-weight: 800;
   font-size: 1.25rem;
   letter-spacing: 0.1em;
-  background: #0a0a0a;
+  background: #f9fafb;
 }
 
 /* Glassmorphism panel for premium feel */
 .glass {
-  border: 1px solid rgba(212, 150, 43, 0.15);
-  background: rgba(23, 23, 23, 0.7);
+  border: 1px solid rgba(212, 150, 43, 0.2);
+  background: rgba(255, 255, 255, 0.7);
   backdrop-filter: blur(12px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5);
-  color: #eef2f6;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.08);
+  color: #111827;
 }
 
 .page-band {
-  background: radial-gradient(circle at top right, rgba(212, 150, 43, 0.08), transparent 40%),
+  background: radial-gradient(circle at top right, rgba(212, 150, 43, 0.1), transparent 40%),
               radial-gradient(circle at bottom left, rgba(212, 150, 43, 0.05), transparent 40%),
-              #0a0a0a;
+              #f9fafb;
 }
 
 @layer components {
@@ -73,15 +73,15 @@ button {
   }
 
   .btn-secondary {
-    @apply border-line bg-charcoal text-gray-200 hover:border-gold-500/50 hover:text-gold-400;
+    @apply border-line bg-charcoal text-gray-800 hover:border-gold-500/50 hover:text-gold-600;
   }
 
   .btn-danger {
-    @apply border-red-900/50 bg-red-950 text-red-200 hover:bg-red-900;
+    @apply border-red-900/50 bg-red-50 text-red-700 hover:bg-red-100;
   }
 
   .input {
-    @apply w-full rounded-md border border-line bg-obsidian px-3 py-2 text-sm text-gray-100 outline-none transition-all placeholder:text-gray-500 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20;
+    @apply w-full rounded-md border border-line bg-obsidian px-3 py-2 text-sm text-gray-900 outline-none transition-all placeholder:text-gray-500 focus:border-gold-500 focus:ring-2 focus:ring-gold-500/20;
   }
 
   .label {
@@ -417,15 +417,15 @@ button {
 .chat-bubble-sent {
   align-self: flex-end;
   background: linear-gradient(135deg, #bb7420, #d4962b);
-  color: #0a0a0a;
+  color: #ffffff;
   border-bottom-right-radius: 4px;
 }
 
 .chat-bubble-received {
   align-self: flex-start;
-  background: #1f1f1f;
-  color: #e5e7eb;
-  border: 1px solid #333;
+  background: #ffffff;
+  color: #111827;
+  border: 1px solid #e5e7eb;
   border-bottom-left-radius: 4px;
 }
 
@@ -440,7 +440,7 @@ button {
 }
 
 .chat-bubble-sent .chat-bubble-meta {
-  color: #0a0a0a;
+  color: rgba(255, 255, 255, 0.8);
 }
 
 /* ── Blue Ticks ─────────────────────────────────────── */
@@ -454,7 +454,7 @@ button {
 }
 
 .chat-tick-sent {
-  color: rgba(10, 10, 10, 0.5);
+  color: rgba(255, 255, 255, 0.6);
 }
 
 .chat-tick-seen {
@@ -475,8 +475,8 @@ button {
   align-items: center;
   gap: 4px;
   padding: 12px 16px;
-  background: #1f1f1f;
-  border: 1px solid #333;
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
   border-radius: 16px;
   border-bottom-left-radius: 4px;
   align-self: flex-start;

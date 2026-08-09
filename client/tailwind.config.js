@@ -5,9 +5,9 @@ export default {
   theme: {
     extend: {
       colors: {
-        obsidian: "#0a0a0a",
-        charcoal: "#171717",
-        surface: "#1f1f1f",
+        obsidian: "#f9fafb", // slate-50
+        charcoal: "#ffffff", // white
+        surface: "#f3f4f6",  // gray-100
         gold: {
           50: '#fbf8eb',
           100: '#f6eed2',
@@ -21,8 +21,8 @@ export default {
           900: '#6a381a',
           950: '#3e1d0c',
         },
-        muted: "#9ca3af",
-        line: "#333333",
+        muted: "#6b7280", // gray-500
+        line: "#e5e7eb", // gray-200
       },
       boxShadow: {
         soft: "0 16px 40px rgba(0, 0, 0, 0.4)",
