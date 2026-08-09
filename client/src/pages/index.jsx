@@ -1517,7 +1517,7 @@ export function ProfilePage() {
  : <Link className="btn btn-primary" to={`/barter/new?userId=${profile.id}`}><Send size={16} /> Send Request</Link>
  } 
  />
- <section className="card mb-6 border border-gold-500/10 bg-charcoal/80">
+ <section className="card mb-6 border border-gold-500/10">
  <div className="flex flex-col gap-6 md:flex-row items-start">
  <div className="grid h-24 w-24 shrink-0 place-items-center rounded-xl bg-gold-600/10 text-4xl font-bold text-gold-600 border border-gold-500/20 shadow-glow">
  {profile.profileImage ? <img className="h-full w-full rounded-xl object-cover" src={profile.profileImage} alt="" /> : profile.name?.charAt(0)}
@@ -1536,13 +1536,13 @@ export function ProfilePage() {
  </section>
 
  <div className="grid gap-6 md:grid-cols-2 items-start">
- <section className="card border border-gold-500/10 bg-charcoal/50">
+ <section className="card border border-gold-500/10">
  <h3 className="font-display text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
  <Star className="text-gold-600" size={20} fill="currentColor" /> Skills Offered
  </h3>
  <div className="grid gap-4">
  {profile.offeredSkills?.length ? profile.offeredSkills.map(s => (
- <div key={s.id} className="p-4 bg-[#1f2022] border border-gold-500/10 rounded-xl shadow-sm transition hover:border-gold-500/30">
+ <div key={s.id} className="p-4 bg-slate-50 border border-gold-500/10 rounded-xl shadow-sm transition hover:border-gold-500/30">
  <div className="flex justify-between items-start gap-3">
  <div>
  <p className="font-bold text-gray-900">{s.skill.name}</p>
@@ -1556,13 +1556,13 @@ export function ProfilePage() {
  </div>
  </section>
 
- <section className="card border border-sky-500/10 bg-charcoal/50">
+ <section className="card border border-sky-500/10">
  <h3 className="font-display text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
  <BookOpen className="text-sky-400" size={20} /> Learning Goals
  </h3>
  <div className="grid gap-4">
  {profile.learningSkills?.length ? profile.learningSkills.map(s => (
- <div key={s.id} className="p-4 bg-[#1f2022] border border-sky-500/10 rounded-xl shadow-sm transition hover:border-sky-500/30">
+ <div key={s.id} className="p-4 bg-slate-50 border border-sky-500/10 rounded-xl shadow-sm transition hover:border-sky-500/30">
  <div className="flex justify-between items-start gap-3">
  <div>
  <p className="font-bold text-gray-900">{s.skill.name}</p>
