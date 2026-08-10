@@ -79,10 +79,10 @@ const register = async (payload) => {
       create: {
         name: offeredSkill.name,
         category: offeredSkill.category,
-        description: offeredSkill.description,
+        description: offeredSkill.description || "",
       },
       update: {
-        description: offeredSkill.description,
+        ...(offeredSkill.description ? { description: offeredSkill.description } : {}),
       },
     });
 
@@ -96,10 +96,10 @@ const register = async (payload) => {
       create: {
         name: learningSkill.name,
         category: learningSkill.category,
-        description: learningSkill.description,
+        description: learningSkill.description || "",
       },
       update: {
-        description: learningSkill.description,
+        ...(learningSkill.description ? { description: learningSkill.description } : {}),
       },
     });
 

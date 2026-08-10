@@ -5,7 +5,7 @@ const { SKILL_LEVELS } = require("../constants/enums");
 const registrationSkillSchema = z.object({
   name: z.string().min(2).max(80),
   category: z.string().min(2).max(60),
-  description: z.string().min(10).max(1000),
+  description: z.string().max(1000).optional().default(""),
 });
 
 const registerSchema = z.object({
@@ -19,7 +19,7 @@ const registerSchema = z.object({
     level: z.enum(SKILL_LEVELS),
   }),
   learningSkill: registrationSkillSchema.extend({
-    goal: z.string().min(10).max(1000),
+    goal: z.string().min(5).max(1000),
     currentLevel: z.enum(SKILL_LEVELS),
   }),
 });

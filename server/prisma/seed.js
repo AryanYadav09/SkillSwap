@@ -79,18 +79,18 @@ const main = async () => {
   });
 
   const ayaan = await createUser({
-    email: "ayaan@skillswap.dev",
-    username: "ayaan_codes",
-    name: "Ayaan Kapoor",
+    email: "aryan@skillswap.dev",
+    username: "aryan",
+    name: "Aryan",
     college: "Delhi Technical University",
     department: "Computer Science",
     semester: "6",
   });
 
   const meera = await createUser({
-    email: "meera@skillswap.dev",
-    username: "meera_designs",
-    name: "Meera Joshi",
+    email: "shrikant@skillswap.dev",
+    username: "shrikant",
+    name: "Shrikant",
     college: "Mumbai University",
     department: "Design",
     semester: "5",
