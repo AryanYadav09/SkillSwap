@@ -56,6 +56,34 @@ enum NotificationType {
   REVIEW_ADDED
   NEW_MESSAGE
   SYSTEM
+  MEETING_BOOKED
+  MEETING_CANCELLED
+  MEETING_RESCHEDULED
+  MEETING_STARTING_SOON
+}
+
+enum MeetingStatus {
+  SCHEDULED
+  IN_PROGRESS
+  COMPLETED
+  CANCELLED
+  NO_SHOW
+}
+
+enum BookingSlotStatus {
+  AVAILABLE
+  BOOKED
+  CANCELLED
+}
+
+enum DayOfWeek {
+  MONDAY
+  TUESDAY
+  WEDNESDAY
+  THURSDAY
+  FRIDAY
+  SATURDAY
+  SUNDAY
 }
 
 model User {
@@ -92,6 +120,11 @@ model User {
   bookmarkedBy             Bookmark[]       @relation("BookmarkedUsers")
   submittedReports         Report[]         @relation("SubmittedReports")
   reportsAgainst           Report[]         @relation("ReportsAgainstUser")
+  timezone                 String?
+  availabilities           Availability[]
+  bookedSlots              BookingSlot[]    @relation("BookedSlots")
+  hostedMeetings           Meeting[]        @relation("HostedMeetings")
+  guestMeetings            Meeting[]        @relation("GuestMeetings")
 
   @@map("users")
 }
@@ -265,4 +298,71 @@ model Report {
 
   @@index([status, createdAt])
   @@map("reports")
+}
+
+model Availability {
+  id              String        @id @default(cuid())
+  userId          String
+  dayOfWeek       DayOfWeek
+  startTime       String        // "HH:mm" format (local time reference)
+  endTime         String        // "HH:mm" format
+  timezone        String        // e.g. "Asia/Kolkata"
+  isRecurring     Boolean       @default(true)
+  isActive        Boolean       @default(true)
+  specificDate    DateTime?     // for one-time slots
+  meetingDuration Int           @default(30)  // minutes
+  bufferMinutes   Int           @default(5)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  user            User          @relation(fields: [userId], references: [id], onDelete: Cascade)
+  bookingSlots    BookingSlot[]
+
+  @@index([userId, isActive])
+  @@index([dayOfWeek, isActive])
+  @@map("availabilities")
+}
+
+model BookingSlot {
+  id              String            @id @default(cuid())
+  availabilityId  String
+  startTime       DateTime          // absolute UTC datetime
+  endTime         DateTime          // absolute UTC datetime
+  status          BookingSlotStatus @default(AVAILABLE)
+  bookedById      String?
+  meetingId       String?           @unique
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  availability    Availability      @relation(fields: [availabilityId], references: [id], onDelete: Cascade)
+  bookedBy        User?             @relation("BookedSlots", fields: [bookedById], references: [id], onDelete: SetNull)
+  meeting         Meeting?
+
+  @@unique([availabilityId, startTime, status])
+  @@index([startTime, status])
+  @@index([bookedById])
+  @@map("booking_slots")
+}
+
+model Meeting {
+  id              String        @id @default(cuid())
+  meetingToken    String        @unique @default(cuid())
+  hostUserId      String
+  guestUserId     String
+  bookingSlotId   String        @unique
+  title           String        @default("Skill Exchange Session")
+  startTime       DateTime
+  endTime         DateTime
+  timezone        String
+  status          MeetingStatus @default(SCHEDULED)
+  cancelledById   String?
+  cancelReason    String?       @db.Text
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  hostUser        User          @relation("HostedMeetings", fields: [hostUserId], references: [id], onDelete: Cascade)
+  guestUser       User          @relation("GuestMeetings", fields: [guestUserId], references: [id], onDelete: Cascade)
+  bookingSlot     BookingSlot   @relation(fields: [bookingSlotId], references: [id], onDelete: Cascade)
+
+  @@index([hostUserId, status])
+  @@index([guestUserId, status])
+  @@index([startTime, status])
+  @@map("meetings")
 }

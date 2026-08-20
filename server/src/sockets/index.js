@@ -133,9 +133,118 @@ const initializeSocketServer = (server) => {
       });
     });
 
+    // ── Meeting room signaling ─────────────────────────
+
+    socket.on("meeting:join", async ({ meetingToken }) => {
+      try {
+        const bookingService = require("../services/booking.service");
+        const meetingInfo = await bookingService.getMeetingByToken(socket.user.id, meetingToken);
+
+        if (!meetingInfo) {
+          socket.emit("meeting:error", { message: "Meeting not found" });
+          return;
+        }
+
+        const roomId = `meeting:${meetingInfo.meetingToken}`;
+        socket.join(roomId);
+        socket.meetingRoom = roomId;
+        socket.meetingToken = meetingToken;
+
+        // Notify others in the room
+        socket.to(roomId).emit("meeting:participant-joined", {
+          userId: socket.user.id,
+          meetingToken,
+        });
+
+        // Send room info back to joiner
+        const roomSockets = await io.in(roomId).fetchSockets();
+        const participants = roomSockets.map((s) => s.user.id);
+        socket.emit("meeting:joined", {
+          meetingToken,
+          participants,
+          meetingInfo,
+        });
+      } catch (error) {
+        socket.emit("meeting:error", { message: error.message || "Failed to join meeting" });
+      }
+    });
+
+    socket.on("meeting:leave", () => {
+      if (socket.meetingRoom) {
+        socket.to(socket.meetingRoom).emit("meeting:participant-left", {
+          userId: socket.user.id,
+        });
+        socket.leave(socket.meetingRoom);
+        socket.meetingRoom = null;
+        socket.meetingToken = null;
+      }
+    });
+
+    socket.on("meeting:offer", ({ targetUserId, offer }) => {
+      if (socket.meetingRoom) {
+        socket.to(socket.meetingRoom).emit("meeting:offer", {
+          callerId: socket.user.id,
+          offer,
+        });
+      }
+    });
+
+    socket.on("meeting:answer", ({ targetUserId, answer }) => {
+      if (socket.meetingRoom) {
+        socket.to(socket.meetingRoom).emit("meeting:answer", {
+          calleeId: socket.user.id,
+          answer,
+        });
+      }
+    });
+
+    socket.on("meeting:ice-candidate", ({ candidate }) => {
+      if (socket.meetingRoom) {
+        socket.to(socket.meetingRoom).emit("meeting:ice-candidate", {
+          userId: socket.user.id,
+          candidate,
+        });
+      }
+    });
+
+    socket.on("meeting:participant-state", ({ micOn, camOn }) => {
+      if (socket.meetingRoom) {
+        socket.to(socket.meetingRoom).emit("meeting:participant-state", {
+          userId: socket.user.id,
+          micOn,
+          camOn,
+        });
+      }
+    });
+
+    socket.on("meeting:chat", ({ message }) => {
+      if (socket.meetingRoom) {
+        io.to(socket.meetingRoom).emit("meeting:chat", {
+          userId: socket.user.id,
+          message,
+          timestamp: new Date().toISOString(),
+        });
+      }
+    });
+
+    socket.on("meeting:end", () => {
+      if (socket.meetingRoom) {
+        io.to(socket.meetingRoom).emit("meeting:ended", {
+          userId: socket.user.id,
+        });
+      }
+    });
+
     // ── Disconnect ────────────────────────────────────────
 
     socket.on("disconnect", () => {
+      // Notify meeting room if in one
+      if (socket.meetingRoom) {
+        socket.to(socket.meetingRoom).emit("meeting:participant-left", {
+          userId: socket.user.id,
+        });
+      }
+
       unregisterUserSocket(socket.user.id, socket.id);
       broadcastPresence(socket.user.id, false);
     });

@@ -6,6 +6,7 @@ const updateProfileSchema = z.object({
   college: z.string().min(2).max(120).optional(),
   department: z.string().min(2).max(120).optional(),
   semester: z.string().min(1).max(20).optional(),
+  timezone: z.string().optional(),
 });
 
 module.exports = {

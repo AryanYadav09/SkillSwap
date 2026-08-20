@@ -1,6 +1,7 @@
 const prisma = require("../config/db");
 const { getAverageRating } = require("../utils/user");
 const chatRepository = require("../repositories/chat.repository");
+const bookingRepository = require("../repositories/booking.repository");
 
 const getStudentDashboard = async (userId) => {
   const userSelect = {
@@ -183,26 +184,64 @@ const getStudentDashboard = async (userId) => {
     }),
   ]);
 
+  // Fetch upcoming meetings from the new booking system
+  const [upcomingBookedMeetings, meetingsCount] = await Promise.all([
+    bookingRepository.findUpcomingMeetings(userId, 5),
+    prisma.meeting.count({
+      where: {
+        OR: [{ hostUserId: userId }, { guestUserId: userId }],
+        status: "SCHEDULED",
+      },
+    }),
+  ]);
+
+  // Check which recommended users have active availability
+  const allRecommendedIds = [
+    ...teachableStudents.map((u) => u.id),
+    ...learnableTeachers.map((u) => u.id),
+  ];
+
+  const usersWithAvailability = allRecommendedIds.length
+    ? await prisma.availability.findMany({
+        where: {
+          userId: { in: allRecommendedIds },
+          isActive: true,
+        },
+        select: { userId: true },
+        distinct: ["userId"],
+      })
+    : [];
+
+  const availableUserIds = new Set(usersWithAvailability.map((a) => a.userId));
+
   return {
     statistics: {
       totalSkillsOffered: offeredSkills.length,
       totalLearningSkills: learningSkills.length,
       activeMatches,
       sessionsScheduled: scheduledSessions,
+      meetingsScheduled: meetingsCount,
       averageRating: getAverageRating(receivedReviews),
     },
     offeredSkills,
     learningSkills,
-    teachableStudents: teachableStudents.map((u) => ({
-      ...u,
-      averageRating: getAverageRating(u.reviewsReceived),
-    })),
-    learnableTeachers: learnableTeachers.map((u) => ({
-      ...u,
-      averageRating: getAverageRating(u.reviewsReceived),
-    })),
+    teachableStudents: teachableStudents
+      .map((u) => ({
+        ...u,
+        averageRating: getAverageRating(u.reviewsReceived),
+        hasAvailability: availableUserIds.has(u.id),
+      }))
+      .sort((a, b) => (b.hasAvailability ? 1 : 0) - (a.hasAvailability ? 1 : 0)),
+    learnableTeachers: learnableTeachers
+      .map((u) => ({
+        ...u,
+        averageRating: getAverageRating(u.reviewsReceived),
+        hasAvailability: availableUserIds.has(u.id),
+      }))
+      .sort((a, b) => (b.hasAvailability ? 1 : 0) - (a.hasAvailability ? 1 : 0)),
     recentMatchRequests,
     upcomingSessions,
+    upcomingMeetings: upcomingBookedMeetings,
     notifications,
     recentChats: recentChats.slice(0, 5).map((chat) => ({
       ...chat,

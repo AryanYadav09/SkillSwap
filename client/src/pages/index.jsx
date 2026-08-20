@@ -31,6 +31,9 @@ import {
 import { fetchCurrentUser, login, register, selectAuth } from "../features/auth/authSlice";
 import { api, getErrorMessage, unwrap } from "../services/api";
 import { getSocket } from "../services/socket";
+import AvailabilityManager from "../components/availability/AvailabilityManager";
+import AvailableSlots from "../components/availability/AvailableSlots";
+import TimezoneSelector from "../components/availability/TimezoneSelector";
 
 const levels = ["BEGINNER", "INTERMEDIATE", "ADVANCED", "EXPERT"];
 const reportReasons = ["Spam", "Fake Profile", "Abusive Behavior", "Other"];
@@ -452,7 +455,7 @@ export function DashboardPage() {
  <StatCard label="Offered" value={stats.totalSkillsOffered} icon={Star} />
  <StatCard label="Learning" value={stats.totalLearningSkills} icon={UserRound} />
  <StatCard label="Matches" value={stats.activeMatches} icon={Check} />
- <StatCard label="Sessions" value={stats.sessionsScheduled} icon={CalendarPlus} />
+ <StatCard label="Meetings" value={stats.meetingsScheduled} icon={Video} />
  <StatCard label="Rating" value={stats.averageRating} icon={Star} />
  </div>
 
@@ -461,8 +464,8 @@ export function DashboardPage() {
  learnableTeachers={data?.learnableTeachers || []}
  />
  <div className="grid gap-6 xl:grid-cols-3">
+ <SimplePanel title="Upcoming meetings" items={data?.upcomingMeetings} render={(item) => `${item.title} — ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(item.startTime))}`} />
  <SimplePanel title="Recent match requests" items={data?.recentMatchRequests} render={(item) => `${item.sender?.name} → ${item.receiver?.name} (${item.status})`} />
- <SimplePanel title="Upcoming sessions" items={data?.upcomingSessions} render={(item) => `${item.title} — ${formatDate(item.sessionDate)}`} />
  <DashboardNotificationPanel notifications={data?.notifications || []} onMatchAction={handleMatchAction} navigate={navigate} />
  </div>
  </div>
@@ -549,10 +552,14 @@ function MatchToggleSection({ teachableStudents, learnableTeachers }) {
 function DashboardMatchCard({ user, variant = "teaching" }) {
  const teaches = user.offeredSkills?.map((entry) => entry.skill.name).join(", ") || "No offered skills";
  const wants = user.learningSkills?.map((entry) => entry.skill.name).join(", ") || "No learning skills";
- const isTeaching = variant === "teaching";
 
  return (
- <article className="card">
+ <article className="card relative">
+ {user.hasAvailability && (
+ <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1 border-2 border-white">
+ <Check size={10} /> Available
+ </div>
+ )}
  <div className="flex items-start gap-3">
  <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-md font-bold bg-gold-500/10 text-gold-600`}>
  {user.profileImage ? <img className="h-full w-full rounded-md object-cover" src={user.profileImage} alt="" /> : user.name?.charAt(0)}
@@ -576,9 +583,9 @@ function DashboardMatchCard({ user, variant = "teaching" }) {
  <span className="font-bold">{user.averageRating}</span>
  </div>
  ) : null}
- <Link className="btn mt-4 w-full btn-primary" to="/matches">
- <Send size={16} />
- Send request
+ <Link className="btn mt-4 w-full btn-primary" to={`/profile?id=${user.id}#book`}>
+ <Calendar size={16} />
+ {user.hasAvailability ? "Book Session" : "View Profile"}
  </Link>
  </article>
  );
@@ -1514,7 +1521,12 @@ export function ProfilePage() {
  action={
  isMe 
  ? <Link className="btn btn-primary" to="/profile/edit">Edit profile</Link>
- : <Link className="btn btn-primary" to={`/barter/new?userId=${profile.id}`}><Send size={16} /> Send Request</Link>
+ : (
+ <div className="flex gap-2">
+ <Link className="btn btn-secondary" to={`/barter/new?userId=${profile.id}`}><Send size={16} /> Request</Link>
+ <a className="btn btn-primary" href="#book"><Calendar className="mr-1" size={16} /> Book Session</a>
+ </div>
+ )
  } 
  />
  <section className="card mb-6 border border-gold-500/10">
@@ -1534,6 +1546,14 @@ export function ProfilePage() {
  </div>
  </div>
  </section>
+
+ <div id="book" className="mb-6">
+ {isMe ? (
+ <AvailabilityManager />
+ ) : (
+ <AvailableSlots userId={profile.id} userName={profile.name} />
+ )}
+ </div>
 
  <div className="grid gap-6 md:grid-cols-2 items-start">
  <section className="card border border-gold-500/10">
@@ -1592,6 +1612,7 @@ export function ProfileEditPage() {
  college: user?.college || "",
  department: user?.department || "",
  semester: user?.semester || "",
+ timezone: user?.timezone || Intl.DateTimeFormat().resolvedOptions().timeZone || "UTC",
  });
  const [file, setFile] = useState(null);
  const update = (event) => setForm((current) => ({ ...current, [event.target.name]: event.target.value }));
@@ -1622,7 +1643,10 @@ export function ProfileEditPage() {
  <Field label="College" name="college" value={form.college} onChange={update} />
  <Field label="Department" name="department" value={form.department} onChange={update} />
  </div>
+ <div className="grid gap-4 sm:grid-cols-2">
  <Field label="Semester" name="semester" value={form.semester} onChange={update} />
+ <TimezoneSelector value={form.timezone} onChange={(tz) => setForm((c) => ({ ...c, timezone: tz }))} />
+ </div>
  <label className="grid gap-1.5">
  <span className="label">Profile image</span>
  <input className="input" type="file" accept="image/*" onChange={(event) => setFile(event.target.files?.[0] || null)} />

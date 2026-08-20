@@ -44,6 +44,7 @@ export default function MeetingPage() {
   const [targetUserId, setTargetUserId] = useState(queryTarget || null);
   const [remoteName, setRemoteName] = useState(queryName);
   const [isCaller, setIsCaller] = useState(queryRole === "caller");
+  const [mode, setMode] = useState(queryTarget ? "legacy" : null); // "legacy" or "room"
   const [resolving, setResolving] = useState(!queryTarget);
 
   const [callState, setCallState] = useState(CALL_STATES.IDLE);
@@ -70,28 +71,44 @@ export default function MeetingPage() {
 
     if (!meetingId || !accessToken || !user) return;
 
-    api.get(`/sessions/meeting/${meetingId}`)
+    // 1. Try new Room-based Meeting system
+    api.get(`/meetings/token/${meetingId}`)
       .then((res) => {
-        const session = unwrap(res);
-        if (session) {
-          const senderId = session.matchRequest?.senderId;
-          const receiverId = session.matchRequest?.receiverId;
-          const senderName = session.matchRequest?.sender?.name || "Participant";
-          const receiverName = session.matchRequest?.receiver?.name || "Participant";
-
-          const otherId = senderId === user.id ? receiverId : senderId;
-          const otherName = senderId === user.id ? receiverName : senderName;
-
+        const meeting = unwrap(res);
+        if (meeting) {
+          const isHost = meeting.hostUserId === user.id;
+          const otherId = isHost ? meeting.guestUserId : meeting.hostUserId;
+          const otherName = isHost ? meeting.guestUser?.name : meeting.hostUser?.name;
           setTargetUserId(otherId);
-          setRemoteName(otherName);
-          setIsCaller(true);
+          setRemoteName(otherName || "Participant");
+          setMode("room");
+          setResolving(false);
         }
       })
-      .catch((err) => {
-        console.error("Failed to resolve meeting:", err);
-        navigate(-1);
-      })
-      .finally(() => setResolving(false));
+      .catch(() => {
+        // 2. Fallback to legacy Session system
+        api.get(`/sessions/meeting/${meetingId}`)
+          .then((res) => {
+            const session = unwrap(res);
+            if (session) {
+              const senderId = session.matchRequest?.senderId;
+              const receiverId = session.matchRequest?.receiverId;
+              const senderName = session.matchRequest?.sender?.name || "Participant";
+              const receiverName = session.matchRequest?.receiver?.name || "Participant";
+              const otherId = senderId === user.id ? receiverId : senderId;
+              const otherName = senderId === user.id ? receiverName : senderName;
+              setTargetUserId(otherId);
+              setRemoteName(otherName);
+              setIsCaller(true);
+              setMode("legacy");
+            }
+          })
+          .catch((err) => {
+            console.error("Failed to resolve meeting/session:", err);
+            navigate(-1);
+          })
+          .finally(() => setResolving(false));
+      });
   }, [meetingId, queryTarget, accessToken, user, navigate]);
 
   // ── Format elapsed time ─────────────────────────────
@@ -200,10 +217,14 @@ export default function MeetingPage() {
 
       pc.onicecandidate = (event) => {
         if (event.candidate) {
-          socket.emit("call:ice-candidate", {
-            targetUserId,
-            candidate: event.candidate.toJSON(),
-          });
+          if (mode === "room") {
+            socket.emit("meeting:ice-candidate", { candidate: event.candidate.toJSON() });
+          } else {
+            socket.emit("call:ice-candidate", {
+              targetUserId,
+              candidate: event.candidate.toJSON(),
+            });
+          }
         }
       };
 
@@ -233,7 +254,8 @@ export default function MeetingPage() {
 
   // ── Main effect: initialize and handle signaling ────
   useEffect(() => {
-    if (!accessToken || !targetUserId || resolving) return;
+    if (!accessToken || resolving || !mode) return;
+    if (mode === "legacy" && !targetUserId) return; // Legacy requires targetUserId
 
     const socket = getSocket(accessToken);
     if (!socket) return;
@@ -244,22 +266,75 @@ export default function MeetingPage() {
     const init = async () => {
       await getLocalStream();
 
-      if (isCaller) {
-        setCallState(CALL_STATES.RINGING);
-        socket.emit("call:initiate", {
-          targetUserId,
-          callerName: user?.name || "Someone",
-          sessionId: meetingId,
-        });
+      if (mode === "room") {
+        setCallState(CALL_STATES.CONNECTING);
+        socket.emit("meeting:join", { meetingToken: meetingId });
       } else {
-        socket.emit("call:accept", { callerId: targetUserId });
+        // Legacy flow
+        if (isCaller) {
+          setCallState(CALL_STATES.RINGING);
+          socket.emit("call:initiate", {
+            targetUserId,
+            callerName: user?.name || "Someone",
+            sessionId: meetingId,
+          });
+        } else {
+          socket.emit("call:accept", { callerId: targetUserId });
+        }
       }
     };
 
+    // ── Common Handlers ──
+    const handleOffer = async (offer) => {
+      if (!mounted) return;
+      setCallState(CALL_STATES.CONNECTING);
+      const pc = createPeerConnection(socket);
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(offer));
+        processIceCandidateQueue();
+        const answer = await pc.createAnswer();
+        await pc.setLocalDescription(answer);
+        if (mode === "room") {
+          socket.emit("meeting:answer", { answer });
+        } else {
+          socket.emit("call:answer", { targetUserId, answer });
+        }
+      } catch (error) {
+        console.error("Failed to handle offer:", error);
+      }
+    };
+
+    const handleAnswer = async (answer) => {
+      if (!mounted) return;
+      const pc = peerRef.current;
+      if (!pc) return;
+      try {
+        await pc.setRemoteDescription(new RTCSessionDescription(answer));
+        processIceCandidateQueue();
+      } catch (error) {
+        console.error("Failed to set remote description:", error);
+      }
+    };
+
+    const handleIceCandidate = (candidate) => {
+      if (!mounted) return;
+      const pc = peerRef.current;
+      if (pc && pc.remoteDescription) {
+        pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(console.error);
+      } else {
+        iceCandidateQueueRef.current.push(candidate);
+      }
+    };
+
+    const handleEnd = () => {
+      if (!mounted) return;
+      setCallState(CALL_STATES.ENDED);
+    };
+
+    // ── Legacy Handlers ──
     const onCallAccepted = async () => {
       if (!mounted) return;
       setCallState(CALL_STATES.CONNECTING);
-
       const pc = createPeerConnection(socket);
       try {
         const offer = await pc.createOffer();
@@ -270,79 +345,72 @@ export default function MeetingPage() {
       }
     };
 
-    const onCallRejected = () => {
+    // ── Room Handlers ──
+    const onParticipantJoined = async () => {
+      // The other participant joined after us, so we act as the caller and send the offer
       if (!mounted) return;
-      setCallState(CALL_STATES.ENDED);
-    };
-
-    const onCallOffer = async ({ offer }) => {
-      if (!mounted) return;
-      setCallState(CALL_STATES.CONNECTING);
-
       const pc = createPeerConnection(socket);
       try {
-        await pc.setRemoteDescription(new RTCSessionDescription(offer));
-        processIceCandidateQueue();
-        const answer = await pc.createAnswer();
-        await pc.setLocalDescription(answer);
-        socket.emit("call:answer", { targetUserId, answer });
+        const offer = await pc.createOffer();
+        await pc.setLocalDescription(offer);
+        socket.emit("meeting:offer", { offer });
       } catch (error) {
-        console.error("Failed to handle offer:", error);
+        console.error("Failed to create room offer:", error);
       }
     };
 
-    const onCallAnswer = async ({ answer }) => {
+    const onRoomJoined = ({ participants }) => {
+      // If we are the second person to join, wait for the first person to send the offer
+      // If we are the first person, wait for the participant-joined event
       if (!mounted) return;
-      const pc = peerRef.current;
-      if (!pc) return;
-
-      try {
-        await pc.setRemoteDescription(new RTCSessionDescription(answer));
-        processIceCandidateQueue();
-      } catch (error) {
-        console.error("Failed to set remote description:", error);
+      if (participants.length > 1) {
+        // We know someone else is already here, but they will receive participant-joined
+        // and send us an offer. So we just wait.
       }
     };
 
-    const onIceCandidate = ({ candidate }) => {
-      if (!mounted) return;
-      const pc = peerRef.current;
-
-      if (pc && pc.remoteDescription) {
-        pc.addIceCandidate(new RTCIceCandidate(candidate)).catch(console.error);
-      } else {
-        iceCandidateQueueRef.current.push(candidate);
-      }
-    };
-
-    const onCallEnded = () => {
-      if (!mounted) return;
-      setCallState(CALL_STATES.ENDED);
-    };
-
-    socket.on("call:accepted", onCallAccepted);
-    socket.on("call:rejected", onCallRejected);
-    socket.on("call:offer", onCallOffer);
-    socket.on("call:answer", onCallAnswer);
-    socket.on("call:ice-candidate", onIceCandidate);
-    socket.on("call:ended", onCallEnded);
+    if (mode === "room") {
+      socket.on("meeting:joined", onRoomJoined);
+      socket.on("meeting:participant-joined", onParticipantJoined);
+      socket.on("meeting:offer", ({ offer }) => handleOffer(offer));
+      socket.on("meeting:answer", ({ answer }) => handleAnswer(answer));
+      socket.on("meeting:ice-candidate", ({ candidate }) => handleIceCandidate(candidate));
+      socket.on("meeting:ended", handleEnd);
+      socket.on("meeting:participant-left", handleEnd);
+    } else {
+      socket.on("call:accepted", onCallAccepted);
+      socket.on("call:rejected", handleEnd);
+      socket.on("call:offer", ({ offer }) => handleOffer(offer));
+      socket.on("call:answer", ({ answer }) => handleAnswer(answer));
+      socket.on("call:ice-candidate", ({ candidate }) => handleIceCandidate(candidate));
+      socket.on("call:ended", handleEnd);
+    }
 
     init();
 
     return () => {
       mounted = false;
+      socket.off("meeting:joined", onRoomJoined);
+      socket.off("meeting:participant-joined", onParticipantJoined);
+      socket.off("meeting:offer");
+      socket.off("meeting:answer");
+      socket.off("meeting:ice-candidate");
+      socket.off("meeting:ended");
+      socket.off("meeting:participant-left");
+
       socket.off("call:accepted", onCallAccepted);
-      socket.off("call:rejected", onCallRejected);
-      socket.off("call:offer", onCallOffer);
-      socket.off("call:answer", onCallAnswer);
-      socket.off("call:ice-candidate", onIceCandidate);
-      socket.off("call:ended", onCallEnded);
+      socket.off("call:rejected", handleEnd);
+      socket.off("call:offer");
+      socket.off("call:answer");
+      socket.off("call:ice-candidate");
+      socket.off("call:ended");
       cleanup();
     };
   }, [
     accessToken,
     targetUserId,
     meetingId,
+    mode,
     isCaller,
     resolving,
     user?.name,
@@ -424,7 +492,11 @@ export default function MeetingPage() {
   const endCall = () => {
     const socket = socketRef.current;
     if (socket) {
-      socket.emit("call:end", { targetUserId });
+      if (mode === "room") {
+        socket.emit("meeting:end");
+      } else {
+        socket.emit("call:end", { targetUserId });
+      }
     }
     cleanup();
     setCallState(CALL_STATES.ENDED);

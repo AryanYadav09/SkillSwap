@@ -33,6 +33,7 @@ const mainLinks = [
  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
  { to: "/search", label: "Search", icon: Search },
  { to: "/matches", label: "Matches", icon: Users },
+ { to: "/meetings", label: "Meetings", icon: CalendarDays },
  { to: "/chat", label: "Chat", icon: MessageSquare },
 ];
 

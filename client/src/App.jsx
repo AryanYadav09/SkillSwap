@@ -35,6 +35,7 @@ import {
   BarterDetailPage,
 } from "./pages";
 import MeetingPage from "./pages/MeetingPage";
+import MeetingDashboard from "./pages/MeetingDashboard";
 import AdminApp from "./admin/AdminApp";
 
 function ProtectedRoute() {
@@ -109,6 +110,7 @@ function Bootstrapper() {
             <Route path="/notifications" element={<NotificationsPage />} />
             <Route path="/search" element={<SearchPage />} />
             <Route path="/reports" element={<ReportsPage />} />
+            <Route path="/meetings" element={<MeetingDashboard />} />
           </Route>
           <Route path="/meeting/:meetingId" element={<MeetingPage />} />
         </Route>

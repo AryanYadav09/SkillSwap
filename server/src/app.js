@@ -22,6 +22,9 @@ const bookmarkRoutes = require("./routes/bookmark.routes");
 const reportRoutes = require("./routes/report.routes");
 const dashboardRoutes = require("./routes/dashboard.routes");
 const adminRoutes = require("./routes/admin.routes");
+const availabilityRoutes = require("./routes/availability.routes");
+const slotRoutes = require("./routes/slot.routes");
+const meetingRoutes = require("./routes/booking.routes");
 
 const app = express();
 
@@ -88,6 +91,9 @@ app.use("/api/bookmarks", bookmarkRoutes);
 app.use("/api/reports", reportRoutes);
 app.use("/api/dashboard", dashboardRoutes);
 app.use("/api/admin", adminRoutes);
+app.use("/api/availability", availabilityRoutes);
+app.use("/api/users", slotRoutes);
+app.use("/api/meetings", meetingRoutes);
 
 app.use(notFoundHandler);
 app.use(errorHandler);
