@@ -9,25 +9,30 @@ const server = http.createServer(app);
 
 initializeSocketServer(server);
 
-const startServer = async () => {
-  try {
-    await prisma.$connect();
+// Export the server for serverless environments (like Vercel)
+module.exports = app;
 
-    server.listen(env.PORT, () => {
-      console.log(`SkillSwap API running on port ${env.PORT}`);
-    });
-  } catch (error) {
-    console.error("Failed to start server", error);
-    process.exit(1);
-  }
-};
+if (require.main === module) {
+  const startServer = async () => {
+    try {
+      await prisma.$connect();
 
-const shutdown = async () => {
-  await prisma.$disconnect();
-  server.close(() => process.exit(0));
-};
+      server.listen(env.PORT, () => {
+        console.log(`SkillSwap API running on port ${env.PORT}`);
+      });
+    } catch (error) {
+      console.error("Failed to start server", error);
+      process.exit(1);
+    }
+  };
 
-process.on("SIGINT", shutdown);
-process.on("SIGTERM", shutdown);
+  const shutdown = async () => {
+    await prisma.$disconnect();
+    server.close(() => process.exit(0));
+  };
 
-startServer();
+  process.on("SIGINT", shutdown);
+  process.on("SIGTERM", shutdown);
+
+  startServer();
+}
