@@ -19,7 +19,7 @@ const registerSchema = z.object({
     level: z.enum(SKILL_LEVELS),
   }),
   learningSkill: registrationSkillSchema.extend({
-    goal: z.string().min(5).max(1000),
+    goal: z.string().min(2).max(1000),
     currentLevel: z.enum(SKILL_LEVELS),
   }),
 });
