@@ -28,6 +28,7 @@ import { logout, selectAuth } from "../features/auth/authSlice";
 import { getSocket } from "../services/socket";
 import { api, getErrorMessage, unwrap } from "../services/api";
 import toast from "react-hot-toast";
+import Logo from "../components/Logo";
 
 const mainLinks = [
  { to: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -164,14 +165,7 @@ export function AppLayout() {
  <header className="sticky top-0 z-40 border-b border-line bg-charcoal/80 backdrop-blur-xl shadow-sm">
  <div className="mx-auto flex max-w-7xl items-center justify-between px-4 py-3 sm:px-6 lg:px-8">
  <div className="flex items-center gap-6">
- <Link to="/dashboard" className="flex items-center gap-2">
- <span className="grid h-9 w-9 place-items-center rounded-md bg-gradient-to-br from-gold-400 to-gold-600 text-obsidian shadow-glow">
- <Sparkles size={18} />
- </span>
- <span className="hidden sm:block font-display text-xl font-bold leading-none text-transparent bg-clip-text bg-gradient-to-r from-gold-300 to-gold-600">
- SkillSwap
- </span>
- </Link>
+ <Logo to="/dashboard" textClassName="hidden sm:block" />
  
  <div className="hidden h-6 w-px bg-line lg:block"></div>
  
@@ -224,9 +218,7 @@ export function AppLayout() {
  onClick={(event) => event.stopPropagation()}
  >
  <div className="mb-5 flex items-center justify-between">
- <Link to="/dashboard" className="font-display text-2xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-300 to-gold-600">
- SkillSwap
- </Link>
+ <Logo to="/dashboard" size="md" />
  <button className="btn btn-secondary px-2" onClick={() => setSidebarOpen(false)} aria-label="Close menu">
  <X size={18} />
  </button>
@@ -566,12 +558,7 @@ export function AuthLayout() {
  <div className={`w-full transition-all duration-300 ${isRegister ? 'max-w-4xl' : 'max-w-md'}`}>
  <section className="glass rounded-2xl p-6 sm:p-10 shadow-glow-lg">
  <div className="mb-10 text-center">
- <Link to="/login" className="inline-flex items-center justify-center gap-3">
- <span className="grid h-12 w-12 place-items-center rounded-xl bg-gradient-to-br from-gold-400 to-gold-600 text-obsidian shadow-glow">
- <Sparkles size={24} />
- </span>
- <span className="font-display text-3xl font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-300 to-gold-600">SkillSwap</span>
- </Link>
+ <Logo to="/login" size="lg" />
  <p className="mt-3 text-sm text-gray-600">Share your skills. Learn what you need.</p>
  </div>
  <Outlet />

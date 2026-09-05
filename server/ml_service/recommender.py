@@ -7,6 +7,7 @@ Evaluates the compatibility between a target user and a list of candidate users 
 
 import logging
 from typing import Any, List, Dict
+# pyrefly: ignore [missing-import]
 import numpy as np
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import cosine_similarity
@@ -20,6 +21,7 @@ def _get_sbert():
     global _sbert_model
     if _sbert_model is None:
         try:
+            # pyrefly: ignore [missing-import]
             from sentence_transformers import SentenceTransformer
             logger.info("Loading Sentence-BERT model...")
             _sbert_model = SentenceTransformer("all-MiniLM-L6-v2")
@@ -35,6 +37,7 @@ def _xgb_ok():
     global _xgb_available
     if _xgb_available is None:
         try:
+            # pyrefly: ignore [missing-import]
             import xgboost  # noqa: F401
             _xgb_available = True
         except ImportError:
@@ -146,6 +149,7 @@ _WEIGHTS = np.array([0.15, 0.25, 0.45, 0.10, 0.05], dtype=np.float32)
 def compute_rank(features: np.ndarray) -> np.ndarray:
     if _xgb_ok():
         try:
+            # pyrefly: ignore [missing-import]
             import xgboost as xgb
             dtrain = xgb.DMatrix(features)
             labels = features @ _WEIGHTS
