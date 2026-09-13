@@ -7,6 +7,7 @@ const morgan = require("morgan");
 const rateLimit = require("express-rate-limit");
 
 const env = require("./config/env");
+const prisma = require("./config/db");
 const { notFoundHandler, errorHandler } = require("./middleware/error.middleware");
 const authRoutes = require("./routes/auth.routes");
 const userRoutes = require("./routes/user.routes");
@@ -44,7 +45,7 @@ app.use(
       if (
         !origin || 
         allowedOrigins.includes(origin) || 
-        (origin && origin.endsWith('.vercel.app'))
+        (origin && (origin.endsWith('.vercel.app') || origin.endsWith('.onrender.com')))
       ) {
         return callback(null, true);
       }
@@ -69,10 +70,19 @@ app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 app.use(morgan(env.NODE_ENV === "production" ? "combined" : "dev"));
 
-app.get("/api/health", (_req, res) => {
+app.get("/api/health", async (_req, res) => {
+  let dbStatus = "unknown";
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+    dbStatus = "connected";
+  } catch (err) {
+    dbStatus = `disconnected: ${err.message}`;
+  }
+
   res.status(200).json({
     success: true,
-    message: "SkillSwap API is healthy",
+    message: "SkillSwap API is running",
+    database: dbStatus,
     timestamp: new Date().toISOString(),
   });
 });

@@ -14,20 +14,25 @@ module.exports = app;
 
 if (require.main === module) {
   const startServer = async () => {
+    server.listen(env.PORT, "0.0.0.0", () => {
+      console.log(`SkillSwap API running on port ${env.PORT}`);
+    });
+
     try {
       await prisma.$connect();
-
-      server.listen(env.PORT, () => {
-        console.log(`SkillSwap API running on port ${env.PORT}`);
-      });
+      console.log("Database connected successfully");
     } catch (error) {
-      console.error("Failed to start server", error);
-      process.exit(1);
+      console.error("Warning: Initial database connection failed:", error.message);
+      console.error("The server is running, but database queries will fail until a valid database is connected.");
     }
   };
 
   const shutdown = async () => {
-    await prisma.$disconnect();
+    try {
+      await prisma.$disconnect();
+    } catch (_e) {
+      // ignore
+    }
     server.close(() => process.exit(0));
   };
 
