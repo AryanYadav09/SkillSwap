@@ -140,10 +140,10 @@ export default function AvailabilityManager() {
   }, {});
 
   return (
-    <section className="card border border-gold-500/10">
+    <section className="card border border-indigo-50 border border-indigo-100">
       <div className="flex items-center justify-between mb-5">
         <h3 className="font-display text-xl font-bold text-gray-900 flex items-center gap-2">
-          <Calendar className="text-gold-600" size={20} />
+          <Calendar className="text-indigo-600" size={20} />
           My Availability
         </h3>
         <button
@@ -158,7 +158,7 @@ export default function AvailabilityManager() {
       {showForm && (
         <form
           onSubmit={handleCreate}
-          className="mb-6 p-5 rounded-xl border border-gold-500/20 bg-slate-50 space-y-4"
+          className="mb-6 p-5 rounded-xl border border-indigo-100 bg-slate-50 space-y-4"
         >
           <div className="grid gap-4 sm:grid-cols-2">
             <label className="grid gap-1">
@@ -181,8 +181,8 @@ export default function AvailabilityManager() {
                   type="button"
                   className={`flex-1 rounded-lg px-3 py-2 text-sm font-bold transition-all ${
                     form.isRecurring
-                      ? "bg-gold-600 text-white shadow-sm"
-                      : "bg-white border border-line text-gray-600 hover:bg-gold-500/10"
+                      ? "bg-indigo-600 text-white shadow-sm"
+                      : "bg-white border border-line text-gray-600 hover:bg-indigo-50 border border-indigo-100"
                   }`}
                   onClick={() => setForm({ ...form, isRecurring: true })}
                 >
@@ -192,8 +192,8 @@ export default function AvailabilityManager() {
                   type="button"
                   className={`flex-1 rounded-lg px-3 py-2 text-sm font-bold transition-all ${
                     !form.isRecurring
-                      ? "bg-gold-600 text-white shadow-sm"
-                      : "bg-white border border-line text-gray-600 hover:bg-gold-500/10"
+                      ? "bg-indigo-600 text-white shadow-sm"
+                      : "bg-white border border-line text-gray-600 hover:bg-indigo-50 border border-indigo-100"
                   }`}
                   onClick={() => setForm({ ...form, isRecurring: false })}
                 >
@@ -275,7 +275,7 @@ export default function AvailabilityManager() {
                 {previewSlots.map((slot) => (
                   <span
                     key={slot}
-                    className="rounded-lg bg-gold-500/10 border border-gold-500/20 px-3 py-1.5 text-xs font-bold text-gold-600"
+                    className="rounded-lg bg-indigo-50 border border-indigo-100 border border-indigo-100 px-3 py-1.5 text-xs font-bold text-indigo-600"
                   >
                     {slot}
                   </span>
@@ -319,7 +319,7 @@ export default function AvailabilityManager() {
         <div className="grid gap-4">
           {Object.entries(groupedByDay).map(([day, daySlots]) => (
             <div key={day}>
-              <h4 className="text-sm font-bold text-gold-600 uppercase tracking-wider mb-2">
+              <h4 className="text-sm font-bold text-indigo-600 uppercase tracking-wider mb-2">
                 {DAY_LABELS[day]}
               </h4>
               <div className="grid gap-2">
@@ -328,7 +328,7 @@ export default function AvailabilityManager() {
                     key={slot.id}
                     className={`flex items-center justify-between rounded-xl border p-4 transition-all ${
                       slot.isActive
-                        ? "border-gold-500/20 bg-white"
+                        ? "border-indigo-100 bg-white"
                         : "border-line bg-gray-50 opacity-60"
                     }`}
                   >
@@ -353,7 +353,7 @@ export default function AvailabilityManager() {
                     </div>
                     <div className="flex items-center gap-2">
                       <button
-                        className="p-2 rounded-lg hover:bg-gold-500/10 text-gray-400 hover:text-gold-600 transition-colors"
+                        className="p-2 rounded-lg hover:bg-indigo-50 border border-indigo-100 text-gray-400 hover:text-indigo-600 transition-colors"
                         onClick={() => handleToggle(slot.id)}
                         title={slot.isActive ? "Disable" : "Enable"}
                       >

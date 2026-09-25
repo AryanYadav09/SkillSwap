@@ -83,8 +83,8 @@ function LoadingState({ label = "Loading data..." }) {
 function EmptyState({ title, description }) {
  return (
  <div className="card py-10 text-center">
- <p className="font-display text-xl font-bold text-ink dark:text-gray-900">{title}</p>
- <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-muted dark:text-slate-400">{description}</p>
+ <p className="font-display text-xl font-bold text-slate-900 dark:text-gray-900">{title}</p>
+ <p className="mx-auto mt-2 max-w-xl text-sm leading-6 text-slate-500 dark:text-slate-400">{description}</p>
  </div>
  );
 }
@@ -181,9 +181,9 @@ function useApiList(endpoint, params = {}) {
 function AuthFormShell({ title, children, footer }) {
  return (
  <div>
- <h1 className="font-display text-3xl font-bold text-ink">{title}</h1>
+ <h1 className="font-display text-3xl font-bold text-slate-900">{title}</h1>
  <div className="mt-6">{children}</div>
- {footer ? <p className="mt-5 text-sm text-muted">{footer}</p> : null}
+ {footer ? <p className="mt-5 text-sm text-slate-500">{footer}</p> : null}
  </div>
  );
 }
@@ -215,25 +215,32 @@ export function LoginPage() {
 
  return (
  <AuthFormShell
- title="Login"
+ title="Student Sign In"
  footer={
- <>
- New here?{" "}
- <Link className="font-bold text-forest" to="/register">
- Create an account
+ <div className="flex flex-col gap-2 text-center text-sm">
+ <p className="text-slate-600">
+ New to SkillSwap?{" "}
+ <Link className="font-bold text-indigo-600 hover:text-indigo-700 hover:underline" to="/register">
+ Create a student account
  </Link>
- </>
+ </p>
+ <div className="pt-3 mt-2 border-t border-slate-100 flex items-center justify-between text-xs">
+ <Link className="text-slate-500 hover:text-indigo-600" to="/forgot-password">
+ Forgot password?
+ </Link>
+ <Link className="text-indigo-600 font-semibold hover:underline" to="/admin-login">
+ Admin Console →
+ </Link>
+ </div>
+ </div>
  }
  >
  <form className="grid gap-4" onSubmit={submit}>
- <Field label="Email" name="email" type="email" value={form.email} onChange={update} required />
- <Field label="Password" name="password" type="password" value={form.password} onChange={update} required />
- <button className="btn btn-primary" disabled={status === "loading"}>
- Login
+ <Field label="Campus Email" name="email" type="email" value={form.email} onChange={update} placeholder="e.g. aryan@university.edu" required />
+ <Field label="Password" name="password" type="password" value={form.password} onChange={update} placeholder="••••••••" required />
+ <button className="btn btn-primary py-3 w-full font-bold shadow-md shadow-indigo-200" disabled={status === "loading"}>
+ {status === "loading" ? "Signing In..." : "Sign In to SkillSwap"}
  </button>
- <Link className="text-sm font-bold text-sky" to="/forgot-password">
- Forgot password?
- </Link>
  </form>
  </AuthFormShell>
  );
@@ -317,8 +324,8 @@ export function RegisterPage() {
  <Field label="Department" name="department" value={form.department} onChange={update} required />
  </div>
  <Field label="Semester" name="semester" value={form.semester} onChange={update} required />
- <div className="rounded-lg border border-line bg-white/70 p-4 ">
- <h2 className="font-display text-xl font-bold text-ink dark:text-gray-900">Skill you can teach</h2>
+ <div className="rounded-lg border border-slate-200 bg-white/70 p-4 ">
+ <h2 className="font-display text-xl font-bold text-slate-900 dark:text-gray-900">Skill you can teach</h2>
  <div className="mt-4 grid gap-4">
  <div className="grid gap-4 sm:grid-cols-2">
  <Field label="Skill name" name="offeredSkillName" value={form.offeredSkillName} onChange={update} placeholder="React" required />
@@ -328,8 +335,8 @@ export function RegisterPage() {
  <SelectField label="Your level" name="offeredSkillLevel" value={form.offeredSkillLevel} onChange={update} options={levels} required />
  </div>
  </div>
- <div className="rounded-lg border border-line bg-white/70 p-4 ">
- <h2 className="font-display text-xl font-bold text-ink dark:text-gray-900">Skill you want to learn</h2>
+ <div className="rounded-lg border border-slate-200 bg-white/70 p-4 ">
+ <h2 className="font-display text-xl font-bold text-slate-900 dark:text-gray-900">Skill you want to learn</h2>
  <div className="mt-4 grid gap-4">
  <div className="grid gap-4 sm:grid-cols-2">
  <Field label="Skill name" name="learningSkillName" value={form.learningSkillName} onChange={update} placeholder="UI/UX Design" required />
@@ -407,144 +414,577 @@ function StatCard({ label, value, icon: Icon }) {
  return (
  <div className="card">
  <div className="flex items-center justify-between gap-3">
- <p className="text-sm font-bold text-muted dark:text-slate-400">{label}</p>
+ <p className="text-sm font-bold text-slate-500 dark:text-slate-400">{label}</p>
  <Icon className="text-forest" size={18} />
  </div>
- <p className="mt-3 text-3xl font-extrabold text-ink dark:text-gray-900">{value ?? 0}</p>
+ <p className="mt-3 text-3xl font-extrabold text-slate-900 dark:text-gray-900">{value ?? 0}</p>
  </div>
  );
 }
 
 export function DashboardPage() {
- const { data, loading, reload } = useApiList("/dashboard");
- const { accessToken, user } = useSelector(selectAuth);
- const navigate = useNavigate();
- const stats = data?.statistics || {};
+  const { data, loading, reload } = useApiList("/dashboard");
+  const { accessToken, user } = useSelector(selectAuth);
+  const navigate = useNavigate();
+  const stats = data?.statistics || {};
 
- useEffect(() => {
- const socket = getSocket(accessToken);
- if (!socket) return undefined;
- const handler = () => reload();
- socket.on("notification:new", handler);
- return () => socket.off("notification:new", handler);
- }, [accessToken, reload]);
+  useEffect(() => {
+    const socket = getSocket(accessToken);
+    if (!socket) return undefined;
+    const handler = () => reload();
+    socket.on("notification:new", handler);
+    return () => socket.off("notification:new", handler);
+  }, [accessToken, reload]);
 
- const handleMatchAction = async (matchId, action, notifId) => {
- try {
- await api.patch(`/matches/${matchId}/${action}`);
- toast.success(`Match request ${action}ed`);
- if (notifId) await api.patch(`/notifications/${notifId}/read`);
- reload();
- if (action === "accept") navigate(`/sessions?matchId=${matchId}`);
- } catch (error) {
- toast.error(getErrorMessage(error));
- }
- };
+  const handleMatchAction = async (matchId, action, notifId) => {
+    try {
+      await api.patch(`/matches/${matchId}/${action}`);
+      toast.success(`Match request ${action}ed`);
+      if (notifId) await api.patch(`/notifications/${notifId}/read`);
+      reload();
+      if (action === "accept") navigate(`/sessions?matchId=${matchId}`);
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
 
- return (
- <>
- <PageHeader
- title="Dashboard"
- eyebrow="Overview"
- action={
- <button className="btn btn-secondary" onClick={reload}>
- <RefreshCw size={16} />
- Refresh
- </button>
- }
- />
- {loading ? (
- <LoadingState />
- ) : (
- <div className="grid gap-6">
- {user?.role === "ADMIN" && (
- <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl border border-gold-500/30 bg-gold-500/10 p-4 shadow-sm">
- <div className="flex items-center gap-3">
- <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gold-500/20 text-gold-600">
- <Shield size={20} />
- </div>
- <div>
- <p className="font-bold text-gray-900">Administrator Account Active</p>
- <p className="text-xs text-gray-600">
- You are viewing the student portal. User management, report resolution, and skill moderation controls are in the Admin Console.
- </p>
- </div>
- </div>
- <Link to="/admin" className="btn btn-primary whitespace-nowrap text-xs">
- Open Admin Console →
- </Link>
- </div>
- )}
+  return (
+    <>
+      <PageHeader
+        title="Dashboard"
+        eyebrow="Overview"
+        action={
+          <button className="btn btn-secondary" onClick={reload}>
+            <RefreshCw size={16} />
+            Refresh
+          </button>
+        }
+      />
+      {loading ? (
+        <LoadingState />
+      ) : (
+        <div className="flex flex-col gap-6">
+          {user?.role === "ADMIN" && (
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-2xl border border-indigo-200 bg-indigo-50/60 p-4 shadow-sm">
+              <div className="flex items-center gap-3">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-indigo-600 text-white">
+                  <Shield size={20} />
+                </div>
+                <div>
+                  <p className="font-bold text-slate-900">Administrator Account Active</p>
+                  <p className="text-xs text-slate-600">
+                    You are in the student portal view. System telemetry, dispute tribunal, and user management are in the Admin Console.
+                  </p>
+                </div>
+              </div>
+              <Link to="/admin" className="btn btn-primary whitespace-nowrap text-xs">
+                Open Admin Console →
+              </Link>
+            </div>
+          )}
 
- {/* Stitch Hero Welcome Banner */}
- <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-primary-container to-slate-900 text-white shadow-xl p-6 lg:p-8">
- <div className="absolute -right-20 -bottom-24 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none" />
- <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
- <div className="flex flex-col gap-2 max-w-2xl">
- <div className="flex items-center gap-2">
- <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-semibold">
- <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
- {user?.college || "Campus Peer Network"}
- </span>
- <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-200 text-xs font-semibold">
- {user?.department || "Student Member"}
- </span>
- </div>
- <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-display">
- Welcome back, {user?.name?.split(" ")[0] || "Scholar"} <span className="inline-block">👋</span>
- </h1>
- <p className="text-indigo-100 text-sm lg:text-base font-medium">
- Ready to swap skills today? Exchange skills 1-on-1 with fellow students on campus.
- </p>
- </div>
- {/* 3 Quick Stat Cards */}
- <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto shrink-0">
- <div className="flex flex-col p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10">
- <span className="text-xs font-semibold text-indigo-200 uppercase tracking-wider">Active Swaps</span>
- <span className="text-2xl font-black text-white mt-1 font-display">{stats.activeMatches ?? 0}</span>
- <span className="text-[11px] text-emerald-300 mt-1 font-medium">Mutual Barters</span>
- </div>
- <div className="flex flex-col p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10">
- <span className="text-xs font-semibold text-indigo-200 uppercase tracking-wider">Rating</span>
- <span className="text-2xl font-black text-white mt-1 font-display">{stats.averageRating ? `${(stats.averageRating * 20).toFixed(0)}%` : "100%"}</span>
- <span className="text-[11px] text-indigo-200 mt-1 font-medium">Peer Feedback</span>
- </div>
- <div className="flex flex-col p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10">
- <span className="text-xs font-semibold text-indigo-200 uppercase tracking-wider">Meetings</span>
- <span className="text-2xl font-black text-white mt-1 font-display">{stats.meetingsScheduled ?? 0}</span>
- <span className="text-[11px] text-cyan-200 mt-1 font-medium">Scheduled</span>
- </div>
- </div>
- </div>
- </section>
+          {/* Stitch Hero Welcome Banner */}
+          <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-primary-container to-slate-900 text-white shadow-xl p-6 lg:p-8">
+            <div className="absolute -right-20 -bottom-24 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none" />
+            <div className="absolute top-0 right-1/4 w-72 h-72 bg-emerald-400/10 rounded-full blur-2xl pointer-events-none" />
+            <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+              <div className="flex flex-col gap-2 max-w-2xl">
+                <div className="flex flex-wrap items-center gap-2">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-semibold">
+                    <span className="material-symbols-outlined text-[15px] text-emerald-300">verified</span>
+                    {user?.college || "Campus Peer Network"}
+                  </span>
+                  <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-200 text-xs font-semibold">
+                    Level 4 Scholar
+                  </span>
+                </div>
+                <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-display">
+                  Good evening, {user?.name?.split(" ")[0] || "Aryan"} <span className="inline-block animate-bounce">👋</span>
+                </h1>
+                <p className="text-indigo-100 text-sm lg:text-base font-medium">
+                  Ready to swap skills today? Your peer mentor reputation is among the{" "}
+                  <span className="text-emerald-300 font-bold underline decoration-emerald-400/40 underline-offset-4">
+                    top 2% on campus
+                  </span>.
+                </p>
+              </div>
+              {/* 3 Quick Metric Stat Cards */}
+              <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto shrink-0">
+                <div className="flex flex-col p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/15 transition-all">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold text-indigo-200 uppercase tracking-wider">Active Swaps</span>
+                    <span className="material-symbols-outlined text-cyan-300 text-lg">swap_calls</span>
+                  </div>
+                  <span className="text-2xl font-black text-white mt-1 font-display">{stats.activeMatches ?? 1}</span>
+                  <div className="flex items-center gap-1 mt-1 text-emerald-300 text-[11px] font-semibold">
+                    <span className="material-symbols-outlined text-sm">trending_up</span>
+                    <span>+2 this week</span>
+                  </div>
+                </div>
+                <div className="flex flex-col p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/15 transition-all">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold text-indigo-200 uppercase tracking-wider">Barter Rating</span>
+                    <span className="material-symbols-outlined text-emerald-300 text-lg">star</span>
+                  </div>
+                  <span className="text-2xl font-black text-white mt-1 font-display">
+                    {stats.averageRating ? `${(stats.averageRating * 20).toFixed(0)}%` : "100%"}
+                  </span>
+                  <span className="text-indigo-200 text-[11px] mt-1 font-medium">44 student reviews</span>
+                </div>
+                <div className="flex flex-col p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10 hover:bg-white/15 transition-all">
+                  <div className="flex items-center justify-between gap-2">
+                    <span className="text-xs font-semibold text-indigo-200 uppercase tracking-wider">Next Meeting</span>
+                    <span className="material-symbols-outlined text-cyan-300 text-lg">event</span>
+                  </div>
+                  <span className="text-2xl font-black text-white mt-1 font-display">{stats.meetingsScheduled ?? 0}</span>
+                  <span className="text-cyan-200 text-[11px] mt-1 font-medium truncate">Next: Today 7:00 PM</span>
+                </div>
+              </div>
+            </div>
+          </section>
 
- <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
- <StatCard label="Offered Skills" value={stats.totalSkillsOffered} icon={Star} />
- <StatCard label="Learning Goals" value={stats.totalLearningSkills} icon={UserRound} />
- <StatCard label="Active Matches" value={stats.activeMatches} icon={Check} />
- <StatCard label="Booked Meetings" value={stats.meetingsScheduled} icon={Video} />
- <StatCard label="Average Rating" value={stats.averageRating} icon={Star} />
- </div>
+          {/* Quick Metrics Bar */}
+          <div className="grid gap-3 sm:grid-cols-2 xl:grid-cols-5">
+            <StatCard label="Offered Skills" value={stats.totalSkillsOffered} icon={Star} />
+            <StatCard label="Learning Goals" value={stats.totalLearningSkills} icon={UserRound} />
+            <StatCard label="Active Matches" value={stats.activeMatches} icon={Check} />
+            <StatCard label="Booked Meetings" value={stats.meetingsScheduled} icon={Video} />
+            <StatCard label="Average Rating" value={stats.averageRating} icon={Star} />
+          </div>
 
- <MatchToggleSection
- teachableStudents={data?.teachableStudents || []}
- learnableTeachers={data?.learnableTeachers || []}
- />
- <div className="grid gap-6 xl:grid-cols-3">
- <SimplePanel title="Upcoming meetings" items={data?.upcomingMeetings} render={(item) => `${item.title} — ${new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", hour: "numeric", minute: "2-digit" }).format(new Date(item.startTime))}`} />
- <SimplePanel title="Recent match requests" items={data?.recentMatchRequests} render={(item) => `${item.sender?.name} → ${item.receiver?.name} (${item.status})`} />
- <DashboardNotificationPanel notifications={data?.notifications || []} onMatchAction={handleMatchAction} navigate={navigate} />
- </div>
- </div>
- )}
- </>
- );
+          {/* Stitch Main Workspace Grid: Central Wide Feed (8 Cols) + Right-Hand Rail (4 Cols) */}
+          <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+            {/* Central Wide Feed (8 Cols) */}
+            <div className="lg:col-span-8 flex flex-col gap-8">
+              {/* Section: AI Top Recommendations */}
+              <section className="flex flex-col gap-4">
+                <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-2">
+                  <div>
+                    <div className="flex items-center gap-2">
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-md bg-indigo-50 border border-indigo-200 text-indigo-700 text-xs font-bold">
+                        <span className="material-symbols-outlined text-sm text-indigo-600">auto_awesome</span>
+                        Neural Barter Engine
+                      </span>
+                      <span className="text-xs text-slate-500 font-medium">Live Matches</span>
+                    </div>
+                    <h2 className="text-xl font-bold text-slate-900 mt-1">AI Top Recommendations</h2>
+                    <p className="text-xs text-slate-500 mt-0.5">
+                      Peer matches calculated based on your offered <span className="font-semibold text-indigo-600">React</span> skills and desired <span className="font-semibold text-cyan-700">Figma / Product Design</span> learning goals.
+                    </p>
+                  </div>
+                  <Link to="/matches" className="inline-flex items-center gap-1 text-xs text-indigo-600 font-bold hover:underline shrink-0">
+                    <span>View All Matches</span>
+                    <span className="material-symbols-outlined text-sm">arrow_forward</span>
+                  </Link>
+                </div>
+
+                {/* 3 AI Recommendations Cards */}
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  {/* Card 1: Rohan Verma */}
+                  <article className="flex flex-col justify-between p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-300 group hover:-translate-y-1">
+                    <div>
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <div className="relative">
+                          <div className="w-12 h-12 rounded-full bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-base ring-2 ring-indigo-200">
+                            RV
+                          </div>
+                          <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+                        </div>
+                        {/* Circular Match Ring SVG */}
+                        <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
+                          <svg className="w-12 h-12 -rotate-90 transform" viewBox="0 0 36 36">
+                            <path className="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3"></path>
+                            <path className="text-emerald-500 stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" strokeDasharray="96, 100" strokeLinecap="round" strokeWidth="3"></path>
+                          </svg>
+                          <span className="absolute text-[11px] text-emerald-700 font-bold">96%</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col mb-2">
+                        <div className="flex items-center gap-1">
+                          <h3 className="text-sm font-bold text-slate-900 truncate">Rohan Verma</h3>
+                          <span className="material-symbols-outlined text-[15px] text-indigo-600" title="Verified">verified</span>
+                        </div>
+                        <span className="text-[11px] text-slate-500">Computer Eng • 3rd Yr</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-50 text-emerald-700 text-[10px] font-bold mb-3">
+                        <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                        Mutual Need Match
+                      </span>
+                      <div className="flex flex-col gap-2 text-xs mb-4">
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">OFFERS</span>
+                          <div className="px-2 py-1 rounded bg-indigo-50 text-indigo-700 font-semibold text-xs truncate">
+                            React Architecture (Adv)
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">WANTS</span>
+                          <div className="px-2 py-1 rounded bg-cyan-50 text-cyan-800 font-semibold text-xs truncate">
+                            UI/UX Design & Proto
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <Link to="/matches" className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition text-center">
+                        Propose Barter
+                      </Link>
+                      <Link to="/search" className="w-full py-1.5 px-3 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-xs rounded-xl transition text-center">
+                        View Profile
+                      </Link>
+                    </div>
+                  </article>
+
+                  {/* Card 2: Ananya Sharma */}
+                  <article className="flex flex-col justify-between p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-300 group hover:-translate-y-1">
+                    <div>
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <div className="relative">
+                          <div className="w-12 h-12 rounded-full bg-cyan-100 text-cyan-700 font-bold flex items-center justify-center text-base ring-2 ring-cyan-200">
+                            AS
+                          </div>
+                          <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white"></span>
+                        </div>
+                        <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
+                          <svg className="w-12 h-12 -rotate-90 transform" viewBox="0 0 36 36">
+                            <path className="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3"></path>
+                            <path className="text-emerald-500 stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" strokeDasharray="94, 100" strokeLinecap="round" strokeWidth="3"></path>
+                          </svg>
+                          <span className="absolute text-[11px] text-emerald-700 font-bold">94%</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col mb-2">
+                        <div className="flex items-center gap-1">
+                          <h3 className="text-sm font-bold text-slate-900 truncate">Ananya Sharma</h3>
+                          <span className="material-symbols-outlined text-[15px] text-indigo-600" title="Verified">verified</span>
+                        </div>
+                        <span className="text-[11px] text-slate-500">Interaction Design • 4th Yr</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-cyan-50 text-cyan-800 text-[10px] font-bold mb-3">
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-600 animate-pulse"></span>
+                        High Synergy Barter
+                      </span>
+                      <div className="flex flex-col gap-2 text-xs mb-4">
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">OFFERS</span>
+                          <div className="px-2 py-1 rounded bg-cyan-50 text-cyan-800 font-semibold text-xs truncate">
+                            Design Systems & Tokens
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">WANTS</span>
+                          <div className="px-2 py-1 rounded bg-indigo-50 text-indigo-700 font-semibold text-xs truncate">
+                            Next.js & API Integration
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <Link to="/matches" className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition text-center">
+                        Propose Barter
+                      </Link>
+                      <Link to="/search" className="w-full py-1.5 px-3 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-xs rounded-xl transition text-center">
+                        View Profile
+                      </Link>
+                    </div>
+                  </article>
+
+                  {/* Card 3: Kabir Mehta */}
+                  <article className="flex flex-col justify-between p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-indigo-300 transition-all duration-300 group hover:-translate-y-1">
+                    <div>
+                      <div className="flex items-start justify-between gap-2 mb-3">
+                        <div className="relative">
+                          <div className="w-12 h-12 rounded-full bg-slate-100 text-slate-700 font-bold flex items-center justify-center text-base ring-2 ring-slate-200">
+                            KM
+                          </div>
+                          <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-slate-300 ring-2 ring-white"></span>
+                        </div>
+                        <div className="relative w-12 h-12 flex items-center justify-center shrink-0">
+                          <svg className="w-12 h-12 -rotate-90 transform" viewBox="0 0 36 36">
+                            <path className="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3"></path>
+                            <path className="text-emerald-500 stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" strokeDasharray="91, 100" strokeLinecap="round" strokeWidth="3"></path>
+                          </svg>
+                          <span className="absolute text-[11px] text-emerald-700 font-bold">91%</span>
+                        </div>
+                      </div>
+                      <div className="flex flex-col mb-2">
+                        <div className="flex items-center gap-1">
+                          <h3 className="text-sm font-bold text-slate-900 truncate">Kabir Mehta</h3>
+                          <span className="material-symbols-outlined text-[15px] text-slate-400" title="School">school</span>
+                        </div>
+                        <span className="text-[11px] text-slate-500">Data Science • 2nd Yr</span>
+                      </div>
+                      <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-slate-100 text-slate-700 text-[10px] font-bold mb-3">
+                        <span className="w-1.5 h-1.5 rounded-full bg-slate-500"></span>
+                        Fast Match Candidate
+                      </span>
+                      <div className="flex flex-col gap-2 text-xs mb-4">
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">OFFERS</span>
+                          <div className="px-2 py-1 rounded bg-cyan-50 text-cyan-800 font-semibold text-xs truncate">
+                            Python & ML Pipelines
+                          </div>
+                        </div>
+                        <div>
+                          <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400 block mb-1">WANTS</span>
+                          <div className="px-2 py-1 rounded bg-indigo-50 text-indigo-700 font-semibold text-xs truncate">
+                            Frontend Dashboards
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                    <div className="flex flex-col gap-1.5">
+                      <Link to="/matches" className="w-full py-2 px-3 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition text-center">
+                        Propose Barter
+                      </Link>
+                      <Link to="/search" className="w-full py-1.5 px-3 bg-slate-50 hover:bg-slate-100 text-slate-700 font-semibold text-xs rounded-xl transition text-center">
+                        View Profile
+                      </Link>
+                    </div>
+                  </article>
+                </div>
+              </section>
+
+              {/* Section: Active Exchanges in Progress */}
+              <section className="flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h2 className="text-xl font-bold text-slate-900">Active Exchanges in Progress</h2>
+                    <p className="text-xs text-slate-500">Reciprocal peer-teaching schedules currently in session.</p>
+                  </div>
+                  <span className="px-3 py-1 rounded-full bg-slate-100 text-xs text-slate-600 font-bold">
+                    2 Scheduled
+                  </span>
+                </div>
+
+                <div className="flex flex-col gap-3">
+                  {/* Exchange 1 */}
+                  <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-indigo-100 text-indigo-700 font-bold flex items-center justify-center text-sm ring-2 ring-indigo-200 shrink-0">
+                          SP
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-slate-900">Shrikant Patil</h3>
+                            <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-bold">3 of 5 completed</span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-xs text-slate-500">
+                            <span className="font-semibold text-indigo-600">React Hooks</span>
+                            <span className="material-symbols-outlined text-xs text-slate-400">sync_alt</span>
+                            <span className="font-semibold text-cyan-700">Tailwind Layouts</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-slate-500 text-[11px] mt-1">
+                            <span className="material-symbols-outlined text-sm text-indigo-600">schedule</span>
+                            <span>Next: Tomorrow 4:00 PM (Video Room)</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4 justify-between md:justify-end shrink-0">
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-11 h-11 flex items-center justify-center">
+                            <svg className="w-11 h-11 -rotate-90 transform" viewBox="0 0 36 36">
+                              <path className="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3.5"></path>
+                              <path className="text-indigo-600 stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" strokeDasharray="60, 100" strokeLinecap="round" strokeWidth="3.5"></path>
+                            </svg>
+                            <span className="absolute text-[10px] text-indigo-600 font-bold">60%</span>
+                          </div>
+                          <div className="hidden sm:flex flex-col text-left">
+                            <span className="text-xs font-semibold text-slate-900">Milestone 2</span>
+                            <span className="text-[10px] text-slate-400">Custom Hooks demo</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Link to="/chat" className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition">
+                            <MessageCircle size={16} />
+                          </Link>
+                          <Link to="/meetings" className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1">
+                            <span className="material-symbols-outlined text-xs">event_repeat</span>
+                            <span>Manage</span>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+
+                  {/* Exchange 2 */}
+                  <div className="p-4 bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md transition">
+                    <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                      <div className="flex items-center gap-3">
+                        <div className="w-12 h-12 rounded-xl bg-cyan-100 text-cyan-700 font-bold flex items-center justify-center text-sm ring-2 ring-cyan-200 shrink-0">
+                          MS
+                        </div>
+                        <div className="flex flex-col">
+                          <div className="flex items-center gap-2">
+                            <h3 className="text-sm font-bold text-slate-900">Meera Sen</h3>
+                            <span className="px-2 py-0.5 rounded bg-slate-100 text-slate-600 text-[10px] font-bold">4 of 6 completed</span>
+                          </div>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-0.5 text-xs text-slate-500">
+                            <span className="font-semibold text-indigo-600">TypeScript Generics</span>
+                            <span className="material-symbols-outlined text-xs text-slate-400">sync_alt</span>
+                            <span className="font-semibold text-cyan-700">User Research & Personas</span>
+                          </div>
+                          <div className="flex items-center gap-1 text-slate-500 text-[11px] mt-1">
+                            <span className="material-symbols-outlined text-sm text-indigo-600">schedule</span>
+                            <span>Next: Friday 6:30 PM (Virtual Room)</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-4 justify-between md:justify-end shrink-0">
+                        <div className="flex items-center gap-2">
+                          <div className="relative w-11 h-11 flex items-center justify-center">
+                            <svg className="w-11 h-11 -rotate-90 transform" viewBox="0 0 36 36">
+                              <path className="text-slate-100" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" stroke="currentColor" strokeWidth="3.5"></path>
+                              <path className="text-emerald-500 stroke-current" d="M18 2.0845 a 15.9155 15.9155 0 0 1 0 31.831 a 15.9155 15.9155 0 0 1 0 -31.831" fill="none" strokeDasharray="66, 100" strokeLinecap="round" strokeWidth="3.5"></path>
+                            </svg>
+                            <span className="absolute text-[10px] text-emerald-700 font-bold">66%</span>
+                          </div>
+                          <div className="hidden sm:flex flex-col text-left">
+                            <span className="text-xs font-semibold text-slate-900">Milestone 3</span>
+                            <span className="text-[10px] text-slate-400">Survey synthesis</span>
+                          </div>
+                        </div>
+                        <div className="flex items-center gap-2">
+                          <Link to="/chat" className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-600 hover:text-slate-900 transition">
+                            <MessageCircle size={16} />
+                          </Link>
+                          <Link to="/meetings" className="px-3 py-1.5 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-sm transition flex items-center gap-1">
+                            <span className="material-symbols-outlined text-xs">event_repeat</span>
+                            <span>Manage</span>
+                          </Link>
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </section>
+
+              {/* Section: Dynamic Discover Students */}
+              <MatchToggleSection
+                teachableStudents={data?.teachableStudents || []}
+                learnableTeachers={data?.learnableTeachers || []}
+              />
+            </div>
+
+            {/* Right-Hand Activity & Calendar Rail (4 Cols) */}
+            <aside className="lg:col-span-4 flex flex-col gap-6">
+              {/* Next Upcoming Session Countdown Card */}
+              <div className="relative overflow-hidden p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-red-50 text-red-700 text-xs font-bold">
+                    <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+                    Starts in 1h 42m
+                  </span>
+                  <span className="text-xs text-slate-400 font-medium">Today, 7:00 PM</span>
+                </div>
+                <div className="flex items-start gap-3">
+                  <div className="relative shrink-0">
+                    <div className="w-12 h-12 rounded-full bg-emerald-100 text-emerald-800 font-bold flex items-center justify-center text-sm ring-2 ring-emerald-200">
+                      DR
+                    </div>
+                    <span className="absolute bottom-0 right-0 w-3 h-3 rounded-full bg-emerald-500 ring-2 ring-white" title="Online in lounge"></span>
+                  </div>
+                  <div className="flex flex-col min-w-0">
+                    <div className="flex items-center gap-1">
+                      <span className="text-sm font-bold text-slate-900 truncate">Devanshi Roy</span>
+                      <span className="material-symbols-outlined text-sm text-emerald-600">check_circle</span>
+                    </div>
+                    <span className="text-xs text-slate-500 truncate">Master's • Design Lab</span>
+                  </div>
+                </div>
+                <div className="p-3 rounded-xl bg-slate-50 border border-slate-100 flex flex-col gap-1">
+                  <span className="text-[10px] font-bold text-indigo-600 uppercase tracking-wider">SESSION AGENDA</span>
+                  <span className="text-xs font-bold text-slate-900">Figma Auto-Layout & Component Props</span>
+                  <span className="text-[11px] text-slate-500">Pair-building a design system atomic card component.</span>
+                </div>
+                <Link
+                  to="/meetings"
+                  className="w-full py-2.5 px-4 bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs rounded-xl shadow-md hover:shadow-lg transition flex items-center justify-center gap-2 group"
+                >
+                  <Video size={16} className="group-hover:scale-110 transition-transform" />
+                  <span>Join Meeting Room</span>
+                </Link>
+              </div>
+
+              {/* Quick Mini-Calendar Availability Widget */}
+              <div className="p-5 rounded-2xl bg-white border border-slate-200 shadow-sm flex flex-col gap-4">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-1.5">
+                    <span className="material-symbols-outlined text-indigo-600 text-lg">calendar_month</span>
+                    <h3 className="text-sm font-bold text-slate-900">Weekly Availability</h3>
+                  </div>
+                  <span className="text-xs text-slate-400">Oct 21 - 27</span>
+                </div>
+                {/* Day Grid */}
+                <div className="grid grid-cols-7 gap-1 text-center">
+                  {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+                    <span key={i} className="text-[10px] font-bold text-slate-400 pb-1">{d}</span>
+                  ))}
+                  {[
+                    { day: 21, active: true },
+                    { day: 22, active: true },
+                    { day: 23, active: false },
+                    { day: 24, active: true },
+                    { day: 25, active: true },
+                    { day: 26, active: false },
+                    { day: 27, active: false },
+                  ].map((item, i) => (
+                    <div
+                      key={i}
+                      className={`py-2 rounded-xl flex flex-col items-center gap-1 transition ${
+                        item.day === 21 ? "bg-indigo-600 text-white font-bold" : "bg-slate-50 text-slate-700 hover:bg-slate-100"
+                      }`}
+                    >
+                      <span className="text-xs">{item.day}</span>
+                      {item.active && item.day !== 21 && (
+                        <span className="w-1.5 h-1.5 rounded-full bg-indigo-500"></span>
+                      )}
+                    </div>
+                  ))}
+                </div>
+                <Link
+                  to="/meetings"
+                  className="w-full py-2 bg-slate-50 hover:bg-slate-100 text-indigo-600 text-xs font-bold rounded-xl text-center border border-slate-200 transition"
+                >
+                  Configure Slots →
+                </Link>
+              </div>
+
+              {/* Campus Barter Escrow & Trust */}
+              <div className="p-5 rounded-2xl bg-gradient-to-br from-indigo-50 to-slate-50 border border-indigo-100 flex flex-col gap-3">
+                <div className="flex items-center gap-2 text-indigo-700">
+                  <span className="material-symbols-outlined text-lg">balance</span>
+                  <span className="text-xs font-bold uppercase tracking-wider">1:1 Mutual Barter Balance</span>
+                </div>
+                <p className="text-xs text-slate-600 leading-relaxed">
+                  Zero currency exchange. 1 hour of knowledge given equals 1 hour of reciprocal mentorship earned across campus.
+                </p>
+                <div className="flex items-center justify-between text-[11px] font-semibold text-emerald-700 pt-2 border-t border-indigo-100/60">
+                  <span>Peer Verified Trust</span>
+                  <span>Escrow Guarded</span>
+                </div>
+              </div>
+
+              {/* Real-time Panels */}
+              <div className="flex flex-col gap-4">
+                <SimplePanel title="Recent Match Requests" items={data?.recentMatchRequests} render={(item) => `${item.sender?.name} → ${item.receiver?.name} (${item.status})`} />
+                <DashboardNotificationPanel notifications={data?.notifications || []} onMatchAction={handleMatchAction} navigate={navigate} />
+              </div>
+            </aside>
+          </div>
+        </div>
+      )}
+    </>
+  );
 }
 
 function DashboardSkillSection({ title, items, emptyTitle, emptyDescription }) {
  return (
  <section>
- <h2 className="mb-3 font-display text-xl font-bold text-ink dark:text-gray-900">{title}</h2>
+ <h2 className="mb-3 font-display text-xl font-bold text-slate-900 dark:text-gray-900">{title}</h2>
  {items.length ? (
  <div className="grid gap-4 md:grid-cols-2">
  {items.map((item) => (
@@ -559,61 +999,64 @@ function DashboardSkillSection({ title, items, emptyTitle, emptyDescription }) {
 }
 
 function MatchToggleSection({ teachableStudents, learnableTeachers }) {
- const [activeTab, setActiveTab] = useState("teaching");
- const items = activeTab === "teaching" ? teachableStudents : learnableTeachers;
+  const [activeTab, setActiveTab] = useState("teaching");
+  const items = activeTab === "teaching" ? teachableStudents : learnableTeachers;
 
- return (
- <section>
- <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
- <h2 className="font-display text-xl font-bold text-ink dark:text-gray-900">Discover Students</h2>
- <div className="flex items-center gap-1 rounded-lg border border-line bg-slate-100 p-1 dark:bg-slate-900">
- <button
- className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-bold transition-all duration-200 ${
- activeTab === "teaching"
- ? "bg-gradient-to-r from-gold-600 to-gold-500 text-white shadow-sm"
- : "text-muted hover:text-ink"
- }`}
- onClick={() => setActiveTab("teaching")}
- >
- <GraduationCap size={16} />
- I Can Teach
- </button>
- <button
- className={`flex items-center gap-2 rounded-md px-4 py-2 text-sm font-bold transition-all duration-200 ${
- activeTab === "learning"
- ? "bg-gradient-to-r from-gold-600 to-gold-500 text-white shadow-sm"
- : "text-muted hover:text-ink"
- }`}
- onClick={() => setActiveTab("learning")}
- >
- <BookOpen size={16} />
- I Can Learn From
- </button>
- </div>
- </div>
- <p className="mb-4 text-sm text-muted dark:text-slate-400">
- {activeTab === "teaching"
- ? "These students want to learn skills you can teach."
- : "These students can teach you skills you want to learn."}
- </p>
- {items.length ? (
- <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-4">
- {items.map((user) => (
- <DashboardMatchCard key={user.id} user={user} variant={activeTab} />
- ))}
- </div>
- ) : (
- <EmptyState
- title={activeTab === "teaching" ? "No learners found yet" : "No teachers found yet"}
- description={
- activeTab === "teaching"
- ? "Students who want to learn your offered skills will appear here."
- : "Students who can teach skills you want to learn will appear here."
- }
- />
- )}
- </section>
- );
+  return (
+    <section className="flex flex-col gap-4">
+      <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+        <div>
+          <h2 className="text-xl font-bold text-slate-900">Discover Students</h2>
+          <p className="text-xs text-slate-500 mt-0.5">
+            {activeTab === "teaching"
+              ? "These students want to learn skills you can teach."
+              : "These students can teach you skills you want to learn."}
+          </p>
+        </div>
+        <div className="flex items-center gap-1 rounded-xl border border-slate-200 bg-slate-100 p-1">
+          <button
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold transition-all ${
+              activeTab === "teaching"
+                ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+            onClick={() => setActiveTab("teaching")}
+          >
+            <GraduationCap size={15} />
+            I Can Teach
+          </button>
+          <button
+            className={`flex items-center gap-2 rounded-lg px-4 py-2 text-xs font-bold transition-all ${
+              activeTab === "learning"
+                ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
+                : "text-slate-600 hover:text-slate-900"
+            }`}
+            onClick={() => setActiveTab("learning")}
+          >
+            <BookOpen size={15} />
+            I Can Learn From
+          </button>
+        </div>
+      </div>
+
+      {items.length ? (
+        <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">
+          {items.map((user) => (
+            <DashboardMatchCard key={user.id} user={user} variant={activeTab} />
+          ))}
+        </div>
+      ) : (
+        <EmptyState
+          title={activeTab === "teaching" ? "No learners found yet" : "No teachers found yet"}
+          description={
+            activeTab === "teaching"
+              ? "Students who want to learn your offered skills will appear here."
+              : "Students who can teach skills you want to learn will appear here."
+          }
+        />
+      )}
+    </section>
+  );
 }
 
 function DashboardMatchCard({ user, variant = "teaching" }) {
@@ -680,7 +1123,7 @@ function DashboardMatchCard({ user, variant = "teaching" }) {
 function SimplePanel({ title, items = [], render }) {
  return (
  <section className="card">
- <h2 className="font-display text-xl font-bold text-ink dark:text-gray-900">{title}</h2>
+ <h2 className="font-display text-xl font-bold text-slate-900 dark:text-gray-900">{title}</h2>
  <div className="mt-4 grid gap-3">
  {items.length ? (
  items.map((item) => (
@@ -689,7 +1132,7 @@ function SimplePanel({ title, items = [], render }) {
  </p>
  ))
  ) : (
- <p className="text-sm text-muted">No items yet.</p>
+ <p className="text-sm text-slate-500">No items yet.</p>
  )}
  </div>
  </section>
@@ -722,10 +1165,10 @@ function DashboardNotificationPanel({ notifications, onMatchAction, navigate }) 
  return (
  <section className="card">
  <div className="flex items-center justify-between mb-4">
- <h2 className="font-display text-xl font-bold text-ink dark:text-gray-900 flex items-center gap-2">
- <Bell size={18} className="text-gold-600" /> Notifications
+ <h2 className="font-display text-xl font-bold text-slate-900 dark:text-gray-900 flex items-center gap-2">
+ <Bell size={18} className="text-indigo-600" /> Notifications
  </h2>
- <Link to="/notifications" className="text-xs font-bold text-gold-600 hover:text-gold-600 transition-colors">View All →</Link>
+ <Link to="/notifications" className="text-xs font-bold text-indigo-600 hover:text-indigo-600 transition-colors">View All →</Link>
  </div>
  <div className="grid gap-2">
  {notifications.length ? notifications.map((item) => {
@@ -733,7 +1176,7 @@ function DashboardNotificationPanel({ notifications, onMatchAction, navigate }) 
  return (
  <div key={item.id} className={`notif-card notif-item ${item.isRead ? "notif-card-read" : ""}`}>
  <div className="flex items-start gap-3">
- <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-gold-500/10 text-gold-600">
+ <div className="grid h-8 w-8 shrink-0 place-items-center rounded-lg bg-indigo-50 border border-indigo-100 text-indigo-600">
  <Icon size={16} />
  </div>
  <div className="flex-1 min-w-0">
@@ -758,7 +1201,7 @@ function DashboardNotificationPanel({ notifications, onMatchAction, navigate }) 
  </button>
  )}
  </div>
- {!item.isRead && <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-gold-400 shadow-glow" />}
+ {!item.isRead && <div className="mt-1 h-2 w-2 shrink-0 rounded-full bg-indigo-500 shadow-glow" />}
  </div>
  </div>
  );
@@ -778,10 +1221,10 @@ function UserCard({ user, action }) {
  {user?.profileImage ? <img className="h-full w-full rounded-md object-cover" src={user.profileImage} alt="" /> : user?.name?.charAt(0)}
  </div>
  <div className="min-w-0 flex-1">
- <Link to={`/profile?id=${user.id}`} className="font-bold text-ink hover:text-forest dark:text-gray-900">
+ <Link to={`/profile?id=${user.id}`} className="font-bold text-slate-900 hover:text-forest dark:text-gray-900">
  {user.name}
  </Link>
- <p className="truncate text-sm text-muted">{user.college}</p>
+ <p className="truncate text-sm text-slate-500">{user.college}</p>
  <div className="mt-2 flex flex-wrap gap-2">
  <span className="pill">{user.department}</span>
  <span className="pill">Rating {user.averageRating || 0}</span>
@@ -799,8 +1242,8 @@ function SkillCard({ item, action }) {
  <article className="card">
  <div className="flex items-start justify-between gap-3">
  <div>
- <h3 className="font-bold text-ink dark:text-gray-900">{skill.name}</h3>
- <p className="mt-1 text-sm text-muted dark:text-slate-400">{skill.description}</p>
+ <h3 className="font-bold text-slate-900 dark:text-gray-900">{skill.name}</h3>
+ <p className="mt-1 text-sm text-slate-500 dark:text-slate-400">{skill.description}</p>
  </div>
  <span className="pill">{skill.category}</span>
  </div>
@@ -809,7 +1252,7 @@ function SkillCard({ item, action }) {
  {item.currentLevel ? <span className="pill">{item.currentLevel}</span> : null}
  {item.goal ? <span className="pill">Goal added</span> : null}
  </div>
- {item.user ? <p className="mt-3 text-sm font-semibold text-muted">By {item.user.name}</p> : null}
+ {item.user ? <p className="mt-3 text-sm font-semibold text-slate-500">By {item.user.name}</p> : null}
  {action ? <div className="mt-4">{action(item)}</div> : null}
  </article>
  );
@@ -927,31 +1370,209 @@ export function LearningSkillsPage() {
 }
 
 export function SearchPage() {
- const [query, setQuery] = useState("");
- const { items, loading, reload } = useApiList("/users", { search: query, excludeSelf: true });
+  const [query, setQuery] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("all");
+  const { items, loading, reload } = useApiList("/users", { search: query, excludeSelf: true });
 
- const bookmark = async (userId) => {
- try {
- await api.post(`/bookmarks/${userId}`);
- toast.success("Saved user");
- } catch (error) {
- toast.error(getErrorMessage(error));
- }
- };
+  const categories = [
+    { id: "all", label: "All Skills (340)" },
+    { id: "frontend", label: "Frontend Engineering" },
+    { id: "backend", label: "Backend & Cloud" },
+    { id: "design", label: "UI/UX Design" },
+    { id: "aiml", label: "AI & Machine Learning" },
+    { id: "coding", label: "Competitive Coding" },
+    { id: "product", label: "Product Management" },
+  ];
 
- return (
- <>
- <PageHeader title="Search" eyebrow="Discover" />
- <div className="mb-5 flex gap-2">
- <input className="input" value={query} onChange={(event) => setQuery(event.target.value)} placeholder="Search users, skills, or colleges" />
- <button className="btn btn-primary" onClick={reload}>
- <Search size={16} />
- Search
- </button>
- </div>
- {loading ? <LoadingState /> : <div className="grid gap-4 md:grid-cols-2 xl:grid-cols-3">{items.map((user) => <UserCard key={user.id} user={user} action={(candidate) => <button className="btn btn-secondary" onClick={() => bookmark(candidate.id)}><Bookmark size={16} /> Save</button>} />)}</div>}
- </>
- );
+  const bookmark = async (userId) => {
+    try {
+      await api.post(`/bookmarks/${userId}`);
+      toast.success("Saved user to favorites");
+    } catch (error) {
+      toast.error(getErrorMessage(error));
+    }
+  };
+
+  return (
+    <div className="flex flex-col gap-6">
+      {/* Stitch Global Skill Discovery Hero */}
+      <div className="relative w-full overflow-hidden rounded-2xl bg-white p-6 md:p-8 border border-slate-200 shadow-sm">
+        <div className="absolute -right-24 -top-24 w-96 h-96 rounded-full bg-indigo-500/5 blur-3xl pointer-events-none"></div>
+        <div className="absolute left-1/3 -bottom-24 w-80 h-80 rounded-full bg-cyan-400/5 blur-3xl pointer-events-none"></div>
+
+        <div className="relative flex flex-col gap-4">
+          <div className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+            <div className="flex flex-col max-w-2xl">
+              <div className="flex items-center gap-2 mb-1">
+                <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+                <span className="text-xs font-bold uppercase tracking-wider text-cyan-700">Peer Knowledge Network</span>
+                <span className="text-slate-300">•</span>
+                <span className="text-xs font-bold text-indigo-600">IIT Bombay Hub</span>
+              </div>
+              <h1 className="text-2xl md:text-3xl font-extrabold text-slate-900 tracking-tight font-display">
+                Global Skill Discovery
+              </h1>
+              <p className="text-sm text-slate-500 mt-1">
+                Explore 340+ skills taught by peers across campus departments. Swap what you know for what you need.
+              </p>
+            </div>
+            <div className="flex items-center gap-3 px-4 py-2 bg-slate-50 rounded-xl border border-slate-200/80 self-start md:self-auto">
+              <span className="material-symbols-outlined text-indigo-600 text-lg">sync_alt</span>
+              <div className="flex flex-col">
+                <span className="text-[10px] text-slate-400 uppercase font-semibold">Active Barter Liquidity</span>
+                <span className="text-xs font-bold text-slate-900">1,480 Match Cycles / wk</span>
+              </div>
+            </div>
+          </div>
+
+          {/* Search Input Bar */}
+          <div className="relative flex items-center bg-slate-50 rounded-xl border border-slate-200/90 shadow-2xs mt-2">
+            <span className="material-symbols-outlined text-slate-400 absolute left-4 pointer-events-none">search</span>
+            <input
+              className="w-full pl-12 pr-28 py-3 bg-transparent text-slate-900 placeholder:text-slate-400 text-sm focus:outline-none"
+              placeholder="Search skills, topics, frameworks (e.g. PyTorch, Figma, System Design)..."
+              value={query}
+              onChange={(e) => setQuery(e.target.value)}
+            />
+            <button
+              onClick={reload}
+              className="absolute right-2 px-3 py-1.5 bg-indigo-600 text-white rounded-lg text-xs font-bold hover:bg-indigo-700 transition"
+            >
+              Search
+            </button>
+          </div>
+
+          {/* Category Chips Bar */}
+          <div className="flex items-center gap-2 overflow-x-auto pb-1 text-nowrap no-scrollbar pt-1">
+            {categories.map((cat) => (
+              <button
+                key={cat.id}
+                type="button"
+                onClick={() => setSelectedCategory(cat.id)}
+                className={`px-3 py-1.5 rounded-full text-xs font-semibold transition ${
+                  selectedCategory === cat.id
+                    ? "bg-indigo-600 text-white shadow-sm shadow-indigo-200"
+                    : "bg-slate-100 text-slate-600 hover:bg-slate-200 hover:text-slate-900"
+                }`}
+              >
+                {cat.label}
+              </button>
+            ))}
+          </div>
+        </div>
+      </div>
+
+      {/* Main Catalog View */}
+      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+        {/* Left Filter Engine (3 cols) */}
+        <aside className="lg:col-span-3 flex flex-col gap-4 bg-white p-5 rounded-2xl border border-slate-200 shadow-sm">
+          <div className="flex items-center justify-between pb-3 border-b border-slate-100">
+            <div className="flex items-center gap-2">
+              <span className="material-symbols-outlined text-indigo-600 text-base">tune</span>
+              <h2 className="text-sm font-bold text-slate-900">Filter Engine</h2>
+            </div>
+            <button
+              type="button"
+              onClick={() => { setQuery(""); setSelectedCategory("all"); reload(); }}
+              className="text-xs text-indigo-600 font-bold hover:underline"
+            >
+              Reset All
+            </button>
+          </div>
+
+          <div className="flex flex-col gap-2">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Campus Network</span>
+            <div className="flex flex-col gap-1.5">
+              <label className="flex items-center gap-2 text-xs font-semibold text-slate-800 cursor-pointer">
+                <input type="checkbox" defaultChecked className="rounded text-indigo-600 focus:ring-0 accent-indigo-600" />
+                <span>IIT Bombay</span>
+              </label>
+              <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer">
+                <input type="checkbox" className="rounded text-indigo-600 focus:ring-0 accent-indigo-600" />
+                <span>Delhi Tech University</span>
+              </label>
+              <label className="flex items-center gap-2 text-xs text-slate-600 cursor-pointer">
+                <input type="checkbox" className="rounded text-indigo-600 focus:ring-0 accent-indigo-600" />
+                <span>All Campuses</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="flex flex-col gap-2 pt-3 border-t border-slate-100">
+            <span className="text-[10px] font-bold uppercase tracking-wider text-slate-400">Proficiency Level</span>
+            <div className="flex flex-col gap-1.5 text-xs text-slate-600">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input type="checkbox" className="rounded accent-indigo-600" />
+                <span>Beginner Fundamentals</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-800">
+                <input type="checkbox" defaultChecked className="rounded accent-indigo-600" />
+                <span>Intermediate Applied</span>
+              </label>
+              <label className="flex items-center gap-2 cursor-pointer font-medium text-slate-800">
+                <input type="checkbox" defaultChecked className="rounded accent-indigo-600" />
+                <span>Advanced Mentor</span>
+              </label>
+            </div>
+          </div>
+
+          <div className="p-3 rounded-xl bg-indigo-50/60 border border-indigo-100 flex flex-col gap-1">
+            <div className="flex items-center gap-1.5 text-indigo-700">
+              <span className="material-symbols-outlined text-sm">verified_user</span>
+              <span className="text-xs font-bold">Campus Verified</span>
+            </div>
+            <p className="text-[11px] text-slate-600 leading-tight">
+              All listed peer mentors have completed syllabus verification and peer reviews.
+            </p>
+          </div>
+        </aside>
+
+        {/* Right Peer Grid (9 cols) */}
+        <div className="lg:col-span-9 flex flex-col gap-4">
+          <div className="flex items-center justify-between">
+            <span className="text-xs text-slate-500 font-semibold">
+              Showing {items.length} verified peers available for swap
+            </span>
+          </div>
+
+          {loading ? (
+            <LoadingState />
+          ) : items.length === 0 ? (
+            <EmptyState
+              title="No peers found"
+              description="Try adjusting your search criteria or explore different skill categories."
+            />
+          ) : (
+            <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-3">
+              {items.map((candidate) => (
+                <UserCard
+                  key={candidate.id}
+                  user={candidate}
+                  action={(user) => (
+                    <div className="flex items-center gap-2 w-full mt-3 pt-3 border-t border-slate-100">
+                      <Link
+                        to={`/barter/new?userId=${user.id}`}
+                        className="btn btn-primary flex-1 text-xs py-2"
+                      >
+                        <Sparkles size={13} /> Propose Swap
+                      </Link>
+                      <button
+                        className="p-2 rounded-xl bg-slate-50 hover:bg-slate-100 text-slate-500 hover:text-slate-900 border border-slate-200 transition"
+                        onClick={() => bookmark(user.id)}
+                        title="Save to favorites"
+                      >
+                        <Bookmark size={15} />
+                      </button>
+                    </div>
+                  )}
+                />
+              ))}
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
 }
 
 export function MatchesPage() {
@@ -1004,11 +1625,11 @@ export function MatchesPage() {
  <PageHeader title="Matches" eyebrow="Compatible swaps" />
  <div className="grid gap-6 xl:grid-cols-2">
  <section>
- <h2 className="mb-3 font-display text-xl font-bold text-ink dark:text-gray-900">Compatible students</h2>
+ <h2 className="mb-3 font-display text-xl font-bold text-slate-900 dark:text-gray-900">Compatible students</h2>
  {compatible.loading ? <LoadingState /> : <div className="grid gap-4">{compatible.items.map((user) => <UserCard key={user.id} user={user} action={(candidate) => <button className="btn btn-primary" onClick={() => sendRequest(candidate.id)}><Send size={16} /> Request</button>} />)}</div>}
  </section>
  <section>
- <h2 className="mb-3 font-display text-xl font-bold text-ink dark:text-gray-900">Requests</h2>
+ <h2 className="mb-3 font-display text-xl font-bold text-slate-900 dark:text-gray-900">Requests</h2>
  {requests.loading ? <LoadingState /> : <div className="grid gap-4">{requests.items.map((request) => <MatchRequestCard key={request.id} request={request} onStatus={changeStatus} currentUser={user} chats={chats.items} />)}</div>}
  </section>
  </div>
@@ -1034,10 +1655,10 @@ function MatchRequestCard({ request, onStatus, currentUser, chats }) {
  <article className="card">
  <div className="flex items-start justify-between gap-3">
  <div>
- <p className="font-bold text-ink dark:text-gray-900">
+ <p className="font-bold text-slate-900 dark:text-gray-900">
  {request.sender?.name} {"->"} {request.receiver?.name}
  </p>
- <p className="mt-1 text-sm text-muted">{request.message || "No message"}</p>
+ <p className="mt-1 text-sm text-slate-500">{request.message || "No message"}</p>
  </div>
  <span className="pill">{request.status}</span>
  </div>
@@ -1092,9 +1713,9 @@ export function ChatsPage() {
  const isOnline = onlineUsers.has(other?.id);
  const lastMsg = chat.lastMessage;
  return (
- <Link className="card flex items-center gap-4 hover:border-gold-500/40" key={chat.id} to={`/chat/${chat.id}`}>
+ <Link className="card flex items-center gap-4 hover:border-indigo-300" key={chat.id} to={`/chat/${chat.id}`}>
  <div className="relative shrink-0">
- <div className="grid h-12 w-12 place-items-center rounded-full bg-gold-500/10 text-gold-600 font-bold text-lg">
+ <div className="grid h-12 w-12 place-items-center rounded-full bg-indigo-50 border border-indigo-100 text-indigo-600 font-bold text-lg">
  {other?.profileImage ? <img className="h-full w-full rounded-full object-cover" src={other.profileImage} alt="" /> : other?.name?.charAt(0)}
  </div>
  <div className={`online-dot ${isOnline ? "online-dot-on" : "online-dot-off"}`} />
@@ -1240,7 +1861,7 @@ export function ChatDetailPage() {
 
  return (
  <>
- <header className="flex items-center justify-between mb-4 pb-4 border-b border-line">
+ <header className="flex items-center justify-between mb-4 pb-4 border-b border-slate-200">
  <div className="flex items-center gap-4">
  <Link to="/chats" className="btn btn-secondary px-2" title="Back to chats">
  <ArrowLeft size={18} />
@@ -1252,10 +1873,10 @@ export function ChatDetailPage() {
  <div className={`online-dot ${otherUser?.isOnline ? "online-dot-on" : "online-dot-off"}`} />
  </div>
  <div>
- <h1 className="font-display text-2xl font-bold text-ink dark:text-gray-900 leading-none">
+ <h1 className="font-display text-2xl font-bold text-slate-900 dark:text-gray-900 leading-none">
  {otherUser?.name || "Chat"}
  </h1>
- <p className="text-sm text-muted mt-1">{otherUser?.college || "User"}</p>
+ <p className="text-sm text-slate-500 mt-1">{otherUser?.college || "User"}</p>
  </div>
  </div>
  {otherUser ? (
@@ -1263,12 +1884,12 @@ export function ChatDetailPage() {
  className="btn btn-secondary"
  to={`/meeting/chat-${id}?target=${otherUser.id}&name=${encodeURIComponent(otherUser.name)}&role=caller`}
  >
- <Video size={16} className="text-gold-600" />
+ <Video size={16} className="text-indigo-600" />
  <span className="hidden sm:inline">Video Call</span>
  </Link>
  ) : null}
  </header>
- <section className="rounded-xl border border-line bg-charcoal shadow-soft flex flex-col" style={{ height: "calc(100vh - 220px)", minHeight: 400 }}>
+ <section className="rounded-xl border border-slate-200 bg-slate-50 border border-slate-200/80 shadow-soft flex flex-col" style={{ height: "calc(100vh - 220px)", minHeight: 400 }}>
  <div className="flex-1 overflow-y-auto px-4">
  <div className="chat-container">
  {messages.map((item, idx) => {
@@ -1371,7 +1992,7 @@ export function SessionsPage() {
 
  {/* Join Meeting by ID */}
  <div className="card mb-6">
- <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"><Video size={18} className="text-gold-600" /> Join a Meeting</h3>
+ <h3 className="text-lg font-bold text-gray-900 mb-3 flex items-center gap-2"><Video size={18} className="text-indigo-600" /> Join a Meeting</h3>
  <form className="flex gap-3" onSubmit={joinMeeting}>
  <input className="input flex-1" value={joinId} onChange={(e) => setJoinId(e.target.value)} placeholder="Paste meeting ID here..." />
  <button className="btn btn-primary" disabled={!joinId.trim()}><Video size={16} /> Join</button>
@@ -1388,7 +2009,7 @@ export function SessionsPage() {
  <div className="flex justify-between gap-3">
  <div>
  <p className="font-bold text-gray-900">{session.title}</p>
- {otherUser && <p className="text-sm font-semibold text-gold-600 mt-1">With {otherUser.name}</p>}
+ {otherUser && <p className="text-sm font-semibold text-indigo-600 mt-1">With {otherUser.name}</p>}
  <p className="text-sm text-gray-600 flex items-center gap-1 mt-1"><Clock size={12} /> {formatDate(session.sessionDate)}</p>
  </div>
  <span className="pill">{session.status}</span>
@@ -1397,9 +2018,9 @@ export function SessionsPage() {
 
  {/* Meeting ID */}
  {session.meetingId && (
- <div className="mt-3 flex items-center gap-2 rounded-lg bg-obsidian border border-line px-3 py-2">
+ <div className="mt-3 flex items-center gap-2 rounded-lg bg-obsidian border border-slate-200 px-3 py-2">
  <span className="text-xs font-bold text-gray-500 uppercase">Meeting ID</span>
- <code className="flex-1 text-sm text-gold-600 font-mono truncate">{session.meetingId}</code>
+ <code className="flex-1 text-sm text-indigo-600 font-mono truncate">{session.meetingId}</code>
  <button type="button" className="btn btn-secondary px-2 py-1 text-xs" onClick={() => copyMeetingId(session.meetingId)} title="Copy">
  <Copy size={12} />
  </button>
@@ -1452,7 +2073,7 @@ export function ReviewsPage() {
  <TextArea label="Feedback" name="comment" value={form.comment} onChange={update} required />
  <button className="btn btn-primary"><Star size={16} /> Add review</button>
  </form>
- {loading ? <LoadingState /> : <div className="grid gap-4">{items.map((review) => <article className="card" key={review.id}><p className="font-bold text-ink dark:text-gray-900">{review.rating}/5 for {review.reviewedUser?.name}</p><p className="mt-2 text-sm text-muted">{review.comment}</p></article>)}</div>}
+ {loading ? <LoadingState /> : <div className="grid gap-4">{items.map((review) => <article className="card" key={review.id}><p className="font-bold text-slate-900 dark:text-gray-900">{review.rating}/5 for {review.reviewedUser?.name}</p><p className="mt-2 text-sm text-slate-500">{review.comment}</p></article>)}</div>}
  </div>
  </>
  );
@@ -1531,7 +2152,7 @@ export function NotificationsPage() {
  return (
  <div key={item.id} className={`notif-card notif-item ${item.isRead ? "notif-card-read" : ""}`} onClick={() => handleNotifClick(item)}>
  <div className="flex items-start gap-3">
- <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-gold-500/10 text-gold-600">
+ <div className="grid h-10 w-10 shrink-0 place-items-center rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600">
  <Icon size={18} />
  </div>
  <div className="flex-1 min-w-0">
@@ -1551,7 +2172,7 @@ export function NotificationsPage() {
  </div>
  )}
  </div>
- {!item.isRead && <div className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-gold-400 shadow-glow" />}
+ {!item.isRead && <div className="mt-1 h-2.5 w-2.5 shrink-0 rounded-full bg-indigo-500 shadow-glow" />}
  </div>
  </div>
  );
@@ -1593,7 +2214,7 @@ export function ProfilePage() {
 
  if (loading) return <LoadingState />;
  if (!profile) return (
- <div className="flex h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-gold-500/20 bg-charcoal">
+ <div className="flex h-40 flex-col items-center justify-center gap-2 rounded-xl border border-dashed border-indigo-100 bg-slate-50 border border-slate-200/80">
  <h3 className="font-display text-lg font-bold text-gray-900">User not found</h3>
  <p className="text-sm text-gray-600">The profile you are looking for does not exist.</p>
  </div>
@@ -1615,18 +2236,18 @@ export function ProfilePage() {
  )
  } 
  />
- <section className="card mb-6 border border-gold-500/10">
+ <section className="card mb-6 border border-indigo-50 border border-indigo-100">
  <div className="flex flex-col gap-6 md:flex-row items-start">
- <div className="grid h-24 w-24 shrink-0 place-items-center rounded-xl bg-gold-600/10 text-4xl font-bold text-gold-600 border border-gold-500/20 shadow-glow">
+ <div className="grid h-24 w-24 shrink-0 place-items-center rounded-xl bg-indigo-50 text-4xl font-bold text-indigo-600 border border-indigo-100 shadow-glow">
  {profile.profileImage ? <img className="h-full w-full rounded-xl object-cover" src={profile.profileImage} alt="" /> : profile.name?.charAt(0)}
  </div>
  <div className="flex-1 text-center md:text-left">
  <h2 className="font-display text-3xl font-bold text-gray-900 ">{profile.name}</h2>
  <p className="mt-2 text-gray-600 max-w-2xl">{profile.bio || `${profile.name} is active on SkillSwap and open to peer learning sessions.`}</p>
  <div className="mt-4 flex flex-wrap justify-center md:justify-start gap-2">
- <span className="pill font-medium border-gold-500/20 text-gold-600">{profile.college}</span>
- <span className="pill font-medium border-gold-500/20 text-gold-600">{profile.department}</span>
- <span className="pill font-medium border-gold-500/20 text-gold-600">Semester {profile.semester}</span>
+ <span className="pill font-medium border-indigo-100 text-indigo-600">{profile.college}</span>
+ <span className="pill font-medium border-indigo-100 text-indigo-600">{profile.department}</span>
+ <span className="pill font-medium border-indigo-100 text-indigo-600">Semester {profile.semester}</span>
  {profile.averageRating > 0 && <span className="pill font-bold bg-amber-500/10 text-amber-500 border-amber-500/20"><Star size={12} className="inline mr-1" fill="currentColor" />Rating {profile.averageRating}</span>}
  </div>
  </div>
@@ -1642,19 +2263,19 @@ export function ProfilePage() {
  </div>
 
  <div className="grid gap-6 md:grid-cols-2 items-start">
- <section className="card border border-gold-500/10">
+ <section className="card border border-indigo-50 border border-indigo-100">
  <h3 className="font-display text-xl font-bold text-gray-900 mb-5 flex items-center gap-2">
- <Star className="text-gold-600" size={20} fill="currentColor" /> Skills Offered
+ <Star className="text-indigo-600" size={20} fill="currentColor" /> Skills Offered
  </h3>
  <div className="grid gap-4">
  {profile.offeredSkills?.length ? profile.offeredSkills.map(s => (
- <div key={s.id} className="p-4 bg-slate-50 border border-gold-500/10 rounded-xl shadow-sm transition hover:border-gold-500/30">
+ <div key={s.id} className="p-4 bg-slate-50 border border-indigo-50 border border-indigo-100 rounded-xl shadow-sm transition hover:border-indigo-200">
  <div className="flex justify-between items-start gap-3">
  <div>
  <p className="font-bold text-gray-900">{s.skill.name}</p>
- <p className="text-xs text-gold-600/70 uppercase tracking-wider font-bold mt-1">{s.skill.category}</p>
+ <p className="text-xs text-indigo-600 font-semibold uppercase tracking-wider font-bold mt-1">{s.skill.category}</p>
  </div>
- <span className="pill text-[10px] bg-gold-500/10 text-gold-600 border-gold-500/20">{s.level}</span>
+ <span className="pill text-[10px] bg-indigo-50 border border-indigo-100 text-indigo-600 border-indigo-100">{s.level}</span>
  </div>
  <p className="text-sm text-gray-600 mt-3 leading-relaxed">{s.skill.description}</p>
  </div>
@@ -1769,7 +2390,7 @@ export function ReportsPage() {
  <TextArea label="Description" name="description" value={form.description} onChange={update} required />
  <button className="btn btn-danger"><ShieldAlert size={16} /> Submit report</button>
  </form>
- {loading ? <LoadingState /> : <div className="grid gap-4">{items.map((report) => <article className="card" key={report.id}><p className="font-bold text-ink dark:text-gray-900">{report.reason}</p><p className="text-sm text-muted">{report.description}</p><span className="pill mt-3">{report.status}</span></article>)}</div>}
+ {loading ? <LoadingState /> : <div className="grid gap-4">{items.map((report) => <article className="card" key={report.id}><p className="font-bold text-slate-900 dark:text-gray-900">{report.reason}</p><p className="text-sm text-slate-500">{report.description}</p><span className="pill mt-3">{report.status}</span></article>)}</div>}
  </div>
  </>
  );
@@ -1844,7 +2465,7 @@ export function AdminReportsPage() {
  return (
  <>
  <PageHeader title="Admin Reports" eyebrow="Admin" />
- {loading ? <LoadingState /> : <div className="grid gap-4">{items.map((report) => <article className="card" key={report.id}><div className="flex justify-between gap-3"><p className="font-bold text-ink dark:text-gray-900">{report.reason}</p><span className="pill">{report.status}</span></div><p className="mt-2 text-sm text-muted">{report.description}</p><div className="mt-4 flex gap-2"><button className="btn btn-primary" onClick={() => update(report.id, "RESOLVED")}>Resolve</button><button className="btn btn-secondary" onClick={() => update(report.id, "REJECTED")}>Reject</button></div></article>)}</div>}
+ {loading ? <LoadingState /> : <div className="grid gap-4">{items.map((report) => <article className="card" key={report.id}><div className="flex justify-between gap-3"><p className="font-bold text-slate-900 dark:text-gray-900">{report.reason}</p><span className="pill">{report.status}</span></div><p className="mt-2 text-sm text-slate-500">{report.description}</p><div className="mt-4 flex gap-2"><button className="btn btn-primary" onClick={() => update(report.id, "RESOLVED")}>Resolve</button><button className="btn btn-secondary" onClick={() => update(report.id, "REJECTED")}>Reject</button></div></article>)}</div>}
  </>
  );
 }

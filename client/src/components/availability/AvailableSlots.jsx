@@ -71,13 +71,13 @@ export default function AvailableSlots({ userId, userName }) {
 
   if (loading) {
     return (
-      <section className="card border border-gold-500/10">
+      <section className="card border border-indigo-50 border border-indigo-100">
         <h3 className="font-display text-xl font-bold text-gray-900 mb-4 flex items-center gap-2">
-          <Calendar className="text-gold-600" size={20} />
+          <Calendar className="text-indigo-600" size={20} />
           Available Sessions
         </h3>
         <div className="flex items-center justify-center py-8">
-          <Loader2 className="animate-spin text-gold-600" size={24} />
+          <Loader2 className="animate-spin text-indigo-600" size={24} />
           <span className="ml-2 text-sm text-gray-500">Loading available sessions...</span>
         </div>
       </section>
@@ -85,10 +85,10 @@ export default function AvailableSlots({ userId, userName }) {
   }
 
   return (
-    <section className="card border border-gold-500/10">
+    <section className="card border border-indigo-50 border border-indigo-100">
       <div className="flex items-center justify-between mb-5">
         <h3 className="font-display text-xl font-bold text-gray-900 flex items-center gap-2">
-          <Calendar className="text-gold-600" size={20} />
+          <Calendar className="text-indigo-600" size={20} />
           Available Sessions
         </h3>
         <span className="text-xs text-gray-400 font-medium">
@@ -108,7 +108,7 @@ export default function AvailableSlots({ userId, userName }) {
         <div className="grid gap-5">
           {groups.map((group) => (
             <div key={group.dateISO}>
-              <h4 className="text-sm font-bold text-gold-600 uppercase tracking-wider mb-3 flex items-center gap-2">
+              <h4 className="text-sm font-bold text-indigo-600 uppercase tracking-wider mb-3 flex items-center gap-2">
                 <Calendar size={14} />
                 {getDateLabel(group.date)}
               </h4>
@@ -116,14 +116,14 @@ export default function AvailableSlots({ userId, userName }) {
                 {group.slots.map((slot) => (
                   <button
                     key={`${slot.availabilityId}-${slot.startTimeUTC}`}
-                    className="group relative rounded-xl border border-gold-500/20 bg-white px-4 py-3 text-sm font-bold text-gray-700 hover:border-gold-500 hover:bg-gold-500/5 hover:text-gold-600 hover:shadow-glow transition-all duration-200"
+                    className="group relative rounded-xl border border-indigo-100 bg-white px-4 py-3 text-sm font-bold text-gray-700 hover:border-indigo-200 hover:bg-indigo-50/50 hover:text-indigo-600 hover:shadow-glow transition-all duration-200"
                     onClick={() => setSelectedSlot(slot)}
                   >
                     <span className="flex items-center gap-2">
-                      <Clock size={14} className="text-gold-500 group-hover:text-gold-600" />
+                      <Clock size={14} className="text-indigo-600 group-hover:text-indigo-600" />
                       {formatSlotTime(slot)}
                     </span>
-                    <span className="block text-[10px] text-gray-400 mt-1 group-hover:text-gold-500">
+                    <span className="block text-[10px] text-gray-400 mt-1 group-hover:text-indigo-600">
                       {slot.duration} min • Click to book
                     </span>
                   </button>

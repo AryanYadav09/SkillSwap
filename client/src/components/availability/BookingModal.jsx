@@ -59,7 +59,7 @@ export default function BookingModal({ slot, userName, viewerTimezone, onClose, 
       />
 
       {/* Modal */}
-      <div className="relative w-full max-w-md rounded-2xl border border-gold-500/20 bg-white p-6 shadow-xl animate-in fade-in zoom-in-95">
+      <div className="relative w-full max-w-md rounded-2xl border border-indigo-100 bg-white p-6 shadow-xl animate-in fade-in zoom-in-95">
         {/* Header */}
         <div className="flex items-center justify-between mb-6">
           <h3 className="font-display text-xl font-bold text-gray-900">Confirm Booking</h3>
@@ -73,9 +73,9 @@ export default function BookingModal({ slot, userName, viewerTimezone, onClose, 
 
         {/* Details */}
         <div className="space-y-4 mb-6">
-          <div className="flex items-start gap-3 p-4 rounded-xl bg-gold-500/5 border border-gold-500/10">
-            <div className="p-2 rounded-lg bg-gold-500/10">
-              <Calendar className="text-gold-600" size={18} />
+          <div className="flex items-start gap-3 p-4 rounded-xl bg-indigo-50/50 border border-indigo-50 border border-indigo-100">
+            <div className="p-2 rounded-lg bg-indigo-50 border border-indigo-100">
+              <Calendar className="text-indigo-600" size={18} />
             </div>
             <div>
               <p className="text-sm font-bold text-gray-900">Session with {userName || slot.hostName}</p>
@@ -86,7 +86,7 @@ export default function BookingModal({ slot, userName, viewerTimezone, onClose, 
           <div className="grid grid-cols-2 gap-3">
             <div className="p-3 rounded-xl bg-slate-50 border border-line">
               <div className="flex items-center gap-2 mb-1">
-                <Clock size={14} className="text-gold-600" />
+                <Clock size={14} className="text-indigo-600" />
                 <span className="text-xs font-bold text-gray-500 uppercase">Time</span>
               </div>
               <p className="text-sm font-bold text-gray-900">
@@ -96,7 +96,7 @@ export default function BookingModal({ slot, userName, viewerTimezone, onClose, 
 
             <div className="p-3 rounded-xl bg-slate-50 border border-line">
               <div className="flex items-center gap-2 mb-1">
-                <Globe size={14} className="text-gold-600" />
+                <Globe size={14} className="text-indigo-600" />
                 <span className="text-xs font-bold text-gray-500 uppercase">Timezone</span>
               </div>
               <p className="text-sm font-bold text-gray-900 truncate">
@@ -107,7 +107,7 @@ export default function BookingModal({ slot, userName, viewerTimezone, onClose, 
 
           <div className="p-3 rounded-xl bg-slate-50 border border-line text-center">
             <span className="text-xs font-bold text-gray-500 uppercase">Duration</span>
-            <p className="text-lg font-bold text-gold-600">{slot.duration} minutes</p>
+            <p className="text-lg font-bold text-indigo-600">{slot.duration} minutes</p>
           </div>
 
           {/* Session title */}

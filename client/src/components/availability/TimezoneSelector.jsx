@@ -88,8 +88,8 @@ export default function TimezoneSelector({ value, onChange, className = "" }) {
                 <button
                   key={tz}
                   type="button"
-                  className={`w-full text-left px-3 py-2 text-sm hover:bg-gold-500/10 transition-colors ${
-                    value === tz ? "bg-gold-500/10 text-gold-600 font-bold" : "text-gray-700"
+                  className={`w-full text-left px-3 py-2 text-sm hover:bg-indigo-50 border border-indigo-100 transition-colors ${
+                    value === tz ? "bg-indigo-50 border border-indigo-100 text-indigo-600 font-bold" : "text-gray-700"
                   }`}
                   onClick={() => {
                     onChange(tz);

@@ -31,13 +31,13 @@ export default function Logo({
   const content = (
     <div className={`inline-flex items-center gap-2.5 ${className}`}>
       <span
-        className={`grid ${config.box} place-items-center bg-gradient-to-br from-gold-400 to-gold-600 text-obsidian shadow-glow shrink-0`}
+        className={`grid ${config.box} place-items-center bg-gradient-to-br from-indigo-500 to-indigo-700 text-white shadow-sm shadow-indigo-200 shrink-0`}
       >
         <Sparkles size={config.icon} />
       </span>
       {showText && (
         <span
-          className={`font-display ${config.text} font-bold leading-none text-transparent bg-clip-text bg-gradient-to-r from-gold-300 to-gold-600 ${textClassName}`}
+          className={`font-display ${config.text} font-black tracking-tight text-indigo-700 ${textClassName}`}
         >
           SkillSwap
         </span>
