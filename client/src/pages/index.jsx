@@ -19,6 +19,7 @@ import {
  RefreshCw,
  Search,
  Send,
+ Shield,
  ShieldAlert,
  Star,
  Trash2,
@@ -201,7 +202,12 @@ export function LoginPage() {
 
  if (login.fulfilled.match(result)) {
  toast.success("Logged in");
+ if (result.payload?.user?.role === "ADMIN") {
+ localStorage.setItem("skillswap_admin_token", result.payload.accessToken);
+ navigate("/admin", { replace: true });
+ } else {
  navigate("/dashboard", { replace: true });
+ }
  } else {
  toast.error(result.payload || "Login failed");
  }
@@ -411,7 +417,7 @@ function StatCard({ label, value, icon: Icon }) {
 
 export function DashboardPage() {
  const { data, loading, reload } = useApiList("/dashboard");
- const { accessToken } = useSelector(selectAuth);
+ const { accessToken, user } = useSelector(selectAuth);
  const navigate = useNavigate();
  const stats = data?.statistics || {};
 
@@ -451,12 +457,73 @@ export function DashboardPage() {
  <LoadingState />
  ) : (
  <div className="grid gap-6">
+ {user?.role === "ADMIN" && (
+ <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4 rounded-xl border border-gold-500/30 bg-gold-500/10 p-4 shadow-sm">
+ <div className="flex items-center gap-3">
+ <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gold-500/20 text-gold-600">
+ <Shield size={20} />
+ </div>
+ <div>
+ <p className="font-bold text-gray-900">Administrator Account Active</p>
+ <p className="text-xs text-gray-600">
+ You are viewing the student portal. User management, report resolution, and skill moderation controls are in the Admin Console.
+ </p>
+ </div>
+ </div>
+ <Link to="/admin" className="btn btn-primary whitespace-nowrap text-xs">
+ Open Admin Console →
+ </Link>
+ </div>
+ )}
+
+ {/* Stitch Hero Welcome Banner */}
+ <section className="relative overflow-hidden rounded-2xl bg-gradient-to-r from-primary via-primary-container to-slate-900 text-white shadow-xl p-6 lg:p-8">
+ <div className="absolute -right-20 -bottom-24 w-96 h-96 bg-cyan-400/10 rounded-full blur-3xl pointer-events-none" />
+ <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6">
+ <div className="flex flex-col gap-2 max-w-2xl">
+ <div className="flex items-center gap-2">
+ <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/15 backdrop-blur-md text-white text-xs font-semibold">
+ <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+ {user?.college || "Campus Peer Network"}
+ </span>
+ <span className="inline-flex items-center gap-1 px-3 py-1 rounded-full bg-cyan-400/20 text-cyan-200 text-xs font-semibold">
+ {user?.department || "Student Member"}
+ </span>
+ </div>
+ <h1 className="text-3xl lg:text-4xl font-extrabold tracking-tight text-white font-display">
+ Welcome back, {user?.name?.split(" ")[0] || "Scholar"} <span className="inline-block">👋</span>
+ </h1>
+ <p className="text-indigo-100 text-sm lg:text-base font-medium">
+ Ready to swap skills today? Exchange skills 1-on-1 with fellow students on campus.
+ </p>
+ </div>
+ {/* 3 Quick Stat Cards */}
+ <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 w-full lg:w-auto shrink-0">
+ <div className="flex flex-col p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10">
+ <span className="text-xs font-semibold text-indigo-200 uppercase tracking-wider">Active Swaps</span>
+ <span className="text-2xl font-black text-white mt-1 font-display">{stats.activeMatches ?? 0}</span>
+ <span className="text-[11px] text-emerald-300 mt-1 font-medium">Mutual Barters</span>
+ </div>
+ <div className="flex flex-col p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10">
+ <span className="text-xs font-semibold text-indigo-200 uppercase tracking-wider">Rating</span>
+ <span className="text-2xl font-black text-white mt-1 font-display">{stats.averageRating ? `${(stats.averageRating * 20).toFixed(0)}%` : "100%"}</span>
+ <span className="text-[11px] text-indigo-200 mt-1 font-medium">Peer Feedback</span>
+ </div>
+ <div className="flex flex-col p-4 rounded-xl bg-white/10 backdrop-blur-md border border-white/10">
+ <span className="text-xs font-semibold text-indigo-200 uppercase tracking-wider">Meetings</span>
+ <span className="text-2xl font-black text-white mt-1 font-display">{stats.meetingsScheduled ?? 0}</span>
+ <span className="text-[11px] text-cyan-200 mt-1 font-medium">Scheduled</span>
+ </div>
+ </div>
+ </div>
+ </section>
+
  <div className="grid gap-4 sm:grid-cols-2 xl:grid-cols-5">
- <StatCard label="Offered" value={stats.totalSkillsOffered} icon={Star} />
- <StatCard label="Learning" value={stats.totalLearningSkills} icon={UserRound} />
- <StatCard label="Matches" value={stats.activeMatches} icon={Check} />
- <StatCard label="Meetings" value={stats.meetingsScheduled} icon={Video} />
- <StatCard label="Rating" value={stats.averageRating} icon={Star} />
+ <StatCard label="Offered Skills" value={stats.totalSkillsOffered} icon={Star} />
+ <StatCard label="Learning Goals" value={stats.totalLearningSkills} icon={UserRound} />
+ <StatCard label="Active Matches" value={stats.activeMatches} icon={Check} />
+ <StatCard label="Booked Meetings" value={stats.meetingsScheduled} icon={Video} />
+ <StatCard label="Average Rating" value={stats.averageRating} icon={Star} />
  </div>
 
  <MatchToggleSection
@@ -554,39 +621,58 @@ function DashboardMatchCard({ user, variant = "teaching" }) {
  const wants = user.learningSkills?.map((entry) => entry.skill.name).join(", ") || "No learning skills";
 
  return (
- <article className="card relative">
+ <article className="flex flex-col justify-between p-5 bg-white rounded-2xl border border-slate-200/90 shadow-sm hover:border-indigo-300 hover:shadow-lg transition-all duration-300 group hover:-translate-y-1 relative">
  {user.hasAvailability && (
- <div className="absolute -top-2 -right-2 bg-green-500 text-white text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1 border-2 border-white">
- <Check size={10} /> Available
+ <div className="absolute top-3 right-3 bg-emerald-50 text-emerald-700 border border-emerald-200 text-[10px] font-bold px-2 py-0.5 rounded-full shadow-sm flex items-center gap-1">
+ <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse"></span> Available
  </div>
  )}
+ <div>
  <div className="flex items-start gap-3">
- <div className={`grid h-11 w-11 shrink-0 place-items-center rounded-md font-bold bg-gold-500/10 text-gold-600`}>
- {user.profileImage ? <img className="h-full w-full rounded-md object-cover" src={user.profileImage} alt="" /> : user.name?.charAt(0)}
+ <div className="grid h-12 w-12 shrink-0 place-items-center rounded-full font-bold bg-indigo-50 border border-indigo-100 text-indigo-600 text-lg">
+ {user.profileImage ? (
+ <img className="h-full w-full rounded-full object-cover" src={user.profileImage} alt="" />
+ ) : (
+ user.name?.charAt(0)
+ )}
  </div>
- <div className="min-w-0">
- <Link to={`/profile?id=${user.id}`} className="truncate font-bold text-ink hover:text-forest dark:text-gray-900">{user.name}</Link>
- <p className="truncate text-sm text-muted">{user.college}</p>
- </div>
- </div>
- <div className="mt-4 grid gap-2 text-sm">
- <p className="rounded-md bg-slate-50 p-2 ">
- <span className="font-bold text-forest">Teaches:</span> {teaches}
- </p>
- <p className="rounded-md bg-slate-50 p-2 ">
- <span className="font-bold text-coral">Wants:</span> {wants}
- </p>
- </div>
- {user.averageRating ? (
- <div className="mt-2 flex items-center gap-1 text-xs text-amber-500">
- <Star size={12} fill="currentColor" />
- <span className="font-bold">{user.averageRating}</span>
- </div>
- ) : null}
- <Link className="btn mt-4 w-full btn-primary" to={`/profile?id=${user.id}#book`}>
- <Calendar size={16} />
- {user.hasAvailability ? "Book Session" : "View Profile"}
+ <div className="min-w-0 pr-14">
+ <Link to={`/profile?id=${user.id}`} className="truncate font-bold text-slate-900 hover:text-indigo-600 block text-base transition">
+ {user.name}
  </Link>
+ <p className="truncate text-xs text-slate-500">{user.college || "Campus Student"}</p>
+ </div>
+ </div>
+
+ <div className="mt-4 flex flex-col gap-2">
+ <div className="p-2.5 rounded-xl bg-indigo-50/60 border border-indigo-100/60">
+ <span className="text-[10px] font-bold uppercase tracking-wider text-indigo-700 block mb-0.5">Teaches</span>
+ <p className="text-xs font-semibold text-slate-800 truncate">{teaches}</p>
+ </div>
+ <div className="p-2.5 rounded-xl bg-cyan-50/60 border border-cyan-100/60">
+ <span className="text-[10px] font-bold uppercase tracking-wider text-cyan-800 block mb-0.5">Wants to Learn</span>
+ <p className="text-xs font-semibold text-slate-800 truncate">{wants}</p>
+ </div>
+ </div>
+ </div>
+
+ <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-2">
+ {user.averageRating ? (
+ <div className="flex items-center gap-1 text-xs text-amber-500 font-bold">
+ <Star size={13} fill="currentColor" />
+ <span>{user.averageRating}</span>
+ </div>
+ ) : (
+ <span className="text-[11px] text-slate-400">New Peer</span>
+ )}
+ <Link
+ className="flex items-center gap-1.5 px-3 py-1.5 bg-indigo-600 text-white font-bold text-xs rounded-xl shadow-sm hover:bg-indigo-700 transition"
+ to={`/profile?id=${user.id}#book`}
+ >
+ <Calendar size={13} />
+ {user.hasAvailability ? "Book" : "Profile"}
+ </Link>
+ </div>
  </article>
  );
 }

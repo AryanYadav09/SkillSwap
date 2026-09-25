@@ -1,0 +1,410 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary":"#3525cd","secondary":"#00687a","primary-fixed":"#e2dfff","surface-container-low":"#eff4ff","on-surface":"#0b1c30","on-secondary-fixed-variant":"#004e5c","on-tertiary":"#ffffff","outline":"#777587","primary-container":"#4f46e5","on-primary-container":"#dad7ff","on-error-container":"#93000a","surface-container-lowest":"#ffffff","on-error":"#ffffff","surface-container-high":"#dce9ff","surface-variant":"#d3e4fe","on-secondary-container":"#006172","error":"#ba1a1a","tertiary-fixed-dim":"#4edea3","error-container":"#ffdad6","background":"#f8f9ff","on-primary":"#ffffff","on-secondary":"#ffffff","on-tertiary-fixed-variant":"#005236","inverse-on-surface":"#eaf1ff","secondary-fixed-dim":"#4cd7f6","on-background":"#0b1c30","outline-variant":"#c7c4d8","secondary-container":"#57dffe","tertiary":"#005338","surface":"#f8f9ff","tertiary-container":"#006e4b","on-surface-variant":"#464555","surface-bright":"#f8f9ff","surface-tint":"#4d44e3","tertiary-fixed":"#6ffbbe","on-tertiary-container":"#67f4b7","on-primary-fixed-variant":"#3323cc","on-tertiary-fixed":"#002113","primary-fixed-dim":"#c3c0ff","secondary-fixed":"#acedff","on-secondary-fixed":"#001f26","surface-dim":"#cbdbf5","inverse-surface":"#213145","surface-container":"#e5eeff","on-primary-fixed":"#0f0069","inverse-primary":"#c3c0ff","surface-container-highest":"#d3e4fe"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-md":"1rem","gutter":"1.5rem","space-lg":"1.5rem","margin":"2rem","space-xl":"2.5rem","space-xs":"0.25rem","space-sm":"0.5rem"},fontFamily:{"label-sm":["Plus Jakarta Sans"],"body-lg":["Inter"],"body-md":["Inter"],"headline-lg":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"body-sm":["Inter"],"label-lg":["Plus Jakarta Sans"]},fontSize:{"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.04em","fontWeight":"700"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"body-md":["15px",{"lineHeight":"24px","fontWeight":"400"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","letterSpacing":"-0.015em","fontWeight":"700"}],"headline-sm":["16px",{"lineHeight":"24px","letterSpacing":"-0.005em","fontWeight":"600"}],"headline-xl":["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"700"}],"display-hero":["56px",{"lineHeight":"64px","letterSpacing":"-0.03em","fontWeight":"800"}],"headline-md":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"display-hero-mobile":["36px",{"lineHeight":"44px","letterSpacing":"-0.025em","fontWeight":"800"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"600"}],"body-sm":["13px",{"lineHeight":"20px","fontWeight":"400"}],"label-lg":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}]}}}}</script></head><body class="bg-surface font-body-md text-body-md text-on-surface antialiased"><aside class="fixed left-0 top-0 h-screen w-72 bg-surface-container-lowest shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-16 px-gutter flex items-center justify-between"><div class="flex items-center gap-space-sm"><img alt="SkillSwap Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XNmsyheKo41FfvfjEAyppHa9-51gWhTJt0gdopYYrwEH2Ys84om8V4pA5n18cYbwYvf5dnO2H4X8xJqZMjIhu1V9Pk0VsCrkwhFHknQtGT9me6XIx8-B0Sp1PwGl1i6t7JZoFWKcoHBcuousPics7PWf-V5p-acLbIfw6gAlvA72cW7RVV7gMhsgPxYAzDtp1q1AWGs86P7fkbGbGzjchs2qPoQmiNhnZchm-oLMMC_8TxHF9iggg-C7s"/><span class="font-headline-sm text-headline-sm text-primary">SkillSwap</span></div><span class="font-label-sm text-label-sm px-space-xs py-0.5 rounded-full bg-surface-container-high text-on-surface-variant">v2.4</span></div><div class="px-gutter my-space-xs"><div class="p-space-sm rounded-xl bg-surface-container-low flex flex-col gap-1"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-tertiary animate-pulse"></span><span class="font-label-sm text-label-sm text-on-surface">IIT Bombay Net</span></div><div class="flex items-center justify-between text-on-surface-variant font-label-md text-label-md"><span>Online Status</span><span class="font-label-md text-label-md text-primary font-semibold">428 Peers</span></div></div></div><nav class="flex flex-col gap-1 px-space-sm mt-space-sm" data-active-classes="bg-primary-container text-on-primary font-semibold shadow-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container hover:text-on-surface transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-headline-md">dashboard</span><span>Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container hover:text-on-surface transition-colors" data-path="barter-hub" href="#"><span class="material-symbols-outlined text-headline-md">swap_horiz</span><span>Barter Hub</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container hover:text-on-surface transition-colors" data-path="availability" href="#"><span class="material-symbols-outlined text-headline-md">calendar_month</span><span>Availability</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl transition-colors bg-primary-container text-on-primary font-semibold shadow-sm" data-path="meeting-room" href="#"><span class="material-symbols-outlined text-headline-md">video_camera_front</span><span>Meeting Room</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container hover:text-on-surface transition-colors" data-path="skill-catalog" href="#"><span class="material-symbols-outlined text-headline-md">menu_book</span><span>Skill Catalog</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-on-surface-variant font-label-lg text-label-lg hover:bg-surface-container hover:text-on-surface transition-colors" data-path="admin-command-center" href="#"><span class="material-symbols-outlined text-headline-md">admin_panel_settings</span><span>Admin Command Center</span></a></nav></div><div class="p-space-sm m-space-sm rounded-xl bg-surface-container-low"><div class="flex items-center gap-space-sm mb-space-xs"><img alt="Profile" class="w-10 h-10 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDznxYiBQSjIOumrVZEJmYHMudPTCatjGDWlOUFSR0zOggTckNtxBrch6kebNAoyPI7tjoZXzdlBAjvhGcKIbvy8IKsMxbntxUcoKqGUJKdYV3-VFq7LmbCi5axaK7apWbNko2ebT0UDVd4RDJko_YHuW0nj8dZN6GzGkcaVNj6UAOjCLentbaU4adoZuD4hBwZH-L2a4uR4c09kwn_vsy21bHsCDz8Be6-F-hanBAZTzLD1NUo9Td6"/><div class="flex flex-col min-w-0 flex-1"><span class="font-label-lg text-label-lg text-on-surface truncate">Aryan S.</span><span class="font-label-sm text-label-sm text-primary font-semibold truncate">Level: Advanced Mentor</span></div></div><div class="flex items-center justify-between pt-space-xs bg-surface-container-lowest px-space-sm py-1 rounded-lg"><span class="font-label-sm text-label-sm text-on-surface-variant">Swap Rating</span><span class="font-label-sm text-label-sm text-tertiary font-bold">98% Positive</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-surface/80 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] z-40 flex items-center justify-between px-gutter"><div class="flex items-center gap-space-md flex-1 max-w-2xl"><div class="relative flex-1 flex items-center bg-surface-container-lowest rounded-xl shadow-[0_1px_8px_rgba(0,0,0,0.04)]"><span class="material-symbols-outlined text-outline absolute left-3 pointer-events-none">search</span><input class="w-full pl-10 pr-4 py-2 bg-transparent text-on-surface placeholder:text-outline focus:outline-none font-body-sm text-body-sm" placeholder="Search skills, mentors, or course tags..." type="text"/></div><div class="hidden xl:flex items-center gap-space-xs"><button class="px-space-sm py-1 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container hover:text-on-surface transition-colors" type="button">Python</button><button class="px-space-sm py-1 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container hover:text-on-surface transition-colors" type="button">CAD</button><button class="px-space-sm py-1 rounded-full bg-surface-container-low text-on-surface-variant font-label-sm text-label-sm hover:bg-surface-container hover:text-on-surface transition-colors" type="button">Robotics</button></div></div><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-low"><span class="w-2 h-2 rounded-full bg-tertiary-fixed-dim"></span><span class="font-label-sm text-label-sm text-on-surface-variant">Available for Barter</span></div><button class="relative p-2 rounded-xl text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors" type="button"><span class="material-symbols-outlined">notifications</span><span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary text-on-primary font-label-sm text-label-sm text-[10px]">3</span></button><button class="flex items-center gap-space-xs px-space-md py-2 bg-primary-container text-on-primary font-label-lg text-label-lg rounded-xl shadow-sm hover:bg-primary transition-colors" type="button"><span class="material-symbols-outlined text-headline-sm">add_box</span><span>Propose Swap</span></button><div class="flex items-center pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDznxYiBQSjIOumrVZEJmYHMudPTCatjGDWlOUFSR0zOggTckNtxBrch6kebNAoyPI7tjoZXzdlBAjvhGcKIbvy8IKsMxbntxUcoKqGUJKdYV3-VFq7LmbCi5axaK7apWbNko2ebT0UDVd4RDJko_YHuW0nj8dZN6GzGkcaVNj6UAOjCLentbaU4adoZuD4hBwZH-L2a4uR4c09kwn_vsy21bHsCDz8Be6-F-hanBAZTzLD1NUo9Td6"/></div></div></header><main class="relative pt-16 w-full min-h-screen bg-surface"><div class="flex flex-col w-full">
+<div class="relative w-full h-[calc(100vh-4rem)] bg-inverse-surface text-inverse-on-surface overflow-hidden flex flex-col select-none">
+<!-- TOP CONTROL HUD -->
+<header class="relative z-30 h-16 px-gutter bg-inverse-surface/85 backdrop-blur-xl flex items-center justify-between shadow-md">
+<!-- Left: Session Title & Badges -->
+<div class="flex items-center gap-space-md min-w-0">
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-primary-container/20 text-primary-fixed">
+<span class="material-symbols-outlined text-headline-sm" style="font-variation-settings: 'FILL' 1;">school</span>
+<span class="font-label-sm text-label-sm uppercase tracking-wider">Skill Classroom</span>
+</div>
+<div class="flex items-center gap-space-xs min-w-0">
+<h1 class="font-headline-sm text-headline-sm text-surface-container-lowest truncate">Aryan &amp; Shrikant • React &amp; Figma Exchange</h1>
+<span class="hidden md:inline-block px-space-xs py-0.5 rounded bg-surface-container-highest/20 text-secondary-container font-label-sm text-label-sm">React Hooks Optimization</span>
+</div>
+</div>
+<!-- Center: Live Elapsed Timer Pill -->
+<div class="hidden lg:flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-surface-container-lowest/10 backdrop-blur-md shadow-sm">
+<span class="relative flex h-2.5 w-2.5">
+<span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-tertiary-fixed-dim opacity-75"></span>
+<span class="relative inline-flex rounded-full h-2.5 w-2.5 bg-tertiary-fixed"></span>
+</span>
+<span class="font-label-md text-label-md text-surface-container-lowest font-medium tracking-wide">00:42:15 remaining</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant font-normal">(60 min session)</span>
+</div>
+<!-- Right: Network Status & Log Progress Action -->
+<div class="flex items-center gap-space-md shrink-0">
+<div class="hidden sm:flex items-center gap-space-xs px-space-sm py-1 rounded-full bg-surface-container-lowest/10 text-on-surface-variant">
+<span class="material-symbols-outlined text-headline-sm text-tertiary-fixed-dim">wifi_tethering</span>
+<span class="font-label-sm text-label-sm text-surface-container-lowest">HD 1080p</span>
+<span class="w-1 h-1 rounded-full bg-surface-container-highest"></span>
+<span class="font-label-sm text-label-sm text-tertiary-fixed-dim">18ms</span>
+</div>
+<button class="flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-tertiary text-on-tertiary font-label-lg text-label-lg shadow-md hover:bg-tertiary-container transition-all active:scale-[0.98]" type="button">
+<span class="material-symbols-outlined text-headline-sm" style="font-variation-settings: 'FILL' 1;">task_alt</span>
+<span class="hidden sm:inline">Finish Barter &amp; Log Progress</span>
+<span class="sm:hidden">Log</span>
+</button>
+<!-- Right Drawer Toggle Button -->
+<button aria-label="Toggle Side Drawer" class="p-2 rounded-xl bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-surface-container-lowest transition-colors" id="toggle-drawer-btn" type="button">
+<span class="material-symbols-outlined text-headline-md" id="drawer-toggle-icon">right_panel_close</span>
+</button>
+</div>
+</header>
+<!-- WORKSPACE BODY: VIDEO STAGE + RIGHT SIDE PANEL -->
+<div class="relative flex-1 flex overflow-hidden">
+<!-- MAIN STAGE VIDEO AREA -->
+<main class="relative flex-1 bg-surface-container-lowest/5 flex flex-col items-center justify-center p-space-md overflow-hidden">
+<!-- Primary Stream Card (IDE Live Broadcast from Shrikant Patel) -->
+<div class="relative w-full h-full max-w-7xl max-h-full rounded-2xl overflow-hidden shadow-2xl bg-on-surface flex flex-col justify-between group">
+<!-- Background: Live Stream Presentation Image Placeholder -->
+<div class="absolute inset-0 z-0 bg-cover bg-center" data-alt="A university student computer screen displaying VS Code with dark theme React JavaScript code highlighting useState and custom hooks, alongside a floating webcam inset of an Indian college peer developer explaining coding concepts in an ambient illuminated computer lab with subtle blue and indigo lighting." style="background-image: url('https://lh3.googleusercontent.com/aida-public/AB6AXuCW7dru6DJJg8IudU8WuAaK8zC95fFwpAW0ceAcdbO12C-fFk01ZxIKS79jPcWzx34iGQkwZK0dgJ1UJV6Wh7s-aCdCglHTndSEKys32_3AbDK1JUVwGAgYW4xs321kaH3YLPkufXrHn5j1YljvITFMfRUgIS8HCJxfpFbnP546FAhTvkFjQzrIkjggSA0xe60dCiygQfAaXrskVoDVWpnPp8kgaflfBucRad1jlXEgANHR-fy4nmUf')">
+<!-- Simulated Code/Dark Overlay for visual clarity -->
+<div class="absolute inset-0 bg-gradient-to-t from-black/80 via-transparent to-black/40"></div>
+</div>
+<!-- Top Stage Badges & Controls -->
+<div class="relative z-10 p-space-md flex items-center justify-between">
+<!-- Participant Identity Pill -->
+<div class="flex items-center gap-space-xs px-space-md py-1.5 rounded-full bg-inverse-surface/85 backdrop-blur-md shadow-md">
+<span class="material-symbols-outlined text-headline-sm text-secondary-container" style="font-variation-settings: 'FILL' 1;">push_pin</span>
+<span class="font-label-md text-label-md text-surface-container-lowest font-semibold">Shrikant Patel</span>
+<span class="px-space-xs py-0.2 rounded bg-primary-container text-on-primary font-label-sm text-label-sm text-[10px] uppercase">Presenter</span>
+<!-- Audio Waveform Graphic Indicator -->
+<div class="flex items-center gap-0.5 ml-space-xs h-3">
+<span class="w-0.5 h-2 bg-tertiary-fixed-dim rounded-full animate-pulse"></span>
+<span class="w-0.5 h-3.5 bg-tertiary-fixed-dim rounded-full animate-bounce"></span>
+<span class="w-0.5 h-1.5 bg-tertiary-fixed-dim rounded-full animate-pulse"></span>
+<span class="w-0.5 h-3 bg-tertiary-fixed-dim rounded-full animate-bounce" style="animation-delay: 150ms;"></span>
+</div>
+</div>
+<!-- Resolution & Stream Quality Tag -->
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded-lg bg-inverse-surface/70 backdrop-blur-md">
+<span class="material-symbols-outlined text-headline-sm text-primary-fixed">desktop_windows</span>
+<span class="font-label-sm text-label-sm text-surface-container-high">Screen: VS Code (Main.tsx)</span>
+</div>
+</div>
+<!-- Picture-in-Picture (PiP) Floating Self-View (Aryan) -->
+<div class="absolute bottom-6 right-6 z-20 w-64 aspect-video rounded-xl overflow-hidden shadow-2xl bg-inverse-surface transition-all duration-300 hover:scale-105" id="pip-container">
+<div class="relative w-full h-full">
+<img class="w-full h-full object-cover" data-alt="Close-up webcam angle of Aryan, a young focused male software engineering college student with dark hair and headphones, illuminated by screen glow inside a modern minimalist study dorm with soft ambient indigo lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuAeSPWfw2NZCnldnnaj5q6EOBCF_kBXOyci8xMiYcR78WjKqGFub0bOzWxpe2q_B_FiyYbeVVtYlyqzu9LzRpDjTdwpgsV8JELfGlkZYC8BAZJ5DIOVaTOv5Xqdg0S7pZyQe2uAsscKeucruL3rLhq0tn9ErUBT0u5eKO135heW5lnezgD3s529pY0wFGys_mFM_Vz2r1rLDNISjrZRbsnB-YyiuofEHSNlYbVjyWEAGNPe62nSjcnG"/>
+<!-- Top Pip Overlays -->
+<div class="absolute top-2 right-2 flex items-center gap-1">
+<span class="px-1.5 py-0.5 rounded bg-surface-container-lowest/30 backdrop-blur-md text-surface-container-lowest font-label-sm text-[10px]">HD</span>
+</div>
+<!-- Bottom Pip Pill -->
+<div class="absolute bottom-2 left-2 right-2 flex items-center justify-between px-2 py-1 rounded-lg bg-black/60 backdrop-blur-md text-surface-container-lowest">
+<span class="font-label-sm text-label-sm truncate">Aryan (You)</span>
+<div class="flex items-center gap-1">
+<span class="material-symbols-outlined text-[16px] text-tertiary-fixed">mic</span>
+<span class="material-symbols-outlined text-[16px] text-surface-container-high">videocam</span>
+</div>
+</div>
+</div>
+</div>
+<!-- Bottom Stage Ambient Pill -->
+<div class="relative z-10 p-space-md flex items-center justify-between pointer-events-none">
+<div class="flex items-center gap-space-xs px-space-sm py-1 rounded-md bg-black/50 backdrop-blur-sm pointer-events-auto">
+<span class="material-symbols-outlined text-headline-sm text-tertiary-fixed">lock</span>
+<span class="font-label-sm text-label-sm text-surface-container-high">End-to-End Encrypted WebRTC Session</span>
+</div>
+</div>
+</div>
+<!-- FLOATING BOTTOM CONTROL DOCK -->
+<div class="absolute bottom-8 z-30 flex items-center gap-space-xs sm:gap-space-sm px-space-md py-space-sm rounded-2xl bg-inverse-surface/85 backdrop-blur-xl shadow-2xl">
+<!-- Mic Toggle -->
+<button aria-label="Toggle Microphone" class="group relative flex flex-col items-center justify-center w-12 h-12 rounded-xl bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-surface-container-lowest transition-all" id="btn-mic" type="button">
+<span class="material-symbols-outlined text-headline-md group-hover:scale-110 transition-transform">mic</span>
+<span class="sr-only">Mute Microphone</span>
+<span class="absolute -top-8 px-2 py-0.5 rounded bg-black/80 text-[10px] font-label-sm text-surface-container-lowest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Mute (Cmd+D)</span>
+</button>
+<!-- Camera Toggle -->
+<button aria-label="Toggle Camera" class="group relative flex flex-col items-center justify-center w-12 h-12 rounded-xl bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-surface-container-lowest transition-all" id="btn-cam" type="button">
+<span class="material-symbols-outlined text-headline-md group-hover:scale-110 transition-transform">videocam</span>
+<span class="sr-only">Stop Video</span>
+<span class="absolute -top-8 px-2 py-0.5 rounded bg-black/80 text-[10px] font-label-sm text-surface-container-lowest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Video (Cmd+E)</span>
+</button>
+<!-- Share Screen Toggle -->
+<button aria-label="Share Screen" class="group relative flex flex-col items-center justify-center w-12 h-12 rounded-xl bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-surface-container-lowest transition-all" id="btn-share" type="button">
+<span class="material-symbols-outlined text-headline-md group-hover:scale-110 transition-transform">present_to_all</span>
+<span class="sr-only">Share Screen</span>
+<span class="absolute -top-8 px-2 py-0.5 rounded bg-black/80 text-[10px] font-label-sm text-surface-container-lowest opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none whitespace-nowrap">Present Screen</span>
+</button>
+<span class="w-px h-6 bg-surface-container-highest/20 mx-1"></span>
+<!-- Shared Code / Notes (Active with NEW pill) -->
+<button class="group relative flex items-center gap-space-xs px-space-md h-12 rounded-xl bg-primary-container text-on-primary font-label-md text-label-md shadow-md hover:bg-primary transition-all" id="btn-code" type="button">
+<span class="material-symbols-outlined text-headline-sm">code</span>
+<span class="hidden sm:inline">Live Code</span>
+<span class="px-space-xs py-0.2 rounded-full bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-label-sm text-[10px] font-bold">New</span>
+</button>
+<!-- Whiteboard Toggle -->
+<button class="group relative flex items-center gap-space-xs px-space-md h-12 rounded-xl bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-surface-container-lowest font-label-md text-label-md transition-all" id="btn-board" type="button">
+<span class="material-symbols-outlined text-headline-sm">draw</span>
+<span class="hidden sm:inline">Whiteboard</span>
+</button>
+<!-- Chat Toggle (with badge '2') -->
+<button class="group relative flex flex-col items-center justify-center w-12 h-12 rounded-xl bg-surface-container-lowest/10 hover:bg-surface-container-lowest/20 text-surface-container-lowest transition-all" id="btn-chat-toggle" type="button">
+<span class="material-symbols-outlined text-headline-md">chat_bubble</span>
+<span class="absolute 1 top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-primary-container text-on-primary font-label-sm text-[10px]">2</span>
+<span class="sr-only">Chat and Notes</span>
+</button>
+<span class="w-px h-6 bg-surface-container-highest/20 mx-1"></span>
+<!-- Emergency Exit / Leave Session Button -->
+<button class="flex items-center gap-space-xs px-space-md h-12 rounded-xl bg-[#EF4444] text-white font-label-md text-label-md shadow-lg hover:bg-red-600 active:scale-95 transition-all" type="button">
+<span class="material-symbols-outlined text-headline-sm">call_end</span>
+<span class="hidden sm:inline">Leave Session</span>
+</button>
+</div>
+</main>
+<!-- COLLAPSIBLE RIGHT DRAWER (TABBED PANEL) -->
+<aside class="relative z-20 w-96 max-w-full bg-surface-container-lowest text-on-surface shadow-2xl flex flex-col transition-all duration-300" id="session-drawer">
+<!-- Tab Switcher Header -->
+<div class="flex items-center justify-between p-space-sm bg-surface-container-low">
+<div class="flex p-1 bg-surface-container rounded-xl w-full">
+<button class="flex-1 py-1.5 rounded-lg text-center font-label-md text-label-md bg-surface-container-lowest text-primary shadow-sm font-semibold transition-all" id="tab-goals-btn" type="button">
+              Session Goals
+            </button>
+<button class="flex-1 py-1.5 rounded-lg text-center font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all" id="tab-chat-btn" type="button">
+              Live Chat &amp; Links
+            </button>
+</div>
+</div>
+<!-- TAB 1 CONTENT: SESSION GOALS CHECKLIST -->
+<div class="flex-1 flex flex-col p-space-md overflow-y-auto" id="tab-goals-content">
+<!-- Barter Exchange Context Summary Card -->
+<div class="p-space-sm rounded-xl bg-surface-container-low mb-space-md">
+<div class="flex items-center justify-between mb-1">
+<span class="font-label-sm text-label-sm uppercase tracking-wider text-on-surface-variant">Barter Balance</span>
+<span class="font-label-sm text-label-sm text-tertiary font-bold">+1.0 Swap Credit</span>
+</div>
+<div class="w-full bg-surface-container-highest rounded-full h-1.5">
+<div class="bg-primary h-1.5 rounded-full" style="width: 70%"></div>
+</div>
+<div class="flex justify-between items-center mt-2 text-on-surface-variant font-label-sm text-label-sm">
+<span>Aryan: 30m Figma Auto-Layout</span>
+<span>Shrikant: 30m Hooks</span>
+</div>
+</div>
+<!-- Section Heading -->
+<div class="flex items-center justify-between mb-space-sm">
+<span class="font-label-lg text-label-lg font-semibold text-on-surface">Agreed Agenda</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">2 of 4 done</span>
+</div>
+<!-- Checklist Items -->
+<div class="flex flex-col gap-space-sm flex-1">
+<!-- Item 1: Completed -->
+<label class="flex items-start gap-space-sm p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="pt-0.5">
+<input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-sm text-body-sm line-through text-on-surface-variant">Review useState vs useReducer in complex form</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-space-xs py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-[10px]">Completed</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">by Shrikant</span>
+</div>
+</div>
+</label>
+<!-- Item 2: Completed -->
+<label class="flex items-start gap-space-sm p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="pt-0.5">
+<input checked="" class="w-4 h-4 rounded text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-sm text-body-sm line-through text-on-surface-variant">Wireframe Review &amp; Auto-layout constraints</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-space-xs py-0.2 rounded bg-tertiary-fixed text-on-tertiary-fixed font-label-sm text-[10px]">Completed</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">by Aryan</span>
+</div>
+</div>
+</label>
+<!-- Item 3: In Progress -->
+<label class="flex items-start gap-space-sm p-space-sm rounded-xl bg-surface-container-high/40 shadow-sm cursor-pointer group">
+<div class="pt-0.5">
+<input class="w-4 h-4 rounded text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-sm text-body-sm font-medium text-on-surface">Implement custom hook for WebSocket connection</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="px-space-xs py-0.2 rounded bg-secondary-fixed text-on-secondary-fixed font-label-sm text-[10px] animate-pulse">In Progress</span>
+<span class="font-label-sm text-label-sm text-primary font-medium">Active Stage</span>
+</div>
+</div>
+</label>
+<!-- Item 4: Pending -->
+<label class="flex items-start gap-space-sm p-space-sm rounded-xl bg-surface-container-low hover:bg-surface-container transition-colors cursor-pointer group">
+<div class="pt-0.5">
+<input class="w-4 h-4 rounded text-primary-container focus:ring-0 cursor-pointer" type="checkbox"/>
+</div>
+<div class="flex-1 min-w-0">
+<p class="font-body-sm text-body-sm text-on-surface">Agree on next session date &amp; homework exercise</p>
+<div class="flex items-center gap-1 mt-1">
+<span class="font-label-sm text-label-sm text-on-surface-variant">Next Step (10 min mark)</span>
+</div>
+</div>
+</label>
+</div>
+<!-- Add New Goal Input Field -->
+<div class="mt-space-md pt-space-sm">
+<div class="flex items-center gap-space-xs">
+<input class="flex-1 px-space-sm py-2 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline focus:outline-none font-body-sm text-body-sm" placeholder="Add milestone goal..." type="text"/>
+<button class="p-2 rounded-xl bg-primary-container text-on-primary hover:bg-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-headline-sm">add</span>
+</button>
+</div>
+</div>
+</div>
+<!-- TAB 2 CONTENT: LIVE CHAT & RESOURCE LINKS (Initially Hidden) -->
+<div class="hidden flex-1 flex flex-col p-space-md overflow-hidden" id="tab-chat-content">
+<!-- Message Thread List -->
+<div class="flex-1 overflow-y-auto flex flex-col gap-space-md pr-1">
+<!-- Message 1 (Shrikant) -->
+<div class="flex flex-col gap-1 items-start">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm font-bold text-on-surface">Shrikant Patel</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">14:18</span>
+</div>
+<div class="p-space-sm rounded-2xl rounded-tl-sm bg-surface-container text-on-surface font-body-sm text-body-sm max-w-[88%]">
+                Check this hook implementation snippet for handling socket cleanup properly:
+              </div>
+<!-- Code Snippet Card in Chat -->
+<div class="w-full p-space-sm rounded-xl bg-inverse-surface text-inverse-on-surface font-mono text-[12px] overflow-x-auto shadow-sm">
+<div class="text-tertiary-fixed-dim">// useWebSocket.ts</div>
+<div><span class="text-secondary-fixed">useEffect</span>(() =&gt; {</div>
+<div class="pl-3">const ws = new WebSocket(url);</div>
+<div class="pl-3">return () =&gt; ws.close();</div>
+<div>}, [url]);</div>
+</div>
+</div>
+<!-- Message 2 (Aryan - You) -->
+<div class="flex flex-col gap-1 items-end">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm text-on-surface-variant">14:22</span>
+<span class="font-label-sm text-label-sm font-bold text-primary">You</span>
+</div>
+<div class="p-space-sm rounded-2xl rounded-tr-sm bg-primary-container text-on-primary font-body-sm text-body-sm max-w-[88%]">
+                Awesome! I've linked the Figma frame with the live socket state mockup here:
+              </div>
+<a class="flex items-center gap-space-xs p-space-xs px-space-sm rounded-xl bg-surface-container-high text-on-surface font-label-sm text-label-sm hover:underline" href="#">
+<span class="material-symbols-outlined text-headline-sm text-primary">link</span>
+<span class="truncate">figma.com/file/x8Z902.../WS-State</span>
+</a>
+</div>
+<!-- Message 3: GitHub Repo Snippet Preview -->
+<div class="flex flex-col gap-1 items-start">
+<div class="flex items-center gap-space-xs">
+<span class="font-label-sm text-label-sm font-bold text-on-surface">Shrikant Patel</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant">14:26</span>
+</div>
+<div class="p-space-sm rounded-xl bg-surface-container text-on-surface font-body-sm text-body-sm w-full">
+<div class="flex items-center gap-space-xs mb-1">
+<span class="material-symbols-outlined text-headline-sm text-on-surface">folder_zip</span>
+<span class="font-label-sm text-label-sm font-semibold">shrikant/react-barter-lab</span>
+</div>
+<p class="font-body-sm text-body-sm text-on-surface-variant line-clamp-1">Public reference repo for our socket sync exercises.</p>
+</div>
+</div>
+</div>
+<!-- Quick File Drop Zone -->
+<div class="my-space-sm p-space-sm rounded-xl bg-surface-container-low flex flex-col items-center justify-center text-center cursor-pointer hover:bg-surface-container transition-colors">
+<span class="material-symbols-outlined text-headline-md text-primary mb-0.5">cloud_upload</span>
+<span class="font-label-sm text-label-sm text-on-surface font-medium">Drop Figma URLs or GitHub Gists here</span>
+<span class="font-label-sm text-label-sm text-on-surface-variant text-[10px]">Instant sync to exchange record</span>
+</div>
+<!-- Chat Input -->
+<div class="flex items-center gap-space-xs pt-1">
+<input class="flex-1 px-space-sm py-2 rounded-xl bg-surface-container-low text-on-surface placeholder:text-outline focus:outline-none font-body-sm text-body-sm" placeholder="Type message or paste link..." type="text"/>
+<button class="p-2 rounded-xl bg-primary-container text-on-primary hover:bg-primary transition-colors" type="button">
+<span class="material-symbols-outlined text-headline-sm">send</span>
+</button>
+</div>
+</div>
+</aside>
+</div>
+</div>
+<!-- Interactive Logic for Tab Switching, Collapsible Drawer, and Controls -->
+<script>
+    (function initVideoClassroom() {
+      const drawer = document.getElementById('session-drawer');
+      const toggleDrawerBtn = document.getElementById('toggle-drawer-btn');
+      const drawerIcon = document.getElementById('drawer-toggle-icon');
+      const btnChatToggle = document.getElementById('btn-chat-toggle');
+
+      const tabGoalsBtn = document.getElementById('tab-goals-btn');
+      const tabChatBtn = document.getElementById('tab-chat-btn');
+      const tabGoalsContent = document.getElementById('tab-goals-content');
+      const tabChatContent = document.getElementById('tab-chat-content');
+
+      let isDrawerOpen = true;
+
+      function setDrawerOpen(open) {
+        isDrawerOpen = open;
+        if (open) {
+          drawer.classList.remove('hidden', '-mr-96');
+          drawer.classList.add('flex');
+          if (drawerIcon) drawerIcon.textContent = 'right_panel_close';
+        } else {
+          drawer.classList.add('hidden', '-mr-96');
+          drawer.classList.remove('flex');
+          if (drawerIcon) drawerIcon.textContent = 'right_panel_open';
+        }
+      }
+
+      if (toggleDrawerBtn) {
+        toggleDrawerBtn.addEventListener('click', () => {
+          setDrawerOpen(!isDrawerOpen);
+        });
+      }
+
+      function switchTab(active) {
+        if (active === 'goals') {
+          tabGoalsContent.classList.remove('hidden');
+          tabChatContent.classList.add('hidden');
+          tabGoalsBtn.className = 'flex-1 py-1.5 rounded-lg text-center font-label-md text-label-md bg-surface-container-lowest text-primary shadow-sm font-semibold transition-all';
+          tabChatBtn.className = 'flex-1 py-1.5 rounded-lg text-center font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all';
+        } else {
+          tabChatContent.classList.remove('hidden');
+          tabGoalsContent.classList.add('hidden');
+          tabChatBtn.className = 'flex-1 py-1.5 rounded-lg text-center font-label-md text-label-md bg-surface-container-lowest text-primary shadow-sm font-semibold transition-all';
+          tabGoalsBtn.className = 'flex-1 py-1.5 rounded-lg text-center font-label-md text-label-md text-on-surface-variant hover:text-on-surface transition-all';
+        }
+      }
+
+      if (tabGoalsBtn) {
+        tabGoalsBtn.addEventListener('click', () => switchTab('goals'));
+      }
+      if (tabChatBtn) {
+        tabChatBtn.addEventListener('click', () => switchTab('chat'));
+      }
+
+      if (btnChatToggle) {
+        btnChatToggle.addEventListener('click', () => {
+          if (!isDrawerOpen) setDrawerOpen(true);
+          switchTab('chat');
+        });
+      }
+
+      // Mic / Cam micro-interaction toggles
+      const btnMic = document.getElementById('btn-mic');
+      const btnCam = document.getElementById('btn-cam');
+      
+      let micActive = true;
+      if (btnMic) {
+        btnMic.addEventListener('click', () => {
+          micActive = !micActive;
+          const icon = btnMic.querySelector('.material-symbols-outlined');
+          if (icon) {
+            icon.textContent = micActive ? 'mic' : 'mic_off';
+            btnMic.classList.toggle('bg-error-container', !micActive);
+            btnMic.classList.toggle('text-error', !micActive);
+          }
+        });
+      }
+
+      let camActive = true;
+      if (btnCam) {
+        btnCam.addEventListener('click', () => {
+          camActive = !camActive;
+          const icon = btnCam.querySelector('.material-symbols-outlined');
+          if (icon) {
+            icon.textContent = camActive ? 'videocam' : 'videocam_off';
+            btnCam.classList.toggle('bg-error-container', !camActive);
+            btnCam.classList.toggle('text-error', !camActive);
+          }
+        });
+      }
+    })();
+  </script>
+</div></main></div></body></html>

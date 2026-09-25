@@ -5,7 +5,9 @@ import { disconnectSocket } from "../../services/socket";
 
 const initialState = {
   admin: null,
-  accessToken: localStorage.getItem("skillswap_admin_token"),
+  accessToken:
+    localStorage.getItem("skillswap_admin_token") ||
+    localStorage.getItem("skillswap_token"),
   status: "idle",
   bootstrapped: false,
   error: null,
@@ -15,9 +17,12 @@ export const fetchCurrentAdmin = createAsyncThunk(
   "admin/me",
   async (_, { rejectWithValue }) => {
     try {
+      const token =
+        localStorage.getItem("skillswap_admin_token") ||
+        localStorage.getItem("skillswap_token");
       const response = await api.get("/auth/me", {
         headers: {
-          Authorization: `Bearer ${localStorage.getItem("skillswap_admin_token")}`,
+          Authorization: `Bearer ${token}`,
         },
       });
       const user = unwrap(response);

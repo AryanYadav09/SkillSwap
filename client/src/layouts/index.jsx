@@ -14,6 +14,7 @@ import {
  Phone,
  PhoneOff,
  Search,
+ Shield,
  Sparkles,
  Star,
  Sun,
@@ -190,6 +191,17 @@ export function AppLayout() {
  </p>
  </div>
  
+ {user?.role === "ADMIN" && (
+ <Link
+ to="/admin"
+ className="flex items-center gap-1.5 rounded-lg border border-gold-500/50 bg-gold-500/20 px-3 py-1.5 text-xs font-bold text-gold-700 hover:bg-gold-500/30 transition shadow-sm"
+ title="Go to Admin Console"
+ >
+ <Shield size={14} className="text-gold-600" />
+ <span>Admin Console</span>
+ </Link>
+ )}
+ 
  <button 
  className="btn border border-gold-500/30 bg-gold-500/10 px-2 sm:px-3 text-gold-600 hover:bg-gold-500/20 shadow-none relative" 
  onClick={() => { setNotificationsOpen(true); }}
@@ -224,6 +236,18 @@ export function AppLayout() {
  </button>
  </div>
  <Navigation mobile={true} onNavigate={() => setSidebarOpen(false)} />
+ {user?.role === "ADMIN" && (
+ <div className="mt-4 px-1">
+ <Link
+ to="/admin"
+ onClick={() => setSidebarOpen(false)}
+ className="flex items-center gap-2 rounded-lg border border-gold-500/40 bg-gold-500/20 px-3 py-2 text-sm font-bold text-gold-700 hover:bg-gold-500/30 transition shadow-sm"
+ >
+ <Shield size={16} className="text-gold-600" />
+ <span>Admin Console</span>
+ </Link>
+ </div>
+ )}
  <div className="mt-6 border-t border-line pt-4">
  <p className="px-3 text-xs font-bold uppercase tracking-wider text-gray-500 mb-2">Your Account</p>
  <nav className="space-y-1">

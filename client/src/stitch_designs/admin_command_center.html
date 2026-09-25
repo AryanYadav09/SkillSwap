@@ -1,0 +1,501 @@
+<!DOCTYPE html>
+
+<html lang="en"><head><meta charset="utf-8"/><meta content="width=device-width, initial-scale=1.0" name="viewport"/><meta content="web_dashboard" name="shell-type"/><link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/><link href="https://fonts.googleapis.com" rel="preconnect"/><link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/><link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&amp;family=Plus+Jakarta+Sans:wght@600;700;800&amp;display=swap" rel="stylesheet"/>
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/><style>@layer base{html,body{margin:0;padding:0;}body{overscroll-behavior:none;}main>:first-child{margin-top:0!important;}main>:last-child{margin-bottom:0!important;}}::-webkit-scrollbar{display:none;}</style><script src="https://cdn.tailwindcss.com?plugins=forms,container-queries"></script><script id="tailwind-config">tailwind.config={darkMode:"class",theme:{extend:{colors:{"primary":"#3525cd","secondary":"#00687a","primary-fixed":"#e2dfff","surface-container-low":"#eff4ff","on-surface":"#0b1c30","on-secondary-fixed-variant":"#004e5c","on-tertiary":"#ffffff","outline":"#777587","primary-container":"#4f46e5","on-primary-container":"#dad7ff","on-error-container":"#93000a","surface-container-lowest":"#ffffff","on-error":"#ffffff","surface-container-high":"#dce9ff","surface-variant":"#d3e4fe","on-secondary-container":"#006172","error":"#ba1a1a","tertiary-fixed-dim":"#4edea3","error-container":"#ffdad6","background":"#f8f9ff","on-primary":"#ffffff","on-secondary":"#ffffff","on-tertiary-fixed-variant":"#005236","inverse-on-surface":"#eaf1ff","secondary-fixed-dim":"#4cd7f6","on-background":"#0b1c30","outline-variant":"#c7c4d8","secondary-container":"#57dffe","tertiary":"#005338","surface":"#f8f9ff","tertiary-container":"#006e4b","on-surface-variant":"#464555","surface-bright":"#f8f9ff","surface-tint":"#4d44e3","tertiary-fixed":"#6ffbbe","on-tertiary-container":"#67f4b7","on-primary-fixed-variant":"#3323cc","on-tertiary-fixed":"#002113","primary-fixed-dim":"#c3c0ff","secondary-fixed":"#acedff","on-secondary-fixed":"#001f26","surface-dim":"#cbdbf5","inverse-surface":"#213145","surface-container":"#e5eeff","on-primary-fixed":"#0f0069","inverse-primary":"#c3c0ff","surface-container-highest":"#d3e4fe"},borderRadius:{"DEFAULT":"0.25rem","lg":"0.5rem","xl":"0.75rem","full":"9999px"},spacing:{"space-md":"1rem","gutter":"1.5rem","space-lg":"1.5rem","margin":"2rem","space-xl":"2.5rem","space-xs":"0.25rem","space-sm":"0.5rem"},fontFamily:{"label-sm":["Plus Jakarta Sans"],"body-lg":["Inter"],"body-md":["Inter"],"headline-lg":["Plus Jakarta Sans"],"headline-xl-mobile":["Plus Jakarta Sans"],"headline-sm":["Plus Jakarta Sans"],"headline-xl":["Plus Jakarta Sans"],"display-hero":["Plus Jakarta Sans"],"headline-md":["Plus Jakarta Sans"],"display-hero-mobile":["Plus Jakarta Sans"],"label-md":["Plus Jakarta Sans"],"body-sm":["Inter"],"label-lg":["Plus Jakarta Sans"]},fontSize:{"label-sm":["11px",{"lineHeight":"14px","letterSpacing":"0.04em","fontWeight":"700"}],"body-lg":["18px",{"lineHeight":"28px","fontWeight":"400"}],"body-md":["15px",{"lineHeight":"24px","fontWeight":"400"}],"headline-lg":["24px",{"lineHeight":"32px","letterSpacing":"-0.015em","fontWeight":"600"}],"headline-xl-mobile":["26px",{"lineHeight":"34px","letterSpacing":"-0.015em","fontWeight":"700"}],"headline-sm":["16px",{"lineHeight":"24px","letterSpacing":"-0.005em","fontWeight":"600"}],"headline-xl":["32px",{"lineHeight":"40px","letterSpacing":"-0.02em","fontWeight":"700"}],"display-hero":["56px",{"lineHeight":"64px","letterSpacing":"-0.03em","fontWeight":"800"}],"headline-md":["20px",{"lineHeight":"28px","letterSpacing":"-0.01em","fontWeight":"600"}],"display-hero-mobile":["36px",{"lineHeight":"44px","letterSpacing":"-0.025em","fontWeight":"800"}],"label-md":["12px",{"lineHeight":"16px","letterSpacing":"0.02em","fontWeight":"600"}],"body-sm":["13px",{"lineHeight":"20px","fontWeight":"400"}],"label-lg":["14px",{"lineHeight":"20px","letterSpacing":"0.01em","fontWeight":"600"}]}}}}</script></head><body class="bg-[#F8FAFC] font-body-md text-body-md text-slate-900 antialiased"><aside class="fixed left-0 top-0 h-screen w-72 bg-white border-r border-slate-200/80 shadow-[0_1px_8px_rgba(0,0,0,0.03)] z-50 flex flex-col justify-between"><div class="flex flex-col"><div class="h-16 px-gutter flex items-center justify-between border-b border-slate-100"><div class="flex items-center gap-space-sm"><img alt="SkillSwap Brand Logo" class="h-8 w-auto object-contain" src="https://lh3.googleusercontent.com/aida/AEtjO1XNmsyheKo41FfvfjEAyppHa9-51gWhTJt0gdopYYrwEH2Ys84om8V4pA5n18cYbwYvf5dnO2H4X8xJqZMjIhu1V9Pk0VsCrkwhFHknQtGT9me6XIx8-B0Sp1PwGl1i6t7JZoFWKcoHBcuousPics7PWf-V5p-acLbIfw6gAlvA72cW7RVV7gMhsgPxYAzDtp1q1AWGs86P7fkbGbGzjchs2qPoQmiNhnZchm-oLMMC_8TxHF9iggg-C7s"/><span class="font-headline-sm text-headline-sm text-primary font-bold">SkillSwap</span></div><span class="font-label-sm text-label-sm px-2 py-0.5 rounded-full bg-slate-100 text-slate-600 font-semibold">v2.4</span></div><div class="px-gutter my-space-xs"><div class="p-space-sm rounded-xl bg-slate-50 border border-slate-200/60 flex flex-col gap-1"><div class="flex items-center gap-space-xs"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-label-sm text-label-sm font-semibold text-slate-800">IIT Bombay Net</span></div><div class="flex items-center justify-between text-slate-500 font-label-md text-label-md"><span>Online Status</span><span class="font-label-md text-label-md text-indigo-600 font-semibold">428 Peers</span></div></div></div><nav class="flex flex-col gap-1 px-space-sm mt-space-sm"><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-slate-600 font-label-lg text-label-lg hover:bg-slate-100 hover:text-slate-900 transition-colors" data-path="dashboard" href="#"><span class="material-symbols-outlined text-headline-md">dashboard</span><span>Dashboard</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-slate-600 font-label-lg text-label-lg hover:bg-slate-100 hover:text-slate-900 transition-colors" data-path="barter-hub" href="#"><span class="material-symbols-outlined text-headline-md">swap_horiz</span><span>Barter Hub</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-slate-600 font-label-lg text-label-lg hover:bg-slate-100 hover:text-slate-900 transition-colors" data-path="availability" href="#"><span class="material-symbols-outlined text-headline-md">calendar_month</span><span>Availability</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-slate-600 font-label-lg text-label-lg hover:bg-slate-100 hover:text-slate-900 transition-colors" data-path="meeting-room" href="#"><span class="material-symbols-outlined text-headline-md">video_camera_front</span><span>Meeting Room</span></a><a class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl text-slate-600 font-label-lg text-label-lg hover:bg-slate-100 hover:text-slate-900 transition-colors" data-path="skill-catalog" href="#"><span class="material-symbols-outlined text-headline-md">menu_book</span><span>Skill Catalog</span></a><a aria-current="page" class="flex items-center gap-space-sm px-space-md py-space-sm rounded-xl transition-all bg-indigo-600 text-white font-semibold shadow-sm shadow-indigo-200" data-path="admin-command-center" href="#"><span class="material-symbols-outlined text-headline-md">admin_panel_settings</span><span>Admin Command Center</span></a></nav></div><div class="p-space-sm m-space-sm rounded-xl bg-slate-50 border border-slate-200/70"><div class="flex items-center gap-space-sm mb-space-xs"><img alt="Profile" class="w-10 h-10 rounded-full object-cover ring-2 ring-indigo-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDznxYiBQSjIOumrVZEJmYHMudPTCatjGDWlOUFSR0zOggTckNtxBrch6kebNAoyPI7tjoZXzdlBAjvhGcKIbvy8IKsMxbntxUcoKqGUJKdYV3-VFq7LmbCi5axaK7apWbNko2ebT0UDVd4RDJko_YHuW0nj8dZN6GzGkcaVNj6UAOjCLentbaU4adoZuD4hBwZH-L2a4uR4c09kwn_vsy21bHsCDz8Be6-F-hanBAZTzLD1NUo9Td6"/><div class="flex flex-col min-w-0 flex-1"><span class="font-label-lg text-label-lg text-slate-900 font-bold truncate">Aryan S.</span><span class="font-label-sm text-label-sm text-indigo-600 font-semibold truncate">Level: Advanced Mentor</span></div></div><div class="flex items-center justify-between pt-space-xs bg-white px-space-sm py-1.5 rounded-lg border border-slate-200/60"><span class="font-label-sm text-label-sm text-slate-500">Swap Rating</span><span class="font-label-sm text-label-sm text-emerald-600 font-bold">98% Positive</span></div></div></aside><div class="pl-72"><header class="fixed top-0 left-72 right-0 h-16 bg-white/90 backdrop-blur-xl border-b border-slate-200/80 shadow-[0_1px_4px_rgba(0,0,0,0.02)] z-40 flex items-center justify-between px-gutter"><div class="flex items-center gap-space-md flex-1 max-w-2xl"><div class="relative flex-1 flex items-center bg-slate-50 rounded-xl border border-slate-200/80"><span class="material-symbols-outlined text-slate-400 absolute left-3 pointer-events-none">search</span><input class="w-full pl-10 pr-4 py-2 bg-transparent text-slate-900 placeholder:text-slate-400 focus:outline-none font-body-sm text-body-sm" placeholder="Search skills, mentors, or course tags..." type="text"/></div><div class="hidden xl:flex items-center gap-space-xs"><button class="px-space-sm py-1 rounded-full bg-slate-100 text-slate-600 font-label-sm text-label-sm hover:bg-slate-200 hover:text-slate-900 transition-colors" type="button">Python</button><button class="px-space-sm py-1 rounded-full bg-slate-100 text-slate-600 font-label-sm text-label-sm hover:bg-slate-200 hover:text-slate-900 transition-colors" type="button">CAD</button><button class="px-space-sm py-1 rounded-full bg-slate-100 text-slate-600 font-label-sm text-label-sm hover:bg-slate-200 hover:text-slate-900 transition-colors" type="button">Robotics</button></div></div><div class="flex items-center gap-space-md"><div class="hidden sm:flex items-center gap-space-xs px-3 py-1 rounded-full bg-emerald-50 border border-emerald-200"><span class="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span><span class="font-label-sm text-label-sm text-emerald-700 font-medium">Available for Barter</span></div><button class="relative p-2 rounded-xl text-slate-600 hover:bg-slate-100 hover:text-slate-900 transition-colors" type="button"><span class="material-symbols-outlined">notifications</span><span class="absolute top-1.5 right-1.5 flex h-4 w-4 items-center justify-center rounded-full bg-indigo-600 text-white font-label-sm text-label-sm text-[10px] font-bold">3</span></button><button class="flex items-center gap-space-xs px-space-md py-2 bg-indigo-600 text-white font-label-lg text-label-lg rounded-xl shadow-sm shadow-indigo-200 hover:bg-indigo-700 transition-colors" type="button"><span class="material-symbols-outlined text-headline-sm">add_box</span><span>Propose Swap</span></button><div class="flex items-center pl-space-xs"><img alt="Profile" class="w-8 h-8 rounded-full object-cover ring-2 ring-indigo-100" src="https://lh3.googleusercontent.com/aida-public/AB6AXuDznxYiBQSjIOumrVZEJmYHMudPTCatjGDWlOUFSR0zOggTckNtxBrch6kebNAoyPI7tjoZXzdlBAjvhGcKIbvy8IKsMxbntxUcoKqGUJKdYV3-VFq7LmbCi5axaK7apWbNko2ebT0UDVd4RDJko_YHuW0nj8dZN6GzGkcaVNj6UAOjCLentbaU4adoZuD4hBwZH-L2a4uR4c09kwn_vsy21bHsCDz8Be6-F-hanBAZTzLD1NUo9Td6"/></div></div></header><main class="relative pt-16 w-full min-h-screen bg-[#F8FAFC]"><div class="flex flex-col w-full">
+<div class="w-full text-slate-800 px-space-md lg:px-margin py-space-lg space-y-space-lg">
+<div class="flex flex-col lg:flex-row lg:items-center justify-between gap-space-md pb-space-xs">
+<div class="flex flex-col gap-1.5">
+<div class="flex flex-wrap items-center gap-space-xs">
+<span class="px-2.5 py-0.5 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 font-label-sm text-label-sm uppercase tracking-wider font-semibold">
+            Admin Root Level
+          </span>
+<span class="px-2.5 py-0.5 rounded-full bg-white border border-slate-200 text-slate-600 font-label-sm text-label-sm flex items-center gap-1 shadow-sm">
+<span class="material-symbols-outlined text-xs text-indigo-600">domain</span>
+            IIT Bombay Regional Instance
+          </span>
+</div>
+<h1 class="font-headline-xl text-headline-xl text-slate-900 tracking-tight font-bold">
+          SkillSwap Campus Admin Command Center
+        </h1>
+<p class="font-body-sm text-body-sm text-slate-500">
+          Supervisory control node for peer-to-peer reciprocity, academic identity verification, and dispute resolution.
+        </p>
+</div>
+<div class="flex flex-wrap items-center gap-space-sm">
+<div class="flex items-center gap-space-xs px-space-md py-2 rounded-xl bg-white border border-slate-200 shadow-sm">
+<span class="w-2.5 h-2.5 rounded-full bg-emerald-500 animate-pulse"></span>
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-emerald-700 font-semibold leading-tight">All Services Operational</span>
+<span class="font-label-sm text-[10px] text-slate-400 leading-tight">99.98% Uptime • Latency 14ms</span>
+</div>
+</div>
+<button class="flex items-center gap-space-xs px-space-md py-2.5 rounded-xl bg-indigo-600 text-white font-label-lg text-label-lg shadow-sm shadow-indigo-200 hover:bg-indigo-700 transition-all active:translate-y-0.5 font-semibold" type="button">
+<span class="material-symbols-outlined text-headline-sm">download</span>
+<span>Audit Export</span>
+</button>
+</div>
+</div>
+<div class="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-space-md">
+<div class="bg-white rounded-2xl p-space-md border border-slate-200 shadow-sm flex flex-col justify-between relative overflow-hidden group hover:border-indigo-300 hover:shadow-md transition-all">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-slate-500 font-semibold uppercase tracking-wider">Total Active Users</span>
+<span class="font-headline-xl text-headline-xl text-slate-900 font-bold mt-1">54</span>
+<span class="font-body-sm text-body-sm text-slate-500">Verified Peers On-Campus</span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-indigo-50 border border-indigo-100 text-indigo-600 flex items-center justify-center">
+<span class="material-symbols-outlined">group</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-md mt-space-sm border-t border-slate-100">
+<span class="font-label-sm text-label-sm text-emerald-600 font-semibold flex items-center gap-0.5">
+<span class="material-symbols-outlined text-xs">trending_up</span> +14% this month
+          </span>
+<svg class="w-20 h-6 text-indigo-400" fill="none" viewbox="0 0 100 30">
+<path d="M0 25 Q 15 20, 30 22 T 60 12 T 85 8 L 100 4" fill="none" stroke="currentColor" stroke-linecap="round" stroke-width="2.5"></path>
+</svg>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-space-md border border-slate-200 shadow-sm flex flex-col justify-between relative overflow-hidden group hover:border-cyan-300 hover:shadow-md transition-all">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-slate-500 font-semibold uppercase tracking-wider">Pending Barters</span>
+<span class="font-headline-xl text-headline-xl text-cyan-700 font-bold mt-1">12</span>
+<span class="font-body-sm text-body-sm text-slate-500">Awaiting Swap Clearance</span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-cyan-50 border border-cyan-100 text-cyan-600 flex items-center justify-center">
+<span class="material-symbols-outlined">sync_alt</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-md mt-space-sm border-t border-slate-100">
+<span class="font-label-sm text-label-sm text-amber-700 font-medium flex items-center gap-1.5 px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> Needs Review
+          </span>
+<span class="font-label-sm text-label-sm text-slate-500">Avg Queue: 32 min</span>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-space-md border border-slate-200 shadow-sm flex flex-col justify-between relative overflow-hidden group hover:border-emerald-300 hover:shadow-md transition-all">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-slate-500 font-semibold uppercase tracking-wider">Completed Sessions</span>
+<span class="font-headline-xl text-headline-xl text-emerald-600 font-bold mt-1">184h</span>
+<span class="font-body-sm text-body-sm text-slate-500">Pure 1:1 Reciprocal Swaps</span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-emerald-50 border border-emerald-100 text-emerald-600 flex items-center justify-center">
+<span class="material-symbols-outlined">schedule</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-md mt-space-sm border-t border-slate-100">
+<span class="font-label-sm text-label-sm text-emerald-700 font-semibold flex items-center gap-1">
+<span class="material-symbols-outlined text-xs">savings</span> ₹0 Monetary Cost
+          </span>
+<span class="font-label-sm text-label-sm text-slate-500">100% Academic Trust</span>
+</div>
+</div>
+<div class="bg-white rounded-2xl p-space-md border border-slate-200 shadow-sm flex flex-col justify-between relative overflow-hidden group hover:border-red-300 hover:shadow-md transition-all">
+<div class="flex items-start justify-between">
+<div class="flex flex-col">
+<span class="font-label-sm text-label-sm text-slate-500 font-semibold uppercase tracking-wider">Flagged Incidents</span>
+<span class="font-headline-xl text-headline-xl text-red-600 font-bold mt-1">3</span>
+<span class="font-body-sm text-body-sm text-slate-500">Open Moderation Tickets</span>
+</div>
+<div class="w-10 h-10 rounded-xl bg-red-50 border border-red-100 text-red-600 flex items-center justify-center">
+<span class="material-symbols-outlined">priority_high</span>
+</div>
+</div>
+<div class="flex items-center justify-between pt-space-md mt-space-sm border-t border-slate-100">
+<span class="px-2.5 py-0.5 rounded-full bg-red-50 border border-red-200 text-red-700 font-label-sm text-label-sm font-semibold flex items-center gap-1">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500 animate-ping"></span> High Priority
+          </span>
+<span class="font-label-sm text-label-sm text-slate-500">Response SLA: 4h</span>
+</div>
+</div>
+</div>
+<section class="bg-white rounded-2xl p-space-md lg:p-space-lg border border-slate-200 shadow-sm space-y-space-md">
+<div class="flex flex-col sm:flex-row sm:items-center justify-between gap-space-sm">
+<div class="flex items-center gap-space-xs">
+<div class="w-2.5 h-6 rounded-full bg-red-500"></div>
+<div>
+<h2 class="font-headline-md text-headline-md text-slate-900 tracking-tight font-bold">
+              Pending Moderation &amp; Trust Flags
+            </h2>
+<p class="font-body-sm text-body-sm text-slate-500">Direct peer complaints requiring tribunal intervention</p>
+</div>
+</div>
+<div class="flex flex-wrap items-center gap-space-xs">
+<div class="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl px-space-sm py-1.5 text-slate-700 font-medium">
+<span class="material-symbols-outlined text-sm text-slate-500">filter_list</span>
+<span class="font-label-sm text-label-sm">Filter: All Violations</span>
+<span class="material-symbols-outlined text-sm text-slate-400">arrow_drop_down</span>
+</div>
+<div class="flex items-center gap-1 bg-slate-50 border border-slate-200 rounded-xl px-space-sm py-1.5 text-slate-700 font-medium">
+<span class="font-label-sm text-label-sm">Severity: Critical First</span>
+<span class="material-symbols-outlined text-sm text-slate-400">sort</span>
+</div>
+</div>
+</div>
+<div class="w-full overflow-x-auto border border-slate-200/80 rounded-xl">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="bg-slate-50 text-slate-600 font-label-sm text-label-sm uppercase tracking-wider border-b border-slate-200">
+<th class="py-3.5 px-space-md">Reporter</th>
+<th class="py-3.5 px-space-md">Reported User</th>
+<th class="py-3.5 px-space-md">Infraction Tag</th>
+<th class="py-3.5 px-space-md min-w-[260px]">Evidence Synopsis</th>
+<th class="py-3.5 px-space-md">Reported</th>
+<th class="py-3.5 px-space-md text-right">Quick Tribunal Actions</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-label-sm text-label-sm font-bold text-slate-700">
+                    MS
+                  </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-slate-900">Meera Sen</span>
+<span class="font-label-sm text-[10px] text-slate-500">Design Dept • 3rd Yr</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-full bg-indigo-50 border border-indigo-200 text-indigo-700 flex items-center justify-center font-label-sm text-label-sm font-bold">
+                    KJ
+                  </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-slate-900">Karan Joshi</span>
+<span class="font-label-sm text-[10px] text-slate-500">Computer Science • M.Tech</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="px-2.5 py-1 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-label-sm text-label-sm inline-flex items-center gap-1.5 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span> No-Show / Ghosted Barter
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="p-space-xs rounded-lg bg-slate-50 border border-slate-200/60 text-slate-700 font-body-sm text-body-sm">
+                  "Missed 2 confirmed video sessions without 24h prior cancellation."
+                </div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-label-sm text-label-sm text-slate-500">
+                2 hours ago
+              </td>
+<td class="py-space-md px-space-md text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-1.5">
+<button class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-label-sm text-label-sm transition-colors border border-slate-200/60" type="button">
+                    Dismiss
+                  </button>
+<button class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-label-sm text-label-sm transition-colors font-medium" type="button">
+                    Warn User
+                  </button>
+<button class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-label-sm text-label-sm transition-colors font-medium" type="button">
+                    Suspend
+                  </button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-label-sm text-label-sm font-bold text-slate-700">
+                    RV
+                  </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-slate-900">Rahul Verma</span>
+<span class="font-label-sm text-[10px] text-slate-500">Aero Engg • 4th Yr</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-full bg-purple-50 border border-purple-200 text-purple-700 flex items-center justify-center font-label-sm text-label-sm font-bold">
+                    VD
+                  </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-slate-900">Vikram Das</span>
+<span class="font-label-sm text-[10px] text-slate-500">Metallurgy • Ph.D.</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="px-2.5 py-1 rounded-full bg-red-50 border border-red-200 text-red-700 font-label-sm text-label-sm inline-flex items-center gap-1.5 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-red-500"></span> Commercial Solicitation
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="p-space-xs rounded-lg bg-slate-50 border border-slate-200/60 text-slate-700 font-body-sm text-body-sm">
+                  "Attempted to charge monetary fee instead of 1:1 skill barter."
+                </div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-label-sm text-label-sm text-slate-500">
+                5 hours ago
+              </td>
+<td class="py-space-md px-space-md text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-1.5">
+<button class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-label-sm text-label-sm transition-colors border border-slate-200/60" type="button">
+                    Dismiss
+                  </button>
+<button class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-label-sm text-label-sm transition-colors font-medium" type="button">
+                    Warn User
+                  </button>
+<button class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-label-sm text-label-sm transition-colors font-medium" type="button">
+                    Suspend
+                  </button>
+</div>
+</td>
+</tr>
+<tr class="hover:bg-slate-50/80 transition-colors">
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 flex items-center justify-center font-label-sm text-label-sm font-bold text-slate-700">
+                    SR
+                  </div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-slate-900">Sneha Roy</span>
+<span class="font-label-sm text-[10px] text-slate-500">Biotech • 2nd Yr</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md">
+<div class="flex items-center gap-space-xs">
+<div class="w-8 h-8 rounded-full bg-slate-100 border border-slate-200 text-slate-500 flex items-center justify-center font-label-sm text-label-sm">
+<span class="material-symbols-outlined text-sm">visibility_off</span>
+</div>
+<div class="flex flex-col">
+<span class="font-label-md text-label-md font-semibold text-slate-700">Anonymous Peer</span>
+<span class="font-label-sm text-[10px] text-slate-400">ID Hash: #78a9c2</span>
+</div>
+</div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap">
+<span class="px-2.5 py-1 rounded-full bg-orange-50 border border-orange-200 text-orange-800 font-label-sm text-label-sm inline-flex items-center gap-1.5 font-medium">
+<span class="w-1.5 h-1.5 rounded-full bg-orange-500"></span> Inappropriate Content
+                </span>
+</td>
+<td class="py-space-md px-space-md">
+<div class="p-space-xs rounded-lg bg-slate-50 border border-slate-200/60 text-slate-700 font-body-sm text-body-sm">
+                  "Inappropriate language in public barter request note."
+                </div>
+</td>
+<td class="py-space-md px-space-md whitespace-nowrap font-label-sm text-label-sm text-slate-500">
+                1 day ago
+              </td>
+<td class="py-space-md px-space-md text-right whitespace-nowrap">
+<div class="inline-flex items-center gap-1.5">
+<button class="px-2.5 py-1 rounded-lg bg-slate-100 hover:bg-slate-200 text-slate-700 font-label-sm text-label-sm transition-colors border border-slate-200/60" type="button">
+                    Dismiss
+                  </button>
+<button class="px-2.5 py-1 rounded-lg bg-amber-50 hover:bg-amber-100 text-amber-700 border border-amber-200 font-label-sm text-label-sm transition-colors font-medium" type="button">
+                    Warn User
+                  </button>
+<button class="px-2.5 py-1 rounded-lg bg-red-50 hover:bg-red-100 text-red-700 border border-red-200 font-label-sm text-label-sm transition-colors font-medium" type="button">
+                    Suspend
+                  </button>
+</div>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</section>
+<div class="grid grid-cols-1 lg:grid-cols-12 gap-space-lg">
+<div class="lg:col-span-7 bg-white rounded-2xl p-space-md lg:p-space-lg border border-slate-200 shadow-sm space-y-space-md flex flex-col justify-between">
+<div class="space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-indigo-600">tune</span>
+<h3 class="font-headline-md text-headline-md text-slate-900 font-bold">Skill Catalog Management</h3>
+</div>
+<button class="flex items-center gap-1 px-3 py-1.5 rounded-xl bg-indigo-600 text-white font-label-md text-label-md hover:bg-indigo-700 transition-colors shadow-sm font-semibold" type="button">
+<span class="material-symbols-outlined text-sm">add</span>
+<span>Add New Skill to Catalog</span>
+</button>
+</div>
+<p class="font-body-sm text-body-sm text-slate-500">
+            Real-time supply and demand ratios for campus skill currencies.
+          </p>
+<div class="w-full overflow-x-auto pt-space-xs border border-slate-200/80 rounded-xl">
+<table class="w-full text-left font-body-sm text-body-sm">
+<thead>
+<tr class="bg-slate-50 text-slate-600 font-label-sm text-label-sm uppercase tracking-wider border-b border-slate-200">
+<th class="py-2.5 px-3">Skill Name</th>
+<th class="py-2.5 px-3">Category</th>
+<th class="py-2.5 px-3">Teachers / Learners</th>
+<th class="py-2.5 px-3">S/D Ratio</th>
+<th class="py-2.5 px-3 text-right">State</th>
+</tr>
+</thead>
+<tbody class="divide-y divide-slate-100 text-slate-700 bg-white">
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3 px-3 font-label-md text-label-md text-slate-900 font-semibold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-cyan-500"></span> Deep Learning / PyTorch
+                  </td>
+<td class="py-3 px-3 text-slate-500 font-label-sm text-label-sm">AI &amp; CS</td>
+<td class="py-3 px-3 font-label-sm text-label-sm">
+<span class="text-emerald-700 font-bold">14</span> mentors / <span class="text-cyan-700 font-bold">42</span> learners
+                  </td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2">
+<div class="w-16 h-2 rounded-full bg-slate-100 overflow-hidden border border-slate-200/60">
+<div class="bg-cyan-500 h-full rounded-full" style="width: 33%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-cyan-800 font-semibold">1 : 3.0</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right">
+<span class="px-2 py-0.5 rounded-full bg-amber-50 border border-amber-200 text-amber-800 font-label-sm text-label-sm font-medium">High Demand</span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3 px-3 font-label-md text-label-md text-slate-900 font-semibold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-emerald-500"></span> SolidWorks / 3D CAD
+                  </td>
+<td class="py-3 px-3 text-slate-500 font-label-sm text-label-sm">Mechanical</td>
+<td class="py-3 px-3 font-label-sm text-label-sm">
+<span class="text-emerald-700 font-bold">18</span> mentors / <span class="text-cyan-700 font-bold">20</span> learners
+                  </td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2">
+<div class="w-16 h-2 rounded-full bg-slate-100 overflow-hidden border border-slate-200/60">
+<div class="bg-emerald-500 h-full rounded-full" style="width: 90%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-emerald-800 font-semibold">1 : 1.1</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right">
+<span class="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-label-sm text-label-sm font-medium">Balanced</span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3 px-3 font-label-md text-label-md text-slate-900 font-semibold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-purple-500"></span> French (DELF B2 Prep)
+                  </td>
+<td class="py-3 px-3 text-slate-500 font-label-sm text-label-sm">Languages</td>
+<td class="py-3 px-3 font-label-sm text-label-sm">
+<span class="text-emerald-700 font-bold">4</span> mentors / <span class="text-cyan-700 font-bold">29</span> learners
+                  </td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2">
+<div class="w-16 h-2 rounded-full bg-slate-100 overflow-hidden border border-slate-200/60">
+<div class="bg-red-500 h-full rounded-full" style="width: 14%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-red-700 font-semibold">1 : 7.2</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right">
+<span class="px-2 py-0.5 rounded-full bg-red-50 border border-red-200 text-red-700 font-label-sm text-label-sm font-medium">Critically Low</span>
+</td>
+</tr>
+<tr class="hover:bg-slate-50 transition-colors">
+<td class="py-3 px-3 font-label-md text-label-md text-slate-900 font-semibold flex items-center gap-2">
+<span class="w-2 h-2 rounded-full bg-indigo-500"></span> Microcontroller / ROS
+                  </td>
+<td class="py-3 px-3 text-slate-500 font-label-sm text-label-sm">Robotics</td>
+<td class="py-3 px-3 font-label-sm text-label-sm">
+<span class="text-emerald-700 font-bold">12</span> mentors / <span class="text-cyan-700 font-bold">16</span> learners
+                  </td>
+<td class="py-3 px-3">
+<div class="flex items-center gap-2">
+<div class="w-16 h-2 rounded-full bg-slate-100 overflow-hidden border border-slate-200/60">
+<div class="bg-indigo-500 h-full rounded-full" style="width: 75%;"></div>
+</div>
+<span class="font-label-sm text-label-sm text-indigo-700 font-semibold">1 : 1.3</span>
+</div>
+</td>
+<td class="py-3 px-3 text-right">
+<span class="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-800 font-label-sm text-label-sm font-medium">Healthy</span>
+</td>
+</tr>
+</tbody>
+</table>
+</div>
+</div>
+<div class="pt-space-sm flex items-center justify-between font-label-sm text-label-sm text-slate-500 border-t border-slate-100">
+<span>Active Curated Skills: 48</span>
+<a class="text-indigo-600 hover:text-indigo-800 hover:underline flex items-center gap-1 font-semibold" href="#">
+<span>Open Taxonomy Editor</span>
+<span class="material-symbols-outlined text-xs">arrow_forward</span>
+</a>
+</div>
+</div>
+<div class="lg:col-span-5 bg-white rounded-2xl p-space-md lg:p-space-lg border border-slate-200 shadow-sm space-y-space-md flex flex-col justify-between">
+<div class="space-y-space-sm">
+<div class="flex items-center justify-between">
+<div class="flex items-center gap-space-xs">
+<span class="material-symbols-outlined text-emerald-600">badge</span>
+<h3 class="font-headline-md text-headline-md text-slate-900 font-bold">Student ID Verification Queue</h3>
+</div>
+<span class="px-2.5 py-0.5 rounded-full bg-slate-100 border border-slate-200 text-slate-700 font-label-sm text-label-sm font-semibold">
+              1 Pending
+            </span>
+</div>
+<p class="font-body-sm text-body-sm text-slate-500">
+            Automated OCR + biometric verification against university directory.
+          </p>
+<div class="bg-slate-50 rounded-xl p-space-md space-y-space-md border border-slate-200/80 relative overflow-hidden">
+<div class="flex items-start gap-space-md">
+<div class="w-24 h-24 rounded-lg bg-white border border-slate-200 shadow-sm flex flex-col items-center justify-center p-1.5 relative overflow-hidden flex-shrink-0">
+<img class="w-full h-full object-cover rounded" data-alt="University identity student card photograph showing IIT Bombay logo, official holographic seal, student portrait with crisp typography and identification barcodes under clean lighting." src="https://lh3.googleusercontent.com/aida-public/AB6AXuDsO94SG1VCQjOSAWfosysZufVYbITV50ErvpXEsfaNr9bieBZr4oMq0G_Knaxst215_9Bh_BFFQsuzaMLfLzWR2EfLTpvXYtm3NVKVH0o2_wDZi72s-X-KYnos99hu_xkZ49_TkbNa5l5QpAy8glBWSAGZlZ0qQQHFj3EdASXju9UacUQheoIQYlCGh9pGv6v7dRXioyctX9dtqdQhujXBUqy_NInsrm71YRHfNiGPGdONstUHywVw"/>
+<div class="absolute inset-0 bg-gradient-to-t from-slate-900/60 to-transparent flex items-end justify-center p-1">
+<span class="text-[9px] font-label-sm text-white uppercase tracking-tighter font-semibold">ID Scan</span>
+</div>
+</div>
+<div class="flex flex-col min-w-0 flex-1">
+<div class="flex items-center justify-between">
+<span class="font-headline-sm text-headline-sm text-slate-900 font-bold truncate">Pooja Sharma</span>
+<span class="px-2 py-0.5 rounded-full bg-emerald-50 border border-emerald-200 text-emerald-700 font-label-sm text-label-sm flex items-center gap-1 flex-shrink-0 font-semibold">
+<span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span> 99.4% AI Match
+                  </span>
+</div>
+<span class="font-body-sm text-body-sm text-slate-700 font-medium mt-0.5">IITB Roll #22B0912</span>
+<span class="font-label-sm text-label-sm text-slate-500">Electrical Engineering • Year 2</span>
+<div class="flex items-center gap-2 mt-2">
+<span class="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600 font-label-sm text-[10px] tracking-wide font-medium">LDAP Verified</span>
+<span class="px-2 py-0.5 rounded bg-white border border-slate-200 text-slate-600 font-label-sm text-[10px] tracking-wide font-medium">Campus Email OK</span>
+</div>
+</div>
+</div>
+<div class="bg-white rounded-lg p-2.5 flex items-center justify-between text-slate-700 border border-slate-200 shadow-xs font-body-sm text-body-sm">
+<div class="flex items-center gap-2">
+<span class="material-symbols-outlined text-emerald-600 text-sm">verified_user</span>
+<span class="font-label-sm text-label-sm font-medium">Facial Liveness: 100% Match</span>
+</div>
+<span class="font-label-sm text-label-sm text-slate-400">Scanned 14m ago</span>
+</div>
+<div class="grid grid-cols-2 gap-space-xs pt-space-xs">
+<button class="w-full py-2.5 rounded-xl bg-white border border-slate-200 text-red-600 hover:bg-red-50 hover:border-red-200 font-label-lg text-label-lg transition-colors flex items-center justify-center gap-1 font-semibold" type="button">
+<span class="material-symbols-outlined text-sm">cancel</span>
+<span>Reject</span>
+</button>
+<button class="w-full py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-700 text-white font-label-lg text-label-lg transition-all shadow-sm shadow-emerald-200 flex items-center justify-center gap-1 font-semibold active:translate-y-0.5" type="button">
+<span class="material-symbols-outlined text-sm">check_circle</span>
+<span>Verify Student ID</span>
+</button>
+</div>
+</div>
+</div>
+<div class="pt-space-sm flex items-center justify-between font-label-sm text-label-sm text-slate-500 border-t border-slate-100">
+<span>Batch Queue Clearance: 98% this week</span>
+<span class="text-slate-500">Auto-Approval: Enabled</span>
+</div>
+</div>
+</div>
+<div class="w-full bg-white rounded-xl p-space-md border border-slate-200 shadow-sm flex flex-col md:flex-row items-center justify-between gap-space-sm font-label-sm text-label-sm text-slate-500">
+<div class="flex items-center gap-space-md">
+<span class="flex items-center gap-1.5 text-slate-700 font-medium">
+<span class="material-symbols-outlined text-indigo-600 text-sm">security</span>
+<span>Zero-Knowledge Campus Trust Protocol v3.2</span>
+</span>
+<span class="hidden sm:inline text-slate-300">•</span>
+<span class="hidden sm:inline">Active Peer Host: Bombay_Node_04</span>
+</div>
+<div class="flex items-center gap-space-md">
+<span>Campus Privacy Policy Compliant</span>
+<span class="text-slate-700 font-medium">System Time: UTC+05:30 (IST)</span>
+</div>
+</div>
+</div>
+</div></main></div></body></html>
