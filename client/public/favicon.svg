@@ -1,44 +1,43 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 48 48" width="48" height="48" fill="none">
   <defs>
-    <!-- Brand Gold Gradient matching tailwind gold-400 (#dcaf4b) to gold-600 (#bb7420) -->
-    <linearGradient id="ss-gold" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FDE047" />
-      <stop offset="25%" stop-color="#EAB308" />
-      <stop offset="65%" stop-color="#CA8A04" />
-      <stop offset="100%" stop-color="#9A3412" />
+    <!-- Stitch Indigo & Cyan Gradient -->
+    <linearGradient id="ss-stitch-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#4f46e5" />
+      <stop offset="60%" stop-color="#3525cd" />
+      <stop offset="100%" stop-color="#00687a" />
     </linearGradient>
     
-    <!-- Top-down glossy light sheen -->
+    <!-- Glossy Sheen -->
     <linearGradient id="ss-sheen" x1="0%" y1="0%" x2="0%" y2="100%">
-      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.45" />
-      <stop offset="40%" stop-color="#FFFFFF" stop-opacity="0.1" />
+      <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.35" />
+      <stop offset="50%" stop-color="#FFFFFF" stop-opacity="0.08" />
       <stop offset="100%" stop-color="#FFFFFF" stop-opacity="0" />
     </linearGradient>
 
-    <!-- Subtle inner border highlight -->
+    <!-- Subtle border highlight -->
     <linearGradient id="ss-stroke" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" stop-color="#FEF08A" stop-opacity="0.9" />
-      <stop offset="100%" stop-color="#B45309" stop-opacity="0.5" />
+      <stop offset="0%" stop-color="#c3c0ff" stop-opacity="0.8" />
+      <stop offset="100%" stop-color="#57dffe" stop-opacity="0.4" />
     </linearGradient>
 
-    <!-- Soft drop shadow for obsidian emblem -->
+    <!-- Ambient Shadow -->
     <filter id="ss-shadow" x="-20%" y="-20%" width="140%" height="140%">
-      <feDropShadow dx="0" dy="1.5" stdDeviation="1.2" flood-color="#000000" flood-opacity="0.35" />
+      <feDropShadow dx="0" dy="2" stdDeviation="2" flood-color="#0b1c30" flood-opacity="0.25" />
     </filter>
   </defs>
 
-  <!-- Base Squircle -->
-  <rect x="2" y="2" width="44" height="44" rx="11" fill="url(#ss-gold)" />
-  <rect x="2" y="2" width="44" height="44" rx="11" fill="url(#ss-sheen)" />
-  <rect x="2.5" y="2.5" width="43" height="43" rx="10.5" stroke="url(#ss-stroke)" stroke-width="1" fill="none" />
+  <!-- Base Squircle with Stitch Indigo Gradient -->
+  <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#ss-stitch-gradient)" filter="url(#ss-shadow)" />
+  <rect x="2" y="2" width="44" height="44" rx="12" fill="url(#ss-sheen)" />
+  <rect x="2.5" y="2.5" width="43" height="43" rx="11.5" stroke="url(#ss-stroke)" stroke-width="1" fill="none" />
 
-  <!-- Obsidian Brand Sparkles Motif -->
-  <g fill="#0F172A" filter="url(#ss-shadow)">
+  <!-- Crisp White Reciprocal Sparkle Motif -->
+  <g fill="#FFFFFF">
     <!-- Primary Star -->
-    <path d="M 20 14 Q 20 26 32 26 Q 20 26 20 38 Q 20 26 8 26 Q 20 26 20 14 Z" />
-    <!-- Secondary Star (Top Right) -->
-    <path d="M 34 8.5 Q 34 15 40.5 15 Q 34 15 34 21.5 Q 34 15 27.5 15 Q 34 15 34 8.5 Z" />
-    <!-- Tertiary Star (Bottom Right) -->
-    <path d="M 33 29.5 Q 33 34 37.5 34 Q 33 34 33 38.5 Q 33 34 28.5 34 Q 33 34 33 29.5 Z" />
+    <path d="M 21 12 Q 21 24 33 24 Q 21 24 21 36 Q 21 24 9 24 Q 21 24 21 12 Z" opacity="0.98" />
+    <!-- Secondary Sparkle (Top Right) -->
+    <path d="M 33 8.5 Q 33 14 38.5 14 Q 33 14 33 19.5 Q 33 14 27.5 14 Q 33 14 33 8.5 Z" fill="#6ffbbe" />
+    <!-- Small Accent Dot -->
+    <circle cx="12" cy="33" r="1.5" fill="#acedff" opacity="0.9" />
   </g>
 </svg>

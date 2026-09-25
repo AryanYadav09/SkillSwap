@@ -22,6 +22,7 @@ import {
  Shield,
  ShieldAlert,
  Star,
+  Sparkles,
  Trash2,
  UserRound,
  Users,
